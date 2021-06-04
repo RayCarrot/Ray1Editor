@@ -6,7 +6,7 @@
                   xmlns:local="clr-namespace:RayCarrot.Ray1Editor"
                   xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
                   mc:Ignorable="d"
-                  Title="Ray1Editor"
+                  Title="{Binding Path=Title}"
                   DataContext="{x:Static local:AppViewModel.Instance}"
                   Height="600" Width="1024"
                   CloseWithEscape="False"

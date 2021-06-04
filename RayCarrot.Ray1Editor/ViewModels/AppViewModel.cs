@@ -22,6 +22,8 @@ namespace RayCarrot.Ray1Editor
         {
             Path_AppDataDir = $"AppUserData";
             Path_AppUserDataFile = Path.Combine(Path_AppDataDir, $"Settings.json");
+
+            SetTitle(null);
         }
 
         #endregion
@@ -55,9 +57,22 @@ namespace RayCarrot.Ray1Editor
         /// </summary>
         public AppViewBaseViewModel CurrentAppViewViewModel { get; protected set; }
 
+        /// <summary>
+        /// The current application title
+        /// </summary>
+        public string Title { get; protected set; }
+
         #endregion
 
         #region Public Methods
+
+        public void SetTitle(string state)
+        {
+            Title = "Ray1Editor";
+
+            if (state != null)
+                Title += $" - {state}";
+        }
 
         /// <summary>
         /// Changes the current view to the specified one

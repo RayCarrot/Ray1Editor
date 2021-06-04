@@ -68,6 +68,9 @@ namespace RayCarrot.Ray1Editor
         {
             // TODO: Verify the game path exists before loading the editor to avoid crash
             App.ChangeView(AppViewModel.AppView.Editor, new EditorViewModel(SelectedGame.Game, SelectedGame.Manager, SelectedLevel.Settings));
+
+            // Set the app title
+            App.SetTitle($"{SelectedLevel.Header}");
         }
 
         #endregion
