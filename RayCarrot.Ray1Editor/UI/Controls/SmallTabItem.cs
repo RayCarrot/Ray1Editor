@@ -1,6 +1,7 @@
 ﻿using MahApps.Metro.IconPacks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -21,6 +22,20 @@ namespace RayCarrot.Ray1Editor
         /// <summary>
         /// Dependency property for <see cref="IconKind"/>
         /// </summary>
-        public static readonly DependencyProperty IconKindProperty = DependencyProperty.Register(nameof(IconKind), typeof(PackIconMaterialKind), typeof(SmallTabItem));
+        public static readonly DependencyProperty IconKindProperty = DependencyProperty.Register(nameof(IconKind), typeof(PackIconMaterialKind), typeof(SmallTabItem));        
+        
+        /// <summary>
+        /// Indicates the icon foreground brush
+        /// </summary>
+        public Brush IconForeground
+        {
+            get => (Brush)GetValue(IconForegroundProperty);
+            set => SetValue(IconForegroundProperty, value);
+        }
+
+        /// <summary>
+        /// Dependency property for <see cref="IconForeground"/>
+        /// </summary>
+        public static readonly DependencyProperty IconForegroundProperty = DependencyProperty.Register(nameof(IconForeground), typeof(Brush), typeof(SmallTabItem));
     }
 }

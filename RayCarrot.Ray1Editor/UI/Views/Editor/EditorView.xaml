@@ -76,28 +76,24 @@
                 </Grid.RowDefinitions>
 
                 <metro:MetroAnimatedTabControl x:Name="EditorTabControl"
-                                           Grid.Row="0"
-                                           metro:TabControlHelper.Underlined="TabPanel">
+                                               Grid.Row="0"
+                                               metro:TabControlHelper.Underlined="TabPanel">
 
                     <!-- General -->
 
-                    <local:SmallTabItem Header="General" IconKind="CogOutline">
+                    <local:SmallTabItem Header="General" IconKind="CogOutline" IconForeground="{StaticResource GenericActionBrush}">
 
                         <ScrollViewer Padding="5 10 5 5"
-                                  VerticalScrollBarVisibility="Auto">
-
-
-
-                        </ScrollViewer>
+                                      VerticalScrollBarVisibility="Auto" />
 
                     </local:SmallTabItem>
 
                     <!-- Layers -->
 
-                    <local:SmallTabItem Header="Layers" IconKind="LayersOutline">
+                    <local:SmallTabItem Header="Layers" IconKind="LayersOutline" IconForeground="{StaticResource TilesBrush}">
 
                         <ScrollViewer Padding="5 10 5 5"
-                                  VerticalScrollBarVisibility="Auto">
+                                      VerticalScrollBarVisibility="Auto">
 
                             <ItemsControl ItemsSource="{Binding Path=Layers, Mode=OneTime}">
 
@@ -111,12 +107,12 @@
                                             </Grid.RowDefinitions>
 
                                             <TextBlock Grid.Row="0"
-                                                   Style="{StaticResource HeaderTextBlock}"
-                                                   Text="{Binding Path=Header, Mode=OneTime}"
-                                                   Margin="0 0 0 7" />
+                                                       Style="{StaticResource HeaderTextBlock}"
+                                                       Text="{Binding Path=Header, Mode=OneTime}"
+                                                       Margin="0 0 0 7" />
 
                                             <ItemsControl Grid.Row="2" Style="{StaticResource FieldsItemsControl}"
-                                                      ItemsSource="{Binding Path=Fields, Mode=OneTime}" />
+                                                          ItemsSource="{Binding Path=Fields, Mode=OneTime}" />
 
                                         </Grid>
                                     </DataTemplate>
@@ -130,10 +126,10 @@
 
                     <!-- Objects -->
 
-                    <local:SmallTabItem Header="Objects" IconKind="ShapeOutline">
+                    <local:SmallTabItem Header="Objects" IconKind="ShapeOutline" IconForeground="{StaticResource ObjectsBrush}">
 
                         <ScrollViewer Padding="5 10 5 5"
-                                  VerticalScrollBarVisibility="Auto">
+                                      VerticalScrollBarVisibility="Auto">
 
                             <!-- TODO: ListBox with all objects in the level -->
 
@@ -144,14 +140,15 @@
 
                     <!-- Properties -->
 
-                    <local:SmallTabItem Header="Properties" IconKind="FileDocumentEditOutline">
+                    <local:SmallTabItem Header="Properties" IconKind="FileDocumentEditOutline" IconForeground="{StaticResource PropertiesBrush}">
 
                         <ScrollViewer Padding="5 10 5 5"
-                                  VerticalScrollBarVisibility="Auto">
+                                      VerticalScrollBarVisibility="Auto">
 
                             <Grid>
 
-                                <Grid Visibility="{Binding Path=SelectedObject, Converter={local:InvertedObjectNullToVisibilityConverter}}">
+                                <Grid
+                                    Visibility="{Binding Path=SelectedObject, Converter={local:InvertedObjectNullToVisibilityConverter}}">
 
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -160,17 +157,18 @@
                                     </Grid.RowDefinitions>
 
                                     <TextBlock Grid.Row="0"
-                                           HorizontalAlignment="Center"
-                                           Text="{Binding Path=SelectedObjectName}"
-                                           FontSize="22"/>
+                                               HorizontalAlignment="Center"
+                                               Text="{Binding Path=SelectedObjectName}"
+                                               FontSize="22" />
 
                                     <ItemsControl Grid.Row="2"
-                                              Style="{StaticResource FieldsItemsControl}"
-                                              ItemsSource="{Binding Path=ObjFields, Mode=OneTime}" />
+                                                  Style="{StaticResource FieldsItemsControl}"
+                                                  ItemsSource="{Binding Path=ObjFields, Mode=OneTime}" />
 
                                 </Grid>
 
-                                <Viewbox Visibility="{Binding Path=SelectedObject, Converter={local:ObjectNullToVisibilityConverter}}">
+                                <Viewbox
+                                    Visibility="{Binding Path=SelectedObject, Converter={local:ObjectNullToVisibilityConverter}}">
                                     <Grid Margin="20">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
@@ -178,7 +176,7 @@
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
 
-                                        <iconPacks:PackIconMaterial Grid.Column="0" Kind="ShapeOutline" />
+                                        <iconPacks:PackIconMaterial Grid.Column="0" Kind="ShapeOutline" Foreground="{StaticResource ObjectsBrush}" />
                                         <TextBlock Grid.Column="2" Text="Select an Object" />
                                     </Grid>
                                 </Viewbox>

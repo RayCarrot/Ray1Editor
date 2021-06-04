@@ -5,6 +5,7 @@
 
     <Style TargetType="{x:Type local:SmallTabItem}" BasedOn="{StaticResource {x:Type TabItem}}">
         <Setter Property="Padding" Value="0" />
+        <Setter Property="IconForeground" Value="{DynamicResource MahApps.Brushes.ThemeForeground}" />
         <Setter Property="HeaderTemplate">
             <Setter.Value>
                 <DataTemplate>
@@ -13,7 +14,7 @@
                                 DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:SmallTabItem}}}">
 
                         <iconPacks:PackIconMaterial Kind="{Binding Path=IconKind}"
-                                                    Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}"
+                                                    Foreground="{Binding Path=IconForeground}"
                                                     Width="14" Height="14"
                                                     Margin="5 0"
                                                     VerticalAlignment="Center" />

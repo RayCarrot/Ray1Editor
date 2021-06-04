@@ -27,13 +27,13 @@
 
     <!-- TODO: Move colors to resources and reuse for other controls with same usage -->
     <ToggleButton ToolTip="Tiles" IsChecked="{Binding Path=Mode, Converter={local:EnumBooleanConverter}, ConverterParameter=Tiles}">
-        <iconPacks:PackIconMaterial Kind="Grid" VerticalAlignment="Center" Foreground="#4CAF50" />
+        <iconPacks:PackIconMaterial Kind="Grid" VerticalAlignment="Center" Foreground="{StaticResource TilesBrush}" />
     </ToggleButton>
     <ToggleButton ToolTip="Objects" IsChecked="{Binding Path=Mode, Converter={local:EnumBooleanConverter}, ConverterParameter=Objects}">
-        <iconPacks:PackIconMaterial Kind="ShapeOutline" VerticalAlignment="Center" Foreground="#FF9800" />
+        <iconPacks:PackIconMaterial Kind="ShapeOutline" VerticalAlignment="Center" Foreground="{StaticResource ObjectsBrush}" />
     </ToggleButton>
     <ToggleButton ToolTip="Links" IsChecked="{Binding Path=Mode, Converter={local:EnumBooleanConverter}, ConverterParameter=Links}">
-        <iconPacks:PackIconMaterial Kind="VectorLink" VerticalAlignment="Center" Foreground="#FDD835" />
+        <iconPacks:PackIconMaterial Kind="VectorLink" VerticalAlignment="Center" Foreground="{StaticResource LinksBrush}" />
     </ToggleButton>
 
     <Separator />
@@ -42,7 +42,7 @@
 
     <Button ToolTip="Save">
         <StackPanel Orientation="Horizontal">
-            <iconPacks:PackIconMaterial Kind="ContentSaveOutline" Foreground="#9C27B0" VerticalAlignment="Center" />
+            <iconPacks:PackIconMaterial Kind="ContentSaveOutline" Foreground="{StaticResource GenericActionBrush}" VerticalAlignment="Center" />
             <TextBlock Text="Save" Margin="10 0 0 0" />
         </StackPanel>
     </Button>
