@@ -113,13 +113,13 @@ namespace RayCarrot.Ray1Editor
                 manager: CurrentGameManager,
                 context: new Context(CurrentGame.Path),
                 gameSettings: CurrentGameSettings);
-
-            // Default to objects mode
-            Mode = EditorMode.Objects;
         }
 
         public void OnEditorLoaded()
         {
+            // Default to objects mode
+            Mode = EditorMode.Objects;
+
             // Set up layers
             Layers.AddRange(EditorScene.GameData.Layers.Select(x => new LayerEditorViewModel(x)));
 

@@ -67,8 +67,11 @@ namespace RayCarrot.Ray1Editor
             get => _mode;
             set
             {
-                if (_mode == EditorMode.Objects)
-                    SelectedObject = null;
+                // Clear selections
+                SelectedObject = null;
+                IsDraggingObject = false;
+                SelectedLinkObject = null;
+                IsDraggingLink = false;
 
                 _mode = value;
             }
@@ -321,6 +324,7 @@ namespace RayCarrot.Ray1Editor
             else
             {
                 IsDraggingLink = false;
+                SelectedLinkObject = null;
             }
         }
 
@@ -388,10 +392,14 @@ namespace RayCarrot.Ray1Editor
                 // Draw object bounds. Always show the bounds for the selected object.
                 // Then if we're hovering over another object without dragging we can
                 // show that too (the object we're dragging will always be selected!).
+                // When in links mode we show the bounds for the object the link is being
+                // moved for.
                 if (SelectedObject != null)
                     s.DrawRectangle(SelectedObject.Bounds, ObjBoundsColor);
-                if (HoverObject != null && !IsDraggingObject)
+                if (HoverObject != null && !IsDraggingObject && !IsDraggingLink)
                     s.DrawRectangle(HoverObject.Bounds, ObjBoundsColor);
+                else if (SelectedLinkObject != null)
+                    s.DrawRectangle(SelectedLinkObject.Bounds, ObjBoundsColor);
             }
         }
 
