@@ -66,7 +66,9 @@ namespace RayCarrot.Ray1Editor
         }
 
         // Links
+        protected virtual int LinkGripSize => 16;
         public Point LinkGripPosition { get; set; }
+        public Point GetLinkGripSnappedPosition => LinkGripPosition - new Point(LinkGripPosition.X % LinkGripSize - LinkGripSize / 2, LinkGripPosition.Y % LinkGripSize - LinkGripSize / 2);
         public int LinkGroup { get; set; }
         public virtual bool CanBeLinkedToGroup => false;
         //public virtual IEnumerable<int> Links => new int[0];
@@ -145,10 +147,12 @@ namespace RayCarrot.Ray1Editor
         }
         public virtual void DrawLinks(SpriteBatch s)
         {
-            if (CanBeLinkedToGroup && LinkGroup > 0)
+            if (CanBeLinkedToGroup)
             {
-                s.DrawLine(Center.ToVector2(), LinkGripPosition.ToVector2(), Color.Yellow, 2);
-                s.DrawFilledRectangle(LinkGripPosition.ToVector2() - new Vector2(8), new Vector2(16), Color.Yellow);
+                var linkGrip = GetLinkGripSnappedPosition.ToVector2();
+
+                s.DrawLine(Center.ToVector2(), linkGrip, Color.Yellow, 2);
+                s.DrawFilledRectangle(linkGrip - new Vector2(LinkGripSize / 2f), new Vector2(LinkGripSize), Color.Yellow);
             }
         }
     }

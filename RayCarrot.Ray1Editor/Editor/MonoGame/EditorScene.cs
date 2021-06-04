@@ -59,6 +59,7 @@ namespace RayCarrot.Ray1Editor
         public Context Context { get; }
         public TextureManager TextureManager { get; protected set; }
 
+        // Mode
         public EditorMode Mode
         {
             get => _mode;
@@ -70,6 +71,7 @@ namespace RayCarrot.Ray1Editor
                 _mode = value;
             }
         }
+        public bool CanHoverOverObject => Mode is EditorMode.Objects or EditorMode.Links;
 
         // Camera
         public Camera Cam { get; protected set; }
@@ -95,6 +97,10 @@ namespace RayCarrot.Ray1Editor
         //public Point DraggingObjectOffset { get; protected set; }
         public Vector2 PrevMousePos { get; protected set; }
         public Point DraggingObjectInitialPosition { get; protected set; }
+
+        // Links
+        public bool IsDraggingLink { get; protected set; }
+        public GameObject SelectedLinkObject { get; protected set; }
 
         #endregion
 
@@ -157,12 +163,15 @@ namespace RayCarrot.Ray1Editor
 
         protected void InitializeObjLinks()
         {
-            foreach (var linkedEvents in GameData.Objects.Where(x => x.LinkGroup != 0 && x.CanBeLinkedToGroup).GroupBy(x => x.LinkGroup))
+            foreach (var notLinkedObj in GameData.Objects.Where(x => x.LinkGroup == 0 && x.CanBeLinkedToGroup))
+                notLinkedObj.LinkGripPosition = notLinkedObj.Position;
+
+            foreach (var linkedObj in GameData.Objects.Where(x => x.LinkGroup != 0 && x.CanBeLinkedToGroup).GroupBy(x => x.LinkGroup))
             {
-                var prev = linkedEvents.Last();
+                var prev = linkedObj.Last();
                 prev.LinkGripPosition = prev.Position;
 
-                foreach (var e in linkedEvents)
+                foreach (var e in linkedObj)
                 {
                     e.LinkGripPosition = prev.LinkGripPosition;
                     prev = e;
@@ -201,10 +210,16 @@ namespace RayCarrot.Ray1Editor
                 obj.Update(deltaTime);
 
             var mouse = Mouse.GetState();
+            var mousePos = mouse.Position;
+            var mouseWorldPos = Cam.ToWorld(mousePos.ToVector2());
 
             // Update the camera
             Cam.ViewArea = new Vector2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
             Cam.Update(deltaTime, mouse, Keyboard.GetState());
+
+            // Get the object we're hovering over
+            if (CanHoverOverObject)
+                HoverObject = GameData.Objects.FirstOrDefault(x => x.Bounds.Contains(mouseWorldPos));
 
             switch (Mode)
             {
@@ -220,9 +235,6 @@ namespace RayCarrot.Ray1Editor
                     UpdateModeLinks(deltaTime, mouse);
                     break;
             }
-
-            var mousePos = mouse.Position;
-            var mouseWorldPos = Cam.ToWorld(mousePos.ToVector2());
 
             // TODO: Remove or change implementation. Combining strings every frame is not good for performance. This is only here for debugging.
             VM.DebugText = $"Mouse (world): {mouseWorldPos}{Environment.NewLine}" +
@@ -240,9 +252,6 @@ namespace RayCarrot.Ray1Editor
         {
             var mousePos = mouse.Position;
             var mouseWorldPos = Cam.ToWorld(mousePos.ToVector2());
-
-            // Get the object we're hovering over
-            HoverObject = GameData.Objects.FirstOrDefault(x => x.Bounds.Contains(mouseWorldPos));
 
             if (mouse.LeftButton == ButtonState.Pressed)
             {
@@ -268,22 +277,7 @@ namespace RayCarrot.Ray1Editor
 
                     // Auto-scroll if the object has been dragged from its initial position and is near an edge
                     if (DraggingObjectInitialPosition != SelectedObject.Position)
-                    {
-                        // Auto-scroll for every edge
-                        autoScroll(ActualWidth - mousePos.X, 1, 0); // Right
-                        autoScroll(mousePos.X, -1, 0); // Left
-                        autoScroll(ActualHeight - mousePos.Y, 0, 1); // Bottom
-                        autoScroll(mousePos.Y, 0, -1); // Top
-
-                        void autoScroll(double diff, int changeX, int changeY)
-                        {
-                            if (diff < State.AutoScrollMargin)
-                                Cam.Position = new Vector2(
-                                    Cam.Position.X + State.AutoScrollSpeed * changeX,
-                                    Cam.Position.Y + State.AutoScrollSpeed * changeY);
-                        }
-
-                    }
+                        AutoScrollAtEdge(mousePos);
                 }
             }
             else
@@ -294,7 +288,55 @@ namespace RayCarrot.Ray1Editor
 
         protected void UpdateModeLinks(double deltaTime, MouseState mouse)
         {
+            var mousePos = mouse.Position;
+            var mouseWorldPos = Cam.ToWorld(mousePos.ToVector2());
 
+            if (mouse.LeftButton == ButtonState.Pressed)
+            {
+                if (!IsDraggingLink)
+                {
+                    if (HoverObject == null)
+                    {
+                        SelectedLinkObject = null;
+                    }
+                    else
+                    {
+                        IsDraggingLink = true;
+                        SelectedLinkObject = HoverObject;
+                        PrevMousePos = mouseWorldPos;
+                        SelectedLinkObject.LinkGripPosition = mouseWorldPos.ToPoint();
+                    }
+                }
+
+                if (IsDraggingLink && SelectedLinkObject != null)
+                {
+                    SelectedLinkObject.LinkGripPosition += (mouseWorldPos - PrevMousePos).ToPoint();
+                    PrevMousePos = mouseWorldPos;
+
+                    AutoScrollAtEdge(mousePos);
+                }
+            }
+            else
+            {
+                IsDraggingLink = false;
+            }
+        }
+
+        public void AutoScrollAtEdge(Point mousePos)
+        {
+            // Auto-scroll for every edge
+            autoScroll(ActualWidth - mousePos.X, 1, 0); // Right
+            autoScroll(mousePos.X, -1, 0); // Left
+            autoScroll(ActualHeight - mousePos.Y, 0, 1); // Bottom
+            autoScroll(mousePos.Y, 0, -1); // Top
+
+            void autoScroll(double diff, int changeX, int changeY)
+            {
+                if (diff < State.AutoScrollMargin)
+                    Cam.Position = new Vector2(
+                        Cam.Position.X + State.AutoScrollSpeed * changeX,
+                        Cam.Position.Y + State.AutoScrollSpeed * changeY);
+            }
         }
 
         protected override void Draw(GameTime gameTime)
@@ -336,18 +378,19 @@ namespace RayCarrot.Ray1Editor
 
             // Draw links if in links mode
             if (Mode == EditorMode.Links)
-            {
                 foreach (var obj in GameData.Objects)
                     obj.DrawLinks(s);
-            }
 
-            // Draw object bounds. Always show the bounds for the selected object.
-            // Then if we're hovering over another object without dragging we can
-            // show that too (the object we're dragging will always be selected!).
-            if (SelectedObject != null)
-                s.DrawRectangle(SelectedObject.Bounds, ObjBoundsColor);
-            if (HoverObject != null && !IsDraggingObject)
-                s.DrawRectangle(HoverObject.Bounds, ObjBoundsColor);
+            if (CanHoverOverObject)
+            {
+                // Draw object bounds. Always show the bounds for the selected object.
+                // Then if we're hovering over another object without dragging we can
+                // show that too (the object we're dragging will always be selected!).
+                if (SelectedObject != null)
+                    s.DrawRectangle(SelectedObject.Bounds, ObjBoundsColor);
+                if (HoverObject != null && !IsDraggingObject)
+                    s.DrawRectangle(HoverObject.Bounds, ObjBoundsColor);
+            }
         }
 
         #endregion
