@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:RayCarrot.Ray1Editor"
+      xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
       mc:Ignorable="d"
       d:DataContext="{d:DesignInstance local:EditorViewModel}">
     <Menu.Style>
@@ -14,46 +15,38 @@
 
     <MenuItem Header="File">
         <MenuItem Header="Load"
+                  Icon="{iconPacks:Material OpenInApp}"
                   Command="{Binding Path=LoadOtherMapCommand, Mode=OneTime}" />
         <MenuItem Header="Save"
+                  Icon="{iconPacks:Material ContentSaveOutline}"
                   IsEnabled="False" />
         <Separator />
         <MenuItem Header="Exit"
+                  Icon="{iconPacks:Material CloseOutline}"
                   InputGestureText="Alt+F4"
                   Click="MenuItem_OnClick" />
     </MenuItem>
 
     <!-- Edit -->
 
-    <MenuItem Header="Edit">
-        <MenuItem Header="Objects"
-                  IsCheckable="True"
-                  IsEnabled="False"/>
-        <MenuItem Header="Tiles"
-                  IsCheckable="True"
-                  IsEnabled="False"/>
-        <MenuItem Header="Map"
-                  IsCheckable="True"
-                  IsEnabled="False"/>
-        <Separator />
-        <MenuItem Header="Add Object"
-                  IsEnabled="False" />
+    <MenuItem Header="Edit" IsEnabled="False">
+
     </MenuItem>
 
     <!-- View -->
 
     <MenuItem Header="View">
         <MenuItem Header="Reset Position"
+                  Icon="{iconPacks:Material MapMarker}"
                   Command="{Binding Path=ResetPositionCommand, Mode=OneTime}" />
         <Separator />
         <MenuItem Header="Animate Objects"
-                  IsCheckable="True"
-                  IsEnabled="False" />
-        <MenuItem Header="Animate Tiles"
+                  Icon="{iconPacks:Material AnimationPlayOutline}"
                   IsCheckable="True"
                   IsEnabled="False" />
         <Separator />
         <MenuItem Header="Show Object HitBoxes"
+                  Icon="{iconPacks:Material SquareOutline}"
                   IsCheckable="True"
                   IsEnabled="False" />
         <Separator />
@@ -72,6 +65,7 @@
                       IsEnabled="False" />
         </MenuItem>
         <MenuItem Header="Show Objects"
+                  Icon="{iconPacks:Material ShapeOutline}"
                   IsCheckable="True"
                   IsEnabled="False"/>
     </MenuItem>
@@ -91,14 +85,15 @@
         </MenuItem>
         <Separator />
         <MenuItem Header="Options"
+                  Icon="{iconPacks:Material CogOutline}"
                   IsEnabled="False" />
     </MenuItem>
 
     <!-- Help -->
 
-    <MenuItem Header="Help" />
+    <MenuItem Header="Help" IsEnabled="False" />
 
     <!-- Debug -->
 
-    <MenuItem Header="Debug" />
+    <MenuItem Header="Debug" IsEnabled="False" />
 </Menu>
