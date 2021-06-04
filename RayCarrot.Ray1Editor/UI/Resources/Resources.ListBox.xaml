@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- ListBox with a border and foreground -->
-    <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource {x:Type ListBox}}">
+    <Style x:Key="BorderedListBox" TargetType="{x:Type ListBox}" BasedOn="{StaticResource {x:Type ListBox}}">
         <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.ThemeForeground}" />
         <Setter Property="BorderThickness" Value="1" />
     </Style>

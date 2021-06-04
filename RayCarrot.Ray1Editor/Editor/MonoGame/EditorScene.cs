@@ -85,7 +85,7 @@ namespace RayCarrot.Ray1Editor
         public GameObject SelectedObject
         {
             get => _selectedObject;
-            protected set
+            set
             {
                 _selectedObject = value;
                 VM.UpdateSelectedObject(_selectedObject);

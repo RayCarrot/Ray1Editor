@@ -128,13 +128,20 @@
 
                     <local:SmallTabItem Header="Objects" IconKind="ShapeOutline" IconForeground="{StaticResource ObjectsBrush}">
 
-                        <ScrollViewer Padding="5 10 5 5"
-                                      VerticalScrollBarVisibility="Auto">
-
-                            <!-- TODO: ListBox with all objects in the level -->
-
-
-                        </ScrollViewer>
+                        <!-- TODO: ListBox with all objects in the level -->
+                        <ListBox ItemsSource="{Binding Path=GameObjects, Mode=OneTime}"
+                                 SelectedItem="{Binding Path=SelectedGameObjectItem}">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Vertical" />
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Header, Mode=OneTime}" />
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
 
                     </local:SmallTabItem>
 

@@ -18,6 +18,7 @@ namespace RayCarrot.Ray1Editor
             CurrentGameManager = currentGameManager;
             CurrentGameSettings = currentGameSettings;
             Layers = new ObservableCollection<LayerEditorViewModel>();
+            GameObjects = new ObservableCollection<GameObjectListItemViewModel>();
             ObjFields = new ObservableCollection<EditorFieldViewModel>();
             ShowObjFields = false;
 
@@ -32,6 +33,12 @@ namespace RayCarrot.Ray1Editor
 
         public ICommand LoadOtherMapCommand { get; }
         public ICommand ResetPositionCommand { get; }
+
+        #endregion
+
+        #region Private Fields
+
+        private GameObjectListItemViewModel _selectedGameObjectItem;
 
         #endregion
 
@@ -55,6 +62,19 @@ namespace RayCarrot.Ray1Editor
         public ObservableCollection<LayerEditorViewModel> Layers { get; }
 
         // Object
+        public ObservableCollection<GameObjectListItemViewModel> GameObjects { get; }
+
+        public GameObjectListItemViewModel SelectedGameObjectItem
+        {
+            get => _selectedGameObjectItem;
+            set
+            {
+                _selectedGameObjectItem = value;
+                EditorScene.SelectedObject = value.Obj;
+                EditorScene.GoToObject(value.Obj);
+            }
+        }
+
         public bool ShowObjFields { get; set; }
         public ObservableCollection<EditorFieldViewModel> ObjFields { get; }
 
@@ -106,6 +126,9 @@ namespace RayCarrot.Ray1Editor
                 layer.RecreateFields();
                 layer.RefreshFields();
             }
+
+            // Create object items
+            GameObjects.AddRange(EditorScene.GameData.Objects.Select(x => new GameObjectListItemViewModel(x)));
         }
 
         public void UnloadEditor()
@@ -126,6 +149,10 @@ namespace RayCarrot.Ray1Editor
         public void UpdateSelectedObject(GameObject obj)
         {
             SelectedObject = obj;
+
+            _selectedGameObjectItem = obj == null ? null : GameObjects.First(x => x.Obj == obj);
+            OnPropertyChanged(nameof(SelectedGameObjectItem));
+
             SelectedObjectName = obj?.PrimaryName;
             RefreshObjFields();
         }
