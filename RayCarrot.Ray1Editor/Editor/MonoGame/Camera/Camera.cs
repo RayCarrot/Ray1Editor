@@ -6,18 +6,27 @@ namespace RayCarrot.Ray1Editor
 {
     public class Camera
     {
+        // Current state
         public float Zoom { get; set; } = 1;
         public Vector2 Position { get; set; }
         public float Rotation { get; set; }
+        public Vector2 ViewArea { get; set; }
 
+        // Zoom
         public float MinZoom { get; set; } = 0.2f;
         public float MaxZoom { get; set; } = 2.5f;
         public float ZoomSpeed { get; set; } = 0.001f;
 
+        // Moving
         public bool IsDraggingCamera { get; protected set; }
         public double CameraSpeed { get; set; } = 500;
-        public Vector2 ViewArea { get; set; }
 
+        // Targeting
+        public Vector2? TargetPosition { get; set; }
+        public float? TargetZoom { get; set; }
+        public float TargetLerpFactor { get; set; } = 6;
+
+        // Saves mouse states
         protected Vector2 PrevMousePos { get; set; }
         protected int PrevScrollWheelValue { get; set; }
 
@@ -33,6 +42,21 @@ namespace RayCarrot.Ray1Editor
 
         public void Update(double deltaTime, MouseState mouse, KeyboardState keyboard)
         {
+            if (TargetPosition.HasValue)
+            {
+                if (Vector2.Distance(Position, TargetPosition.Value) < 0.4f)
+                    TargetPosition = null;
+                else
+                    Position = Vector2.Lerp(Position, TargetPosition.Value, (float)(deltaTime * TargetLerpFactor));
+            }
+            if (TargetZoom.HasValue)
+            {
+                if (Math.Abs(TargetZoom.Value - Zoom) < 0.04f)
+                    TargetZoom = null;
+                else
+                    Zoom = MathHelper.Lerp(Zoom, TargetZoom.Value, (float)(deltaTime * TargetLerpFactor));
+            }
+
             UpdateZoom(deltaTime, mouse);
 
             // Move camera with WASD

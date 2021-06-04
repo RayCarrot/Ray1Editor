@@ -6,6 +6,7 @@ using MonoGame.Framework.WpfInterop;
 using MonoGame.Framework.WpfInterop.Input;
 using System;
 using System.Linq;
+using BinarySerializer.Ray1;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace RayCarrot.Ray1Editor
@@ -184,6 +185,12 @@ namespace RayCarrot.Ray1Editor
         {
             Cam.Zoom = 1;
             Cam.Position = new Vector2(GraphicsDevice.Viewport.Width / 2f, GraphicsDevice.Viewport.Height / 2f);
+        }
+
+        public void GoToObject(GameObject obj)
+        {
+            Cam.TargetPosition = obj.Position.ToVector2();
+            Cam.TargetZoom = 2;
         }
 
         protected override void Update(GameTime gameTime)
