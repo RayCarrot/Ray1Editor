@@ -40,7 +40,7 @@
 
     <!-- Save -->
 
-    <Button ToolTip="Save">
+    <Button ToolTip="Save" Command="{Binding Path=SaveCommand, Mode=OneTime}">
         <StackPanel Orientation="Horizontal">
             <iconPacks:PackIconMaterial Kind="ContentSaveOutline" Foreground="{StaticResource GenericActionBrush}" VerticalAlignment="Center" />
             <TextBlock Text="Save" Margin="10 0 0 0" />

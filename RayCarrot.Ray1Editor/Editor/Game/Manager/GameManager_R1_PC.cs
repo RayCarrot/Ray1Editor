@@ -75,6 +75,24 @@ namespace RayCarrot.Ray1Editor
             return data;
         }
 
+        public override void Save(Context context, GameData gameData)
+        {
+            // Get settings
+            var ray1Settings = context.GetSettings<Ray1Settings>();
+            var world = ray1Settings.World;
+            var level = ray1Settings.Level;
+
+            // Get the level data
+            var lvlData = context.GetMainFileObject<PC_LevFile>(Path_LevelFile(world, level));
+
+            // TODO: Update tiles
+            // TODO: Update objects
+            // TODO: Update links
+
+            // Save the file
+            FileFactory.Write<PC_LevFile>(Path_LevelFile(world, level), context);
+        }
+
         public override IEnumerable<EditorFieldViewModel> GetEditorObjFields(Func<GameObject> getSelectedObj)
         {
             // Helper methods

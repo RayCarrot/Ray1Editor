@@ -21,12 +21,17 @@ namespace RayCarrot.Ray1Editor
         /// </summary>
         /// <param name="context">The serializer context</param>
         /// <param name="settings">The serializer settings</param>
-        /// <param name="graphicsDevice">The graphics device</param>
+        /// <param name="textureManager">The texture manager</param>
         /// <returns>The loaded game data</returns>
         public abstract GameData Load(Context context, object settings, TextureManager textureManager);
 
-        // TODO: Save
-
+        /// <summary>
+        /// Saves the game data
+        /// </summary>
+        /// <param name="context">The serializer context</param>
+        /// <param name="gameData">The game data</param>
+        public abstract void Save(Context context, GameData gameData);
+        
         /// <summary>
         /// Gets the editor fields for an object
         /// </summary>

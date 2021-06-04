@@ -155,7 +155,7 @@ namespace RayCarrot.Ray1Editor
             base.LoadContent();
         }
 
-        public void InitializeObjLinks()
+        protected void InitializeObjLinks()
         {
             foreach (var linkedEvents in GameData.Objects.Where(x => x.LinkGroup != 0 && x.CanBeLinkedToGroup).GroupBy(x => x.LinkGroup))
             {
@@ -180,18 +180,6 @@ namespace RayCarrot.Ray1Editor
         }
 
         protected bool GetIsEditorPaused() => PauseWhenInactive && !IsActive || IsPaused;
-
-        public void ResetCamera()
-        {
-            Cam.Zoom = 1;
-            Cam.Position = new Vector2(GraphicsDevice.Viewport.Width / 2f, GraphicsDevice.Viewport.Height / 2f);
-        }
-
-        public void GoToObject(GameObject obj)
-        {
-            Cam.TargetPosition = obj.Position.ToVector2();
-            Cam.TargetZoom = 2;
-        }
 
         protected override void Update(GameTime gameTime)
         {
@@ -374,6 +362,27 @@ namespace RayCarrot.Ray1Editor
             element.Data = GameData;
 
             return element;
+        }
+
+        public void ResetCamera()
+        {
+            Cam.Zoom = 1;
+            Cam.Position = new Vector2(GraphicsDevice.Viewport.Width / 2f, GraphicsDevice.Viewport.Height / 2f);
+        }
+
+        public void GoToObject(GameObject obj)
+        {
+            Cam.TargetPosition = obj.Position.ToVector2();
+            Cam.TargetZoom = 2;
+        }
+
+        public void Save()
+        {
+            // Save objects
+            foreach (var obj in GameData.Objects)
+                obj.Save();
+
+            GameManager.Save(Context, GameData);
         }
 
         protected override void Dispose(bool disposing)

@@ -3,6 +3,7 @@ using RayCarrot.UI;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 
 namespace RayCarrot.Ray1Editor
@@ -25,6 +26,7 @@ namespace RayCarrot.Ray1Editor
             // Create commands
             LoadOtherMapCommand = new RelayCommand(LoadOtherMap);
             ResetPositionCommand = new RelayCommand(ResetPosition);
+            SaveCommand = new RelayCommand(Save);
         }
 
         #endregion
@@ -33,6 +35,7 @@ namespace RayCarrot.Ray1Editor
 
         public ICommand LoadOtherMapCommand { get; }
         public ICommand ResetPositionCommand { get; }
+        public ICommand SaveCommand { get; }
 
         #endregion
 
@@ -194,6 +197,13 @@ namespace RayCarrot.Ray1Editor
         public void ResetPosition()
         {
             EditorScene.ResetCamera();
+        }
+
+        public void Save()
+        {
+            // TODO: Try/catch
+            EditorScene.Save();
+            MessageBox.Show("Saved!"); // TODO: Have custom dialog window
         }
 
         public override void Dispose()
