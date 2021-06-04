@@ -1,0 +1,104 @@
+﻿<Menu x:Class="RayCarrot.Ray1Editor.EditorMenu"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:RayCarrot.Ray1Editor"
+      mc:Ignorable="d"
+      d:DataContext="{d:DesignInstance local:EditorViewModel}">
+    <Menu.Style>
+        <Style TargetType="{x:Type Menu}" BasedOn="{StaticResource {x:Type Menu}}" />
+    </Menu.Style>
+
+    <!-- File -->
+
+    <MenuItem Header="File">
+        <MenuItem Header="Load"
+                  Command="{Binding Path=LoadOtherMapCommand, Mode=OneTime}" />
+        <MenuItem Header="Save"
+                  IsEnabled="False" />
+        <Separator />
+        <MenuItem Header="Exit"
+                  InputGestureText="Alt+F4"
+                  Click="MenuItem_OnClick" />
+    </MenuItem>
+
+    <!-- Edit -->
+
+    <MenuItem Header="Edit">
+        <MenuItem Header="Objects"
+                  IsCheckable="True"
+                  IsEnabled="False"/>
+        <MenuItem Header="Tiles"
+                  IsCheckable="True"
+                  IsEnabled="False"/>
+        <MenuItem Header="Map"
+                  IsCheckable="True"
+                  IsEnabled="False"/>
+        <Separator />
+        <MenuItem Header="Add Object"
+                  IsEnabled="False" />
+    </MenuItem>
+
+    <!-- View -->
+
+    <MenuItem Header="View">
+        <MenuItem Header="Reset Position"
+                  Command="{Binding Path=ResetPositionCommand, Mode=OneTime}" />
+        <Separator />
+        <MenuItem Header="Animate Objects"
+                  IsCheckable="True"
+                  IsEnabled="False" />
+        <MenuItem Header="Animate Tiles"
+                  IsCheckable="True"
+                  IsEnabled="False" />
+        <Separator />
+        <MenuItem Header="Show Object HitBoxes"
+                  IsCheckable="True"
+                  IsEnabled="False" />
+        <Separator />
+        <MenuItem Header="Show/Hide Tiles Layers">
+            <MenuItem Header="Layer 0 (Background)"
+                      IsCheckable="True"
+                      IsEnabled="False" />
+            <MenuItem Header="Layer 1 (Parallax Back)"
+                      IsCheckable="True"
+                      IsEnabled="False" />
+            <MenuItem Header="Layer 2 (Objects)"
+                      IsCheckable="True"
+                      IsEnabled="False" />
+            <MenuItem Header="Layer 3 (Parallax Front)"
+                      IsCheckable="True"
+                      IsEnabled="False" />
+        </MenuItem>
+        <MenuItem Header="Show Objects"
+                  IsCheckable="True"
+                  IsEnabled="False"/>
+    </MenuItem>
+
+    <!-- Tools -->
+
+    <MenuItem Header="Tools">
+        <MenuItem Header="View/Edit">
+            <MenuItem Header="Palette"
+                      IsEnabled="False" />
+            <MenuItem Header="PS1 VRAM"
+                      IsEnabled="False" />
+            <MenuItem Header="Sprites"
+                      IsEnabled="False" />
+            <MenuItem Header="Animation"
+                      IsEnabled="False" />
+        </MenuItem>
+        <Separator />
+        <MenuItem Header="Options"
+                  IsEnabled="False" />
+    </MenuItem>
+
+    <!-- Help -->
+
+    <MenuItem Header="Help" />
+
+    <!-- Debug -->
+
+    <MenuItem Header="Debug" />
+</Menu>

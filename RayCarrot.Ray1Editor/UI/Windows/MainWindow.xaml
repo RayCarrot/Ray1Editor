@@ -1,0 +1,17 @@
+﻿<local:BaseWindow x:Class="RayCarrot.Ray1Editor.MainWindow"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                  xmlns:local="clr-namespace:RayCarrot.Ray1Editor"
+                  xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+                  mc:Ignorable="d"
+                  Title="Ray1Editor"
+                  DataContext="{x:Static local:AppViewModel.Instance}"
+                  Height="600" Width="1024"
+                  CloseWithEscape="False"
+                  Closing="MainWindow_OnClosing">
+
+    <metro:TransitioningContentControl Content="{Binding Path=CurrentAppView, Converter={local:AppViewToContentConverter}}"/>
+
+</local:BaseWindow>

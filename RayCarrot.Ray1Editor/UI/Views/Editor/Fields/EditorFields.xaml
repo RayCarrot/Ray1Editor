@@ -1,0 +1,88 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:RayCarrot.Ray1Editor"
+                    xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls">
+
+    <!-- Int -->
+
+    <DataTemplate x:Key="EditorIntFieldTemplate"
+                  DataType="{x:Type local:EditorIntFieldViewModel}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="FieldHeader" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" 
+                       VerticalAlignment="Center"
+                       Text="{Binding Path=Header, Mode=OneTime}" />
+
+            <metro:NumericUpDown Grid.Column="2"
+                                 Minimum="{Binding Path=Min, Mode=OneTime}"
+                                 Maximum="{Binding Path=Max, Mode=OneTime}"
+                                 Value="{Binding Path=Value}" />
+
+        </Grid>
+    </DataTemplate>
+
+    <!-- Drop-down -->
+
+    <DataTemplate x:Key="EditorDropDownFieldTemplate"
+                  DataType="{x:Type local:EditorDropDownFieldViewModel}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="FieldHeader" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" 
+                       VerticalAlignment="Center"
+                       Text="{Binding Path=Header, Mode=OneTime}" />
+
+            <ComboBox Grid.Column="2"
+                      ItemsSource="{Binding Path=Items, Mode=OneTime}"
+                      DisplayMemberPath="Header"
+                      SelectedIndex="{Binding Path=SelectedItem}" />
+
+        </Grid>
+    </DataTemplate>
+
+    <!-- Point -->
+
+    <DataTemplate x:Key="EditorPointFieldTemplate"
+                  DataType="{x:Type local:EditorDropDownFieldViewModel}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="FieldHeader" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0"
+                       VerticalAlignment="Center"
+                       Text="{Binding Path=Header, Mode=OneTime}" />
+
+            <StackPanel Grid.Column="2" 
+                        Orientation="Horizontal">
+                <metro:NumericUpDown Style="{StaticResource SimpleNumericUpDown}" 
+                                     Value="{Binding Path=X}" 
+                                     Minimum="{Binding Path=Min, Mode=OneTime}"
+                                     Maximum="{Binding Path=Max, Mode=OneTime}" />
+
+                <TextBlock Text="  x  "
+                           VerticalAlignment="Center"
+                           FontSize="14" />
+
+                <metro:NumericUpDown Style="{StaticResource SimpleNumericUpDown}" 
+                                     Value="{Binding Path=Y}" 
+                                     Minimum="{Binding Path=Min, Mode=OneTime}"
+                                     Maximum="{Binding Path=Max, Mode=OneTime}" />
+
+            </StackPanel>
+
+        </Grid>
+    </DataTemplate>
+
+</ResourceDictionary>

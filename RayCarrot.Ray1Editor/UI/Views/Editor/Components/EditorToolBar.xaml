@@ -1,0 +1,50 @@
+﻿<ToolBar x:Class="RayCarrot.Ray1Editor.EditorToolBar"
+         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+         xmlns:local="clr-namespace:RayCarrot.Ray1Editor"
+         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+         mc:Ignorable="d"
+         d:DataContext="{d:DesignInstance local:EditorViewModel}"
+         ToolBarTray.IsLocked="True">
+    <ToolBar.Style>
+        <Style TargetType="{x:Type ToolBar}" BasedOn="{StaticResource {x:Type ToolBar}}" />
+    </ToolBar.Style>
+
+    <!-- Undo/Redo -->
+
+    <Button ToolTip="Undo">
+        <iconPacks:PackIconMaterial Kind="Undo" VerticalAlignment="Center" />
+    </Button>
+    <Button ToolTip="Redo" IsEnabled="False">
+        <iconPacks:PackIconMaterial Kind="Redo" VerticalAlignment="Center" />
+    </Button>
+
+    <Separator />
+
+    <!-- Mode -->
+
+    <!-- TODO: Move colors to resources and reuse for other controls with same usage -->
+    <ToggleButton ToolTip="Tiles" IsChecked="{Binding Path=Mode, Converter={local:EnumBooleanConverter}, ConverterParameter=Tiles}">
+        <iconPacks:PackIconMaterial Kind="Grid" VerticalAlignment="Center" Foreground="#4CAF50" />
+    </ToggleButton>
+    <ToggleButton ToolTip="Objects" IsChecked="{Binding Path=Mode, Converter={local:EnumBooleanConverter}, ConverterParameter=Objects}">
+        <iconPacks:PackIconMaterial Kind="ShapeOutline" VerticalAlignment="Center" Foreground="#FF9800" />
+    </ToggleButton>
+    <ToggleButton ToolTip="Links" IsChecked="{Binding Path=Mode, Converter={local:EnumBooleanConverter}, ConverterParameter=Links}">
+        <iconPacks:PackIconMaterial Kind="VectorLink" VerticalAlignment="Center" Foreground="#FDD835" />
+    </ToggleButton>
+
+    <Separator />
+
+    <!-- Save -->
+
+    <Button ToolTip="Save">
+        <StackPanel Orientation="Horizontal">
+            <iconPacks:PackIconMaterial Kind="ContentSaveOutline" Foreground="#9C27B0" VerticalAlignment="Center" />
+            <TextBlock Text="Save" Margin="10 0 0 0" />
+        </StackPanel>
+    </Button>
+
+</ToolBar>

@@ -1,0 +1,77 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <LangVersion>9</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Theme -->
+    <PackageReference Include="MahApps.Metro" Version="2.4.5" />
+    <PackageReference Include="MahApps.Metro.IconPacks.Material" Version="4.8.0" />
+
+    <!-- Required for full folder selection dialog -->
+    <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
+
+    <!-- MonoGame for WPF -->
+    <PackageReference Include="MonoGame.Framework.WpfInterop" Version="1.9.0" />
+
+    <!-- For JSON serialization (used to store app user data) -->
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+
+    <!-- For automatically invoking PropertyChanged for modified properties -->
+    <PackageReference Include="PropertyChanged.Fody" Version="3.3.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Binary serializer -->
+    <ProjectReference Include="..\..\Binary\BinarySerializer.GBA\src\BinarySerializer.GBA.csproj" />
+    <ProjectReference Include="..\..\Binary\BinarySerializer.Ray1\src\BinarySerializer.Ray1.csproj" />
+    <ProjectReference Include="..\..\Binary\BinarySerializer\src\BinarySerializer.csproj" />
+
+    <!-- RayCarrot libraries -->
+    <ProjectReference Include="..\..\RayCarrot.UI\RayCarrot.UI\RayCarrot.UI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="UI\Resources\Resources.TextBlock.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Resources\Resources.Button.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Views\Editor\Components\EditorMenu.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Views\Editor\Components\EditorToolBar.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Views\LoadMap\LoadMapView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Windows\EditGameWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Windows\MainWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
+</Project>

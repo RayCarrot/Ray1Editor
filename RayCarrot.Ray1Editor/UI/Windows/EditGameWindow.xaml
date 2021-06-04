@@ -1,0 +1,102 @@
+﻿<local:BaseWindow x:Class="RayCarrot.Ray1Editor.EditGameWindow"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                  xmlns:local="clr-namespace:RayCarrot.Ray1Editor"
+                  xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+                  xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+                  mc:Ignorable="d"
+                  Title="Edit Game"
+                  ResizeMode="NoResize"
+                  Width="450" Height="270"
+                  CloseWithEscape="True" 
+                  d:DataContext="{d:DesignInstance local:EditGameViewModel}">
+    <StackPanel Margin="10">
+
+        <!-- Name -->
+
+        <TextBlock Style="{StaticResource HeaderTextBlock}"
+                   Text="Name"
+                   Margin="0 0 0 7" />
+
+        <TextBox Text="{Binding Path=GameName}"
+                 AcceptsReturn="False"
+                 MaxLength="100"
+                 TextWrapping="Wrap"
+                 Margin="0 0 0 15"
+                 metro:TextBoxHelper.Watermark="Name" />
+
+        <!-- Mode -->
+
+        <TextBlock Style="{StaticResource HeaderTextBlock}"
+                   Text="Game Mode"
+                   Margin="0 0 0 7" />
+
+        <ComboBox Margin="0 0 0 15"
+                  ItemsSource="{Binding Path=AvailableGameModes, Mode=OneTime}"
+                  SelectedItem="{Binding Path=GameMode}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Converter={local:GameModeToDisplayNameConverter}, Mode=OneTime}" />
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+
+        <!-- Path -->
+
+        <TextBlock Style="{StaticResource HeaderTextBlock}"
+                   Text="Game Path"
+                   Margin="0 0 0 7" />
+
+        <Grid Margin="0 0 0 15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Path Box -->
+
+            <TextBox TextWrapping="Wrap"
+                     AcceptsReturn="False"
+                     MinWidth="100"
+                     HorizontalAlignment="Stretch"
+                     metro:TextBoxHelper.Watermark="Game Path"
+                     Text="{Binding Path=GamePath}" />
+
+            <!-- Browse Button -->
+
+            <Button Grid.Column="1"
+                    Margin="10 0 0 0"
+                    Command="{Binding Path=BrowseCommand, Mode=OneTime}">
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconMaterial Kind="Folder"
+                                                VerticalAlignment="Center"/>
+
+                    <TextBlock Margin="10 0" 
+                               Text="Browse" 
+                               VerticalAlignment="Center"/>
+
+                </StackPanel>
+            </Button>
+
+        </Grid>
+
+        <!-- Actions -->
+
+        <StackPanel Orientation="Horizontal" 
+                    HorizontalAlignment="Right">
+
+            <Button Content="Cancel"
+                    IsCancel="True"/>
+
+            <Button Content="Accept"
+                    Margin="10 0 0 0"
+                    IsDefault="True"
+                    Click="AcceptButton_OnClick" />
+
+        </StackPanel>
+
+    </StackPanel>
+
+</local:BaseWindow>
