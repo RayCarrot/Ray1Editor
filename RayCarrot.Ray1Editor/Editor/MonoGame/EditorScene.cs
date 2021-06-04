@@ -30,6 +30,7 @@ namespace RayCarrot.Ray1Editor
             //BackgroundColor = new Color(0x0f, 0x0e, 0x1b);
             //MapBackgroundColor = new Color(0x1d, 0x1b, 0x32);
             ObjBoundsColor = Color.Red;
+            ObjLinksColor = new Color(0xFD, 0xD8, 0x35);
 
             State = new EditorState();
 
@@ -53,6 +54,7 @@ namespace RayCarrot.Ray1Editor
         public Color BackgroundColor { get; set; }
         public Color MapBackgroundColor { get; set; }
         public Color ObjBoundsColor { get; set; }
+        public Color ObjLinksColor { get; set; }
         public bool PauseWhenInactive { get; set; } // TODO: Add setting
         public bool IsPaused { get; set; } // TODO: Add setting
         public EditorState State { get; }
@@ -379,7 +381,7 @@ namespace RayCarrot.Ray1Editor
             // Draw links if in links mode
             if (Mode == EditorMode.Links)
                 foreach (var obj in GameData.Objects)
-                    obj.DrawLinks(s);
+                    obj.DrawLinks(s, ObjLinksColor);
 
             if (CanHoverOverObject)
             {

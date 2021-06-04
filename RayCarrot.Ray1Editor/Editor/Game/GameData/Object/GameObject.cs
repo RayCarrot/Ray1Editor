@@ -145,14 +145,14 @@ namespace RayCarrot.Ray1Editor
             Bounds = new Rectangle(new Point(Position.X + leftX, Position.Y + topY), new Point(rightX - leftX, bottomY - topY));
             Center = new Point(Position.X + leftX + (rightX - leftX) / 2, Position.Y + topY + (bottomY - topY) / 2);
         }
-        public virtual void DrawLinks(SpriteBatch s)
+        public virtual void DrawLinks(SpriteBatch s, Color linkColor)
         {
             if (CanBeLinkedToGroup)
             {
                 var linkGrip = GetLinkGripSnappedPosition.ToVector2();
 
-                s.DrawLine(Center.ToVector2(), linkGrip, Color.Yellow, 2);
-                s.DrawFilledRectangle(linkGrip - new Vector2(LinkGripSize / 2f), new Vector2(LinkGripSize), Color.Yellow);
+                s.DrawLine(Center.ToVector2(), linkGrip, linkColor, 2);
+                s.DrawFilledRectangle(linkGrip - new Vector2(LinkGripSize / 2f), new Vector2(LinkGripSize), linkColor);
             }
         }
     }
