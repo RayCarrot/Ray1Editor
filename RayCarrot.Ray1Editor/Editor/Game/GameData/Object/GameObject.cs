@@ -19,6 +19,7 @@ namespace RayCarrot.Ray1Editor
         public virtual bool FlipHorizontally => false;
         public virtual bool FlipVertically => false;
         public virtual float? Rotation => null;
+        public virtual int OffsetSize => 8;
 
         // Animations
         public Rectangle Bounds { get; set; }
@@ -29,7 +30,7 @@ namespace RayCarrot.Ray1Editor
         public abstract int AnimSpeed { get; }
         public double AnimationFrameFloat { get; set; }
         public abstract TextureSheet SpriteSheet { get; }
-        public virtual Vector2 Pivot => Vector2.Zero;
+        public virtual Point Pivot => Point.Zero;
         public void UpdateFrame(double deltaTime)
         {
             if (!ShouldUpdateFrame() || CurrentAnimation == null)
@@ -67,6 +68,7 @@ namespace RayCarrot.Ray1Editor
 
         // Links
         protected virtual int LinkGripSize => 16;
+        protected virtual int LinkLineThickness => 2;
         public Point LinkGripPosition { get; set; }
         public Point GetLinkGripSnappedPosition => LinkGripPosition - new Point(LinkGripPosition.X % LinkGripSize - LinkGripSize / 2, LinkGripPosition.Y % LinkGripSize - LinkGripSize / 2);
         public int LinkGroup { get; set; }
@@ -145,15 +147,28 @@ namespace RayCarrot.Ray1Editor
             Bounds = new Rectangle(new Point(Position.X + leftX, Position.Y + topY), new Point(rightX - leftX, bottomY - topY));
             Center = new Point(Position.X + leftX + (rightX - leftX) / 2, Position.Y + topY + (bottomY - topY) / 2);
         }
-        public virtual void DrawLinks(SpriteBatch s, Color linkColor)
+        public virtual void DrawLinks(SpriteBatch s)
         {
             if (CanBeLinkedToGroup)
             {
                 var linkGrip = GetLinkGripSnappedPosition.ToVector2();
 
-                s.DrawLine(Center.ToVector2(), linkGrip, linkColor, 2);
-                s.DrawFilledRectangle(linkGrip - new Vector2(LinkGripSize / 2f), new Vector2(LinkGripSize), linkColor);
+                s.DrawLine(Center.ToVector2(), linkGrip, EditorState.Color_ObjLinks, LinkLineThickness);
+                s.DrawFilledRectangle(linkGrip - new Vector2(LinkGripSize / 2f), new Vector2(LinkGripSize), EditorState.Color_ObjLinks);
             }
+        }
+        public virtual void DrawOffsets(SpriteBatch s)
+        {
+            DrawOffset(s, Position, EditorState.Color_ObjOffsetPos);
+
+            if (Pivot != Point.Zero)
+                DrawOffset(s, Position + Pivot, EditorState.Color_ObjOffsetPivot);
+        }
+        public virtual void DrawOffset(SpriteBatch s, Point pos, Color c)
+        {
+            var halfSize = OffsetSize / 2;
+            s.DrawLine(new Vector2(pos.X - halfSize, pos.Y), new Vector2(pos.X + halfSize, pos.Y), c, 1);
+            s.DrawLine(new Vector2(pos.X, pos.Y - halfSize), new Vector2(pos.X, pos.Y + halfSize), c, 1);
         }
     }
 }

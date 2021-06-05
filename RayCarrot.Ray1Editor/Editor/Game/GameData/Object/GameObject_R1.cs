@@ -1,6 +1,7 @@
 ﻿using BinarySerializer;
 using BinarySerializer.Ray1;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System.Linq;
 
 namespace RayCarrot.Ray1Editor
@@ -109,7 +110,7 @@ namespace RayCarrot.Ray1Editor
         }
         public override int AnimSpeed => CurrentState?.AnimationSpeed ?? 0;
         public override TextureSheet SpriteSheet => Data.Sprites.TryGetValue(ObjData.Sprites);
-        public override Vector2 Pivot => new Vector2(ObjData.OffsetBX, ObjData.OffsetBY);
+        public override Point Pivot => new Point(ObjData.OffsetBX, ObjData.OffsetBY);
         protected override bool ShouldUpdateFrame()
         {
             return true;
@@ -199,5 +200,19 @@ namespace RayCarrot.Ray1Editor
         public ObjState InitialState => GetState(ObjData.InitialEtat, ObjData.InitialSubEtat);
         public ObjState LinkedState => GetState(CurrentState?.LinkedEtat ?? -1, CurrentState?.LinkedSubEtat ?? -1);
         protected ObjState GetState(int etat, int subEtat) => ObjData.ETA.States.ElementAtOrDefault(etat)?.ElementAtOrDefault(subEtat);
+
+        // Update
+        public override void DrawOffsets(SpriteBatch s)
+        {
+            base.DrawOffsets(s);
+
+            int hy = ObjData.OffsetHY;
+
+            if (ObjData.GetFollowEnabled(Data.Context.GetSettings<Ray1Settings>()))
+                hy += CurrentAnimation?.Frames.ElementAtOrDefault(AnimationFrame)?.SpriteLayers.ElementAtOrDefault(ObjData.FollowSprite)?.Position.Y ?? 0;
+
+            if (hy != 0)
+                DrawOffset(s, Position + new Point(0, hy), EditorState.Color_ObjOffsetGeneric);
+        }
     }
 }

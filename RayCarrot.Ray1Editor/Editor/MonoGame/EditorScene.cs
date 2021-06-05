@@ -6,8 +6,6 @@ using MonoGame.Framework.WpfInterop;
 using MonoGame.Framework.WpfInterop.Input;
 using System;
 using System.Linq;
-using BinarySerializer.Ray1;
-using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -23,14 +21,6 @@ namespace RayCarrot.Ray1Editor
             GameManager = manager;
             Context = context;
             GameSettings = gameSettings;
-
-            // TODO: Allow to be modified
-            BackgroundColor = Color.BlueViolet;
-            MapBackgroundColor = Color.CornflowerBlue;
-            //BackgroundColor = new Color(0x0f, 0x0e, 0x1b);
-            //MapBackgroundColor = new Color(0x1d, 0x1b, 0x32);
-            ObjBoundsColor = Color.Red;
-            ObjLinksColor = new Color(0xFD, 0xD8, 0x35);
 
             State = new EditorState();
 
@@ -51,10 +41,6 @@ namespace RayCarrot.Ray1Editor
 
         // General
         public EditorViewModel VM => (EditorViewModel)DataContext;
-        public Color BackgroundColor { get; set; }
-        public Color MapBackgroundColor { get; set; }
-        public Color ObjBoundsColor { get; set; }
-        public Color ObjLinksColor { get; set; }
         public bool PauseWhenInactive { get; set; } // TODO: Add setting
         public bool IsPaused { get; set; } // TODO: Add setting
         public EditorState State { get; }
@@ -353,7 +339,7 @@ namespace RayCarrot.Ray1Editor
             base.Draw(gameTime);
 
             // Clear the screen with the background color
-            GraphicsDevice.Clear(BackgroundColor);
+            GraphicsDevice.Clear(State.Color_Background);
 
             // Begin drawing using the camera's transform matrix
             SpriteBatch.Begin(
@@ -361,7 +347,7 @@ namespace RayCarrot.Ray1Editor
                 transformMatrix: Cam.TransformMatrix);
 
             // Draw map background color
-            SpriteBatch.DrawFilledRectangle(new Rectangle(Point.Zero, State.MapSize), MapBackgroundColor);
+            SpriteBatch.DrawFilledRectangle(new Rectangle(Point.Zero, State.MapSize), State.Color_MapBackground);
 
             // Draw the content
             Draw(SpriteBatch);
@@ -384,7 +370,7 @@ namespace RayCarrot.Ray1Editor
             // Draw links if in links mode
             if (Mode == EditorMode.Links)
                 foreach (var obj in GameData.Objects)
-                    obj.DrawLinks(s, ObjLinksColor);
+                    obj.DrawLinks(s);
 
             if (CanHoverOverObject)
             {
@@ -394,12 +380,15 @@ namespace RayCarrot.Ray1Editor
                 // When in links mode we show the bounds for the object the link is being
                 // moved for.
                 if (SelectedObject != null)
-                    s.DrawRectangle(SelectedObject.Bounds, ObjBoundsColor);
+                    s.DrawRectangle(SelectedObject.Bounds, State.Color_ObjBounds);
                 if (HoverObject != null && !IsDraggingObject && !IsDraggingLink)
-                    s.DrawRectangle(HoverObject.Bounds, ObjBoundsColor);
+                    s.DrawRectangle(HoverObject.Bounds, State.Color_ObjBounds);
                 else if (SelectedLinkObject != null)
-                    s.DrawRectangle(SelectedLinkObject.Bounds, ObjBoundsColor);
+                    s.DrawRectangle(SelectedLinkObject.Bounds, State.Color_ObjBounds);
             }
+
+            // Draw offsets for the currently selected object
+            SelectedObject?.DrawOffsets(s);
         }
 
         #endregion
