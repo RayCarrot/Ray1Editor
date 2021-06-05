@@ -122,7 +122,7 @@ namespace RayCarrot.Ray1Editor
             Mode = EditorMode.Objects;
 
             // Set up layers
-            Layers.AddRange(EditorScene.GameData.Layers.Select(x => new LayerEditorViewModel(x)));
+            Layers.AddRange(EditorScene.GameData.Layers.Select(x => new LayerEditorViewModel(this, x)));
 
             // Create layer fields
             foreach (var layer in Layers)

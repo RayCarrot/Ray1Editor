@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Input;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -22,6 +23,12 @@ namespace RayCarrot.Ray1Editor
             LinkedLayers = new HashSet<TileMapLayer<T>>();
             IsVisible = true;
         }
+
+        #endregion
+
+        #region Protected Properties
+
+        protected Rectangle? TileSelection { get; set; }
 
         #endregion
 
@@ -53,6 +60,7 @@ namespace RayCarrot.Ray1Editor
 
         public override string Name => $"Map";
         public override Rectangle Rectangle => new Rectangle(Position, MapSize * TileSet.TileSize);
+        public override bool CanEdit => true;
 
         #endregion
 
@@ -103,6 +111,11 @@ namespace RayCarrot.Ray1Editor
             }
 
             EditorState.UpdateMapSize(Data);
+        }
+
+        public override void UpdateLayerEditing(double deltaTime, MouseState mouse)
+        {
+            // TODO: Update layer editing
         }
 
         public override void Draw(SpriteBatch s)

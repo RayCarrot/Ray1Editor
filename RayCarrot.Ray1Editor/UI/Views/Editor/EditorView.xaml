@@ -90,7 +90,9 @@
 
                     <!-- Layers -->
 
-                    <local:SmallTabItem Header="Layers" IconKind="LayersOutline" IconForeground="{StaticResource TilesBrush}">
+                    <local:SmallTabItem Header="Layers" 
+                                        IconKind="{StaticResource LayersIcon}" 
+                                        IconForeground="{StaticResource LayersBrush}">
 
                         <ScrollViewer Padding="5 10 5 5"
                                       VerticalScrollBarVisibility="Auto">
@@ -110,6 +112,7 @@
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="*" />
                                                     <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
 
                                                 <TextBlock Grid.Column="0"
@@ -119,10 +122,19 @@
 
                                                 <ToggleButton Grid.Column="1"
                                                               Style="{StaticResource MahApps.Styles.ToggleButton.Circle}"
+                                                              IsChecked="{Binding Path=IsSelected}"
+                                                              Visibility="{Binding Path=Layer.CanEdit, Converter={local:BooleanToVisibilityConverter}, Mode=OneTime}"
+                                                              ToolTip="Edit layer"
+                                                              Width="28" Height="28"
+                                                              Margin="5 0"
+                                                              Content="{iconPacks:Material Kind=PencilOutline, Width=14, Height=14}" />
+
+                                                <ToggleButton Grid.Column="2"
+                                                              Style="{StaticResource MahApps.Styles.ToggleButton.Circle}"
                                                               IsChecked="{Binding Path=IsVisible}"
                                                               ToolTip="Show layer"
                                                               Width="28" Height="28"
-                                                              Content="{iconPacks:Material EyeOutline}" />
+                                                              Content="{iconPacks:Material Kind=EyeOutline, Width=14, Height=14}" />
 
                                             </Grid>
 
@@ -142,7 +154,9 @@
 
                     <!-- Objects -->
 
-                    <local:SmallTabItem Header="Objects" IconKind="ShapeOutline" IconForeground="{StaticResource ObjectsBrush}">
+                    <local:SmallTabItem Header="Objects" 
+                                        IconKind="{StaticResource ObjectsIcon}" 
+                                        IconForeground="{StaticResource ObjectsBrush}">
 
                         <!-- TODO: ListBox with all objects in the level -->
                         <ListBox ItemsSource="{Binding Path=GameObjects, Mode=OneTime}"
@@ -163,7 +177,9 @@
 
                     <!-- Properties -->
 
-                    <local:SmallTabItem Header="Properties" IconKind="FileDocumentEditOutline" IconForeground="{StaticResource PropertiesBrush}">
+                    <local:SmallTabItem Header="Properties" 
+                                        IconKind="FileDocumentEditOutline" 
+                                        IconForeground="{StaticResource PropertiesBrush}">
 
                         <ScrollViewer Padding="5 10 5 5"
                                       VerticalScrollBarVisibility="Auto">
@@ -199,7 +215,9 @@
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
 
-                                        <iconPacks:PackIconMaterial Grid.Column="0" Kind="ShapeOutline" Foreground="{StaticResource ObjectsBrush}" />
+                                        <iconPacks:PackIconMaterial Grid.Column="0" 
+                                                                    Kind="{StaticResource ObjectsIcon}" 
+                                                                    Foreground="{StaticResource ObjectsBrush}" />
                                         <TextBlock Grid.Column="2" Text="Select an Object" />
                                     </Grid>
                                 </Viewbox>

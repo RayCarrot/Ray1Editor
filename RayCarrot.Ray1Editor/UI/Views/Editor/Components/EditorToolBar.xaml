@@ -26,14 +26,14 @@
     <!-- Mode -->
 
     <!-- TODO: Move colors to resources and reuse for other controls with same usage -->
-    <ToggleButton ToolTip="Tiles" IsChecked="{Binding Path=Mode, Converter={local:EnumBooleanConverter}, ConverterParameter=Tiles}">
-        <iconPacks:PackIconMaterial Kind="Grid" VerticalAlignment="Center" Foreground="{StaticResource TilesBrush}" />
+    <ToggleButton ToolTip="Layers" IsChecked="{Binding Path=Mode, Converter={local:EnumBooleanConverter}, ConverterParameter=Layers}">
+        <iconPacks:PackIconMaterial Kind="{StaticResource LayersIcon}" VerticalAlignment="Center" Foreground="{StaticResource LayersBrush}" />
     </ToggleButton>
     <ToggleButton ToolTip="Objects" IsChecked="{Binding Path=Mode, Converter={local:EnumBooleanConverter}, ConverterParameter=Objects}">
-        <iconPacks:PackIconMaterial Kind="ShapeOutline" VerticalAlignment="Center" Foreground="{StaticResource ObjectsBrush}" />
+        <iconPacks:PackIconMaterial Kind="{StaticResource ObjectsIcon}" VerticalAlignment="Center" Foreground="{StaticResource ObjectsBrush}" />
     </ToggleButton>
     <ToggleButton ToolTip="Links" IsChecked="{Binding Path=Mode, Converter={local:EnumBooleanConverter}, ConverterParameter=Links}">
-        <iconPacks:PackIconMaterial Kind="VectorLink" VerticalAlignment="Center" Foreground="{StaticResource LinksBrush}" />
+        <iconPacks:PackIconMaterial Kind="{StaticResource LinksIcon}" VerticalAlignment="Center" Foreground="{StaticResource LinksBrush}" />
     </ToggleButton>
 
     <Separator />

@@ -213,8 +213,8 @@ namespace RayCarrot.Ray1Editor
 
             switch (Mode)
             {
-                case EditorMode.Tiles:
-                    UpdateModeTiles(deltaTime, mouse);
+                case EditorMode.Layers:
+                    UpdateModeLayers(deltaTime, mouse);
                     break;
                 
                 case EditorMode.Objects:
@@ -233,9 +233,9 @@ namespace RayCarrot.Ray1Editor
                            $"Position: {Cam.Position}";
         }
 
-        protected void UpdateModeTiles(double deltaTime, MouseState mouse)
+        protected void UpdateModeLayers(double deltaTime, MouseState mouse)
         {
-
+            GameData.Layers.FirstOrDefault(x => x.IsSelected)?.UpdateLayerEditing(deltaTime, mouse);
         }
 
         protected void UpdateModeObjects(double deltaTime, MouseState mouse)

@@ -284,6 +284,7 @@ namespace RayCarrot.Ray1Editor
             var colLayer = new CollisionMapLayer_R1(map.Tiles, Point.Zero, new Point(map.Width, map.Height), textureManager);
 
             mapLayer.LinkedLayers.Add(colLayer);
+            mapLayer.Select();
 
             data.Layers.Add(mapLayer);
             data.Layers.Add(colLayer);

@@ -3,7 +3,7 @@
     public enum EditorMode
     {
         None,
-        Tiles,
+        Layers,
         Objects,
         Links,
     }

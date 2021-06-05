@@ -23,6 +23,7 @@ namespace RayCarrot.Ray1Editor
 
         public override string Name { get; }
         public override Rectangle Rectangle { get; }
+        public override bool CanEdit => false;
         public Texture2D Texture { get; }
         public override IEnumerable<EditorFieldViewModel> GetFields()
         {

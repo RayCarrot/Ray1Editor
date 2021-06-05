@@ -51,7 +51,7 @@
                   IsCheckable="True"
                   IsEnabled="False" />
         <Separator />
-        <MenuItem Header="Show/Hide Tiles Layers"
+        <MenuItem Header="Show/Hide Layers"
                   ItemsSource="{Binding Path=Layers, Mode=OneTime}">
             <MenuItem.ItemContainerStyle>
                 <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">

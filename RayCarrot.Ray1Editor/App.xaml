@@ -18,6 +18,7 @@
                 <!-- Local -->
 
                 <ResourceDictionary Source="UI/Resources/Resources.Colors.xaml" />
+                <ResourceDictionary Source="UI/Resources/Resources.Icons.xaml" />
                 <ResourceDictionary Source="UI/Resources/Resources.TextBlock.xaml" />
                 <ResourceDictionary Source="UI/Resources/Resources.Button.xaml" />
                 <ResourceDictionary Source="UI/Resources/Resources.ListBox.xaml" />

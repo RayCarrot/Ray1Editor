@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <SolidColorBrush x:Key="GenericActionBrush" Color="#9C27B0" />
-    <SolidColorBrush x:Key="TilesBrush" Color="#4CAF50" />
+    <SolidColorBrush x:Key="LayersBrush" Color="#4CAF50" />
     <SolidColorBrush x:Key="ObjectsBrush" Color="#FF9800" />
     <SolidColorBrush x:Key="LinksBrush" Color="#FDD835" />
     <SolidColorBrush x:Key="PropertiesBrush" Color="#3F51B5" />
