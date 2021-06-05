@@ -85,7 +85,6 @@ namespace RayCarrot.Ray1Editor
         public GameManager GameManager { get; }
         public object GameSettings { get; }
         public GameData GameData { get; protected set; }
-        public Point MapSize { get; protected set; }
 
         // Objects
         public GameObject HoverObject { get; protected set; }
@@ -160,7 +159,7 @@ namespace RayCarrot.Ray1Editor
             InitializeObjLinks();
 
             // Calculate the map size
-            MapSize = new Point(GameData.Layers.Max(x => x.Rectangle.Right), GameData.Layers.Max(x => x.Rectangle.Bottom));
+            State.UpdateMapSize(GameData);
 
             // Load base content
             base.LoadContent();
@@ -362,7 +361,7 @@ namespace RayCarrot.Ray1Editor
                 transformMatrix: Cam.TransformMatrix);
 
             // Draw map background color
-            SpriteBatch.DrawFilledRectangle(new Rectangle(Point.Zero, MapSize), MapBackgroundColor);
+            SpriteBatch.DrawFilledRectangle(new Rectangle(Point.Zero, State.MapSize), MapBackgroundColor);
 
             // Draw the content
             Draw(SpriteBatch);

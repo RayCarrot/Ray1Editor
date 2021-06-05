@@ -6,8 +6,6 @@ using System.Collections.Generic;
 
 namespace RayCarrot.Ray1Editor
 {
-    // TODO: Allow the layer to be resized. When this happens we need to re-arrange the tiles so to keep them aligned as best as possible. Other things in the editor, such as the max width and height, also need to be re-calculated.
-
     /// <summary>
     /// A tile map layer
     /// </summary>
@@ -16,20 +14,22 @@ namespace RayCarrot.Ray1Editor
         public TileMapLayer(MapTile[] tileMap, Point position, Point mapSize, TileSet tileSet)
         {
             TileMap = tileMap;
+            Position = position;
             MapSize = mapSize;
             TileSet = tileSet;
-            Rectangle = new Rectangle(position, mapSize * TileSet.TileSize);
 
             IsVisible = true;
         }
 
+        public Point Position { get; }
+
         /// <summary>
         /// The map size, in tiles
         /// </summary>
-        public Point MapSize { get; }
+        public Point MapSize { get; protected set; }
 
         // TODO: Either create common tile class to avoid using the R1 type or create TileMapLayer_R1 for R1 types
-        public MapTile[] TileMap { get; }
+        public MapTile[] TileMap { get; protected set; }
 
         /// <summary>
         /// The tile set, containing the tile textures
@@ -37,7 +37,7 @@ namespace RayCarrot.Ray1Editor
         public TileSet TileSet { get; }
 
         public override string Name => $"Map";
-        public override Rectangle Rectangle { get; }
+        public override Rectangle Rectangle => new Rectangle(Position, MapSize * TileSet.TileSize);
         public override IEnumerable<EditorFieldViewModel> GetFields()
         {
             yield return new EditorPointFieldViewModel(
@@ -51,7 +51,23 @@ namespace RayCarrot.Ray1Editor
 
         public void UpdateMapSize(Point newSize)
         {
-            throw new NotImplementedException("Map resizing has not been implemented");
+            var newMap = new MapTile[newSize.X * newSize.Y];
+
+            // Copy tiles which fit the new size
+            for (int y = 0; y < newSize.Y; y++)
+            {
+                for (int x = 0; x < newSize.X; x++)
+                {
+                    if (x < MapSize.X && y < MapSize.Y)
+                        newMap[y * newSize.X + x] = TileMap[y * MapSize.X + x];
+                    else
+                        newMap[y * newSize.X + x] = new MapTile();
+                }
+            }
+
+            MapSize = newSize;
+            TileMap = newMap;
+            EditorState.UpdateMapSize(Data);
         }
 
         public override void Draw(SpriteBatch s)
@@ -63,8 +79,8 @@ namespace RayCarrot.Ray1Editor
                     var tile = TileMap[y * MapSize.X + x];
 
                     var dest = new Rectangle(
-                        x: x * TileSet.TileSize.X + Rectangle.X, 
-                        y: y * TileSet.TileSize.Y + Rectangle.Y, 
+                        x: x * TileSet.TileSize.X + Position.X, 
+                        y: y * TileSet.TileSize.Y + Position.Y, 
                         width: TileSet.TileSize.X, 
                         height: TileSet.TileSize.Y);
                     var src = TileSet.TileSheet.Entries[tile.TileMapY].Source;
