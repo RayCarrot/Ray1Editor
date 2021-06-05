@@ -1,10 +1,11 @@
 ﻿using BinarySerializer;
 using BinarySerializer.Ray1;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BinarySerializer.Image;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -17,6 +18,7 @@ namespace RayCarrot.Ray1Editor
 
         #region Paths
 
+        public string Path_VigFile => $"VIGNET.DAT";
         public string Path_DataDir => $"PCMAP/";
         public string Path_FixFile => Path_DataDir + $"ALLFIX.DAT";
         public string Path_WorldFile(World world) => Path_DataDir + $"RAY{(int)world}.WLD";
@@ -43,6 +45,7 @@ namespace RayCarrot.Ray1Editor
             context.AddSettings(ray1Settings);
 
             // Add files
+            context.AddFile(new LinearSerializedFile(context, Path_VigFile));
             context.AddFile(new LinearSerializedFile(context, Path_FixFile));
             context.AddFile(new LinearSerializedFile(context, Path_WorldFile(world)));
             context.AddFile(new LinearSerializedFile(context, Path_LevelFile(world, level)));
@@ -58,7 +61,8 @@ namespace RayCarrot.Ray1Editor
             // Load palettes
             LoadPalettes(data, lev);
 
-            // TODO: Load vignette
+            // Load fond (background)
+            LoadFond(data, wld, lev, textureManager);
 
             // Load map
             LoadMap(data, lev, textureManager);
@@ -262,6 +266,45 @@ namespace RayCarrot.Ray1Editor
             }
 
             data.Layers.Add(new TileMapLayer(map.Tiles, Point.Zero, new Point(map.Width, map.Height), tileSet));
+        }
+
+        public void LoadFond(GameData_R1 data, PC_WorldFile wld, PC_LevFile lev, TextureManager textureManager)
+        {
+            var normalFnd = LoadFond(data, wld, lev, textureManager, false);
+            var scrollDiffFnd = LoadFond(data, wld, lev, textureManager, true);
+
+            data.Layers.Add(new BackgroundLayer(normalFnd, Point.Zero));
+
+            if (scrollDiffFnd != null)
+                data.Layers.Add(new BackgroundLayer(scrollDiffFnd, Point.Zero, $"Parallax Background")
+                {
+                    IsVisible = false
+                });
+        }
+
+        public Texture2D LoadFond(GameData_R1 data, PC_WorldFile wld, PC_LevFile lev, TextureManager textureManager, bool parallax)
+        {
+            // Return null if the parallax bg is the same as the normal one
+            if (parallax && lev.ScrollDiffFNDIndex == lev.FNDIndex)
+                return null;
+
+            var pcx = LoadArchiveFile<PCX>(data.Context, Path_VigFile, wld.Plan0NumPcx[parallax ? lev.ScrollDiffFNDIndex : lev.FNDIndex]);
+
+            var tex = new Texture2D(textureManager.GraphicsDevice, pcx.ImageWidth, pcx.ImageHeight).AddToManager(textureManager);
+
+            for (int y = 0; y < pcx.ImageHeight; y++)
+                tex.SetData(0, new Rectangle(0, y, pcx.ImageWidth, 1), pcx.ScanLines[y].Select(x => data.Palette.Colors[x]).ToArray(), 0, pcx.ImageWidth);
+
+            return tex;
+        }
+
+        public T LoadArchiveFile<T>(Context context, string archivePath, int fileIndex)
+            where T : BinarySerializable, new()
+        {
+            if (context.MemoryMap.Files.All(x => x.FilePath != archivePath))
+                return null;
+
+            return FileFactory.Read<PC_FileArchive>(archivePath, context).ReadFile<T>(context, fileIndex);
         }
 
         public int InitLinkGroups(IList<GameObject> objects, ushort[] linkTable)

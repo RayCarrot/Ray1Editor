@@ -13,7 +13,7 @@ namespace RayCarrot.Ray1Editor
 
         public ObservableCollection<EditorFieldViewModel> Fields { get; }
         public Layer Layer { get; }
-        public string Header => $"Layer 0 ({Layer.Name})"; // TODO: Set index based on order
+        public string Header => Layer.Name;
         public bool IsVisible
         {
             get => Layer.IsVisible;

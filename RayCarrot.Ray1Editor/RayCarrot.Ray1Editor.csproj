@@ -36,6 +36,7 @@
   <ItemGroup>
     <!-- Binary serializer -->
     <ProjectReference Include="..\..\Binary\BinarySerializer.GBA\src\BinarySerializer.GBA.csproj" />
+    <ProjectReference Include="..\..\Binary\BinarySerializer.Image\src\BinarySerializer.Image.csproj" />
     <ProjectReference Include="..\..\Binary\BinarySerializer.Ray1\src\BinarySerializer.Ray1.csproj" />
     <ProjectReference Include="..\..\Binary\BinarySerializer\src\BinarySerializer.csproj" />
 
