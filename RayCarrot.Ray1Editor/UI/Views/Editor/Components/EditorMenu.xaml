@@ -36,6 +36,10 @@
     <!-- View -->
 
     <MenuItem Header="View">
+        <MenuItem Header="Pause Editor Scene"
+                  Icon="{iconPacks:Material PlayPause}"
+                  IsCheckable="True"
+                  IsChecked="{Binding Path=IsPaused}" />
         <MenuItem Header="Reset Position"
                   Icon="{iconPacks:Material MapMarker}"
                   Command="{Binding Path=ResetPositionCommand, Mode=OneTime}" />

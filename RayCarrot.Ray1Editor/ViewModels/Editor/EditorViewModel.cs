@@ -21,7 +21,6 @@ namespace RayCarrot.Ray1Editor
             Layers = new ObservableCollection<LayerEditorViewModel>();
             GameObjects = new ObservableCollection<GameObjectListItemViewModel>();
             ObjFields = new ObservableCollection<EditorFieldViewModel>();
-            ShowObjFields = false;
 
             // Create commands
             LoadOtherMapCommand = new RelayCommand(LoadOtherMap);
@@ -60,13 +59,18 @@ namespace RayCarrot.Ray1Editor
             set => EditorScene.Mode = value;
         }
         public GameObject SelectedObject { get; set; }
+        public bool IsPaused
+        {
+            get => EditorScene?.IsPaused ?? false;
+            set => EditorScene.IsPaused = value;
+        }
+        public string DebugText { get; set; }
 
         // Layers
         public ObservableCollection<LayerEditorViewModel> Layers { get; }
 
-        // Object
+        // Objects
         public ObservableCollection<GameObjectListItemViewModel> GameObjects { get; }
-
         public GameObjectListItemViewModel SelectedGameObjectItem
         {
             get => _selectedGameObjectItem;
@@ -78,12 +82,9 @@ namespace RayCarrot.Ray1Editor
             }
         }
 
-        public bool ShowObjFields { get; set; }
-        public ObservableCollection<EditorFieldViewModel> ObjFields { get; }
-
-        // TODO: Clean up
-        public string DebugText { get; set; }
+        // Properties
         public string SelectedObjectName { get; set; }
+        public ObservableCollection<EditorFieldViewModel> ObjFields { get; }
 
         #endregion
 
@@ -145,7 +146,6 @@ namespace RayCarrot.Ray1Editor
             DebugText = null;
             SelectedObjectName = null;
             Layers.Clear();
-            ShowObjFields = false;
             ObjFields.Clear();
         }
 
@@ -181,17 +181,11 @@ namespace RayCarrot.Ray1Editor
 
         public void RefreshObjFields()
         {
-            if (SelectedObject == null)
-            {
-                ShowObjFields = false;
-            }
-            else
-            {
-                ShowObjFields = true;
+            if (SelectedObject == null) 
+                return;
 
-                foreach (var field in ObjFields)
-                    field.Refresh();
-            }
+            foreach (var field in ObjFields)
+                field.Refresh();
         }
 
         public void ResetPosition()
