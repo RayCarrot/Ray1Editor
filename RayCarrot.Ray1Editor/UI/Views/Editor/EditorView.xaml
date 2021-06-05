@@ -99,10 +99,10 @@
 
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Grid>
+                                        <Grid Margin="0 0 0 10">
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="7" />
+                                                <RowDefinition Height="5" />
                                                 <RowDefinition Height="*" />
                                             </Grid.RowDefinitions>
 
@@ -113,11 +113,11 @@
                                                 </Grid.ColumnDefinitions>
 
                                                 <TextBlock Grid.Column="0"
+                                                           VerticalAlignment="Center"
                                                            Style="{StaticResource HeaderTextBlock}"
-                                                           Text="{Binding Path=Header, Mode=OneTime}"
-                                                           Margin="0 0 0 7" />
+                                                           Text="{Binding Path=Header, Mode=OneTime}" />
 
-                                                <ToggleButton Grid.Column="1" 
+                                                <ToggleButton Grid.Column="1"
                                                               Style="{StaticResource MahApps.Styles.ToggleButton.Circle}"
                                                               IsChecked="{Binding Path=IsVisible}"
                                                               ToolTip="Show layer"
@@ -126,7 +126,8 @@
 
                                             </Grid>
 
-                                            <ItemsControl Grid.Row="2" Style="{StaticResource FieldsItemsControl}"
+                                            <ItemsControl Grid.Row="2" 
+                                                          Style="{StaticResource FieldsItemsControl}"
                                                           ItemsSource="{Binding Path=Fields, Mode=OneTime}" />
 
                                         </Grid>
