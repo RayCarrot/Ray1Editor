@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using BinarySerializer.Ray1;
+﻿using BinarySerializer.Ray1;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Collections.Generic;
 
 namespace RayCarrot.Ray1Editor
 {
     // TODO: Allow the layer to be resized. When this happens we need to re-arrange the tiles so to keep them aligned as best as possible. Other things in the editor, such as the max width and height, also need to be re-calculated.
-    
+
     /// <summary>
     /// A tile map layer
     /// </summary>
@@ -19,6 +19,8 @@ namespace RayCarrot.Ray1Editor
             MapSize = mapSize;
             TileSet = tileSet;
             Rectangle = new Rectangle(position, mapSize * TileSet.TileSize);
+
+            IsVisible = true;
         }
 
         /// <summary>

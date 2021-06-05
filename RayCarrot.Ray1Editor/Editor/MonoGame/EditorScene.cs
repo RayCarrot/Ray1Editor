@@ -375,7 +375,7 @@ namespace RayCarrot.Ray1Editor
         protected void Draw(SpriteBatch s)
         {
             // Draw each layer
-            foreach (var layer in GameData.Layers)
+            foreach (var layer in GameData.Layers.Where(x => x.IsVisible))
                 layer.Draw(s);
 
             // Draw objects
