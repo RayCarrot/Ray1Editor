@@ -97,13 +97,12 @@ namespace RayCarrot.Ray1Editor
             FileFactory.Write<PC_LevFile>(Path_LevelFile(world, level), context);
         }
 
+        // TODO: Is it better to move this to the GameObject class? Each object type can then have its own fields, but that also means the fields get recreated each time the selection changes.
         public override IEnumerable<EditorFieldViewModel> GetEditorObjFields(Func<GameObject> getSelectedObj)
         {
             // Helper methods
             GameObject_R1 getObj() => (GameObject_R1)getSelectedObj();
             ObjData getObjData() => getObj().ObjData;
-
-            // TODO: Position (general field?)
 
             // TODO: Do not include EDU/KIT types for R1
             var dropDownItems_type = Enum.GetValues(typeof(ObjType)).Cast<ObjType>().Select(x =>
@@ -120,8 +119,6 @@ namespace RayCarrot.Ray1Editor
                 getValueAction: () => dropDownItems_type.FindItemIndex(x => x.Data == getObjData().Type),
                 setValueAction: x => getObjData().Type = dropDownItems_type[x].Data,
                 getItemsAction: () => dropDownItems_type);
-
-            // TODO: BX, BY, HY
 
             yield return new EditorDropDownFieldViewModel(
                 header: "State",
@@ -142,6 +139,24 @@ namespace RayCarrot.Ray1Editor
 
                     return dropDownItems_state[eta];
                 });
+
+            yield return new EditorPointFieldViewModel(
+                header: "Pivot",
+                info: "The object pivot (BX and BY)",
+                getValueAction: () => getSelectedObj().Pivot,
+                setValueAction: x =>
+                {
+                    getObjData().OffsetBX = (byte)x.X;
+                    getObjData().OffsetBY = (byte)x.Y;
+                },
+                max: Byte.MaxValue);
+
+            yield return new EditorIntFieldViewModel(
+                header: "Offset HY",
+                info: "This offset is relative to the follow sprite position and is usually used for certain platform collision",
+                getValueAction: () => getObjData().OffsetHY,
+                setValueAction: x => getObjData().OffsetHY = (byte)x,
+                max: Byte.MaxValue);
 
             // TODO: FollowSprite
 
