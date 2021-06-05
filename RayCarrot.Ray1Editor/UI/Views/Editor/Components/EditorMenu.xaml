@@ -37,7 +37,6 @@
 
     <MenuItem Header="View">
         <MenuItem Header="Pause Editor Scene"
-                  Icon="{iconPacks:Material PlayPause}"
                   IsCheckable="True"
                   IsChecked="{Binding Path=IsPaused}" />
         <MenuItem Header="Reset Position"
@@ -45,31 +44,27 @@
                   Command="{Binding Path=ResetPositionCommand, Mode=OneTime}" />
         <Separator />
         <MenuItem Header="Animate Objects"
-                  Icon="{iconPacks:Material AnimationPlayOutline}"
                   IsCheckable="True"
                   IsEnabled="False" />
         <Separator />
         <MenuItem Header="Show Object HitBoxes"
-                  Icon="{iconPacks:Material SquareOutline}"
                   IsCheckable="True"
                   IsEnabled="False" />
         <Separator />
-        <MenuItem Header="Show/Hide Tiles Layers">
-            <MenuItem Header="Layer 0 (Background)"
-                      IsCheckable="True"
-                      IsEnabled="False" />
-            <MenuItem Header="Layer 1 (Parallax Back)"
-                      IsCheckable="True"
-                      IsEnabled="False" />
-            <MenuItem Header="Layer 2 (Objects)"
-                      IsCheckable="True"
-                      IsEnabled="False" />
-            <MenuItem Header="Layer 3 (Parallax Front)"
-                      IsCheckable="True"
-                      IsEnabled="False" />
+        <MenuItem Header="Show/Hide Tiles Layers"
+                  ItemsSource="{Binding Path=Layers, Mode=OneTime}">
+            <MenuItem.ItemContainerStyle>
+                <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
+                    <Setter Property="Header" Value="{Binding Path=Header, Mode=OneTime}" />
+                    <Setter Property="IsCheckable" Value="True" />
+                    <Setter Property="IsChecked" Value="{Binding Path=IsVisible}" />
+                </Style>
+            </MenuItem.ItemContainerStyle>
         </MenuItem>
         <MenuItem Header="Show Objects"
-                  Icon="{iconPacks:Material ShapeOutline}"
+                  IsCheckable="True"
+                  IsEnabled="False"/>
+        <MenuItem Header="Show Object Links"
                   IsCheckable="True"
                   IsEnabled="False"/>
     </MenuItem>
@@ -85,6 +80,12 @@
             <MenuItem Header="Sprites"
                       IsEnabled="False" />
             <MenuItem Header="Animation"
+                      IsEnabled="False" />
+        </MenuItem>
+        <Separator />
+        <MenuItem Header="Edit Colors"
+                  Icon="{iconPacks:Material Brush}">
+            <MenuItem Header="Background"
                       IsEnabled="False" />
         </MenuItem>
         <Separator />
