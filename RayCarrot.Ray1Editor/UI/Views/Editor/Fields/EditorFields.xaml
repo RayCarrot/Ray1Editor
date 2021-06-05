@@ -21,7 +21,7 @@
             <metro:NumericUpDown Grid.Column="2"
                                  Minimum="{Binding Path=Min, Mode=OneTime}"
                                  Maximum="{Binding Path=Max, Mode=OneTime}"
-                                 Value="{Binding Path=Value}" />
+                                 Value="{Binding Path=Value, UpdateSourceTrigger=LostFocus}" />
 
         </Grid>
     </DataTemplate>
@@ -52,7 +52,7 @@
     <!-- Point -->
 
     <DataTemplate x:Key="EditorPointFieldTemplate"
-                  DataType="{x:Type local:EditorDropDownFieldViewModel}">
+                  DataType="{x:Type local:EditorPointFieldViewModel}">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" SharedSizeGroup="FieldHeader" />
@@ -67,7 +67,7 @@
             <StackPanel Grid.Column="2" 
                         Orientation="Horizontal">
                 <metro:NumericUpDown Style="{StaticResource SimpleNumericUpDown}" 
-                                     Value="{Binding Path=X}" 
+                                     Value="{Binding Path=X, UpdateSourceTrigger=LostFocus}" 
                                      Minimum="{Binding Path=Min, Mode=OneTime}"
                                      Maximum="{Binding Path=Max, Mode=OneTime}" />
 
@@ -76,7 +76,7 @@
                            FontSize="14" />
 
                 <metro:NumericUpDown Style="{StaticResource SimpleNumericUpDown}" 
-                                     Value="{Binding Path=Y}" 
+                                     Value="{Binding Path=Y, UpdateSourceTrigger=LostFocus}" 
                                      Minimum="{Binding Path=Min, Mode=OneTime}"
                                      Maximum="{Binding Path=Max, Mode=OneTime}" />
 
