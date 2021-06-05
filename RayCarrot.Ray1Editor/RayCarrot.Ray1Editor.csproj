@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
+  <!-- General -->
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -7,14 +8,17 @@
     <LangVersion>9</LangVersion>
   </PropertyGroup>
 
+  <!-- Debug -->
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <!-- Release -->
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <!-- Package references -->
   <ItemGroup>
     <!-- Theme -->
     <PackageReference Include="MahApps.Metro" Version="2.4.5" />
@@ -33,6 +37,7 @@
     <PackageReference Include="PropertyChanged.Fody" Version="3.3.3" />
   </ItemGroup>
 
+  <!-- Project references -->
   <ItemGroup>
     <!-- Binary serializer -->
     <ProjectReference Include="..\..\Binary\BinarySerializer.GBA\src\BinarySerializer.GBA.csproj" />
@@ -44,6 +49,7 @@
     <ProjectReference Include="..\..\RayCarrot.UI\RayCarrot.UI\RayCarrot.UI.csproj" />
   </ItemGroup>
 
+  <!-- WPF XAML -->
   <ItemGroup>
     <Page Update="UI\Resources\Resources.TextBlock.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
@@ -73,6 +79,14 @@
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>
+  </ItemGroup>
+
+  <!-- Resources -->
+  <ItemGroup>
+    <Content Remove="Assets/Collision/R1_TypeCollision.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets/Collision/R1_TypeCollision.png" />
   </ItemGroup>
 
 </Project>

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -50,6 +50,13 @@ namespace RayCarrot.Ray1Editor
             var height = y + maxHeight;
 
             Sheet = new Texture2D(g, sheetWidth, height);
+        }
+
+        public TextureSheet(GraphicsDevice g, string path, IEnumerable<Rectangle> textures)
+        {
+            using var stream = Assets.GetAsset(path);
+            Sheet = Texture2D.FromStream(g, stream);
+            Entries = textures.Select(x => new Entry(x)).ToArray();
         }
 
         public Texture2D Sheet { get; }

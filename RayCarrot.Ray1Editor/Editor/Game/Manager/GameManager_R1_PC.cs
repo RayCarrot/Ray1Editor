@@ -265,7 +265,13 @@ namespace RayCarrot.Ray1Editor
                 tileSet.TileSheet.InitEntry(tileSet.TileSheet.Entries[i], data.Palette, tex.ImgData.Select(x => (byte)(255 - x)), tex.ImgData.Length);
             }
 
-            data.Layers.Add(new TileMapLayer(map.Tiles, Point.Zero, new Point(map.Width, map.Height), tileSet));
+            var mapLayer = new TileMapLayer_R1(map.Tiles, Point.Zero, new Point(map.Width, map.Height), tileSet);
+            var colLayer = new CollisionMapLayer_R1(map.Tiles, Point.Zero, new Point(map.Width, map.Height), textureManager);
+
+            mapLayer.LinkedLayers.Add(colLayer);
+
+            data.Layers.Add(mapLayer);
+            data.Layers.Add(colLayer);
         }
 
         public void LoadFond(GameData_R1 data, PC_WorldFile wld, PC_LevFile lev, TextureManager textureManager)
