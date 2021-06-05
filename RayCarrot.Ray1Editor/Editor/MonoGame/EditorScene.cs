@@ -22,6 +22,7 @@ namespace RayCarrot.Ray1Editor
             Context = context;
             GameSettings = gameSettings;
 
+            EditorUpdateData = new EditorUpdateData();
             State = new EditorState();
 
             Mouse = new WpfMouse(this);
@@ -34,6 +35,12 @@ namespace RayCarrot.Ray1Editor
 
         private GameObject _selectedObject;
         private EditorMode _mode;
+
+        #endregion
+
+        #region Protected Properties
+
+        protected EditorUpdateData EditorUpdateData { get; }
 
         #endregion
 
@@ -188,62 +195,57 @@ namespace RayCarrot.Ray1Editor
             // Update base
             base.Update(gameTime);
 
-            // Get the delta-time
-            var deltaTime = gameTime.ElapsedGameTime.TotalSeconds;
+            EditorUpdateData.DeltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            EditorUpdateData.Mouse = Mouse.GetState();
+            EditorUpdateData.MousePosition = Cam.ToWorld(EditorUpdateData.Mouse.Position.ToVector2());
+            EditorUpdateData.Keyboard = Keyboard.GetState();
 
             // Update layers
             foreach (var layer in GameData.Layers)
-                layer.Update();
+                layer.Update(EditorUpdateData);
 
             // Update objects
             foreach (var obj in GameData.Objects)
-                obj.Update(deltaTime);
-
-            var mouse = Mouse.GetState();
-            var mousePos = mouse.Position;
-            var mouseWorldPos = Cam.ToWorld(mousePos.ToVector2());
+                obj.Update(EditorUpdateData);
 
             // Update the camera
             Cam.ViewArea = new Vector2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
-            Cam.Update(deltaTime, mouse, Keyboard.GetState());
+            Cam.Update(EditorUpdateData);
 
             // Get the object we're hovering over
             if (CanHoverOverObject)
-                HoverObject = GameData.Objects.FirstOrDefault(x => x.Bounds.Contains(mouseWorldPos));
+                HoverObject = GameData.Objects.FirstOrDefault(x => x.Bounds.Contains(EditorUpdateData.MousePosition));
 
             switch (Mode)
             {
                 case EditorMode.Layers:
-                    UpdateModeLayers(deltaTime, mouse);
+                    UpdateModeLayers(EditorUpdateData);
                     break;
                 
                 case EditorMode.Objects:
-                    UpdateModeObjects(deltaTime, mouse);
+                    UpdateModeObjects(EditorUpdateData);
                     break;
 
                 case EditorMode.Links:
-                    UpdateModeLinks(deltaTime, mouse);
+                    UpdateModeLinks(EditorUpdateData);
                     break;
             }
 
             // TODO: Remove or change implementation. Combining strings every frame is not good for performance. This is only here for debugging.
-            VM.DebugText = $"Mouse (world): {mouseWorldPos}{Environment.NewLine}" +
-                           $"Mouse (local): {mousePos}{Environment.NewLine}" +
+            VM.DebugText = $"Mouse (world): {EditorUpdateData.MousePosition}{Environment.NewLine}" +
+                           $"Mouse (local): {EditorUpdateData.Mouse.Position}{Environment.NewLine}" +
                            $"Zoom: {Cam.Zoom * 100} %{Environment.NewLine}" +
                            $"Position: {Cam.Position}";
         }
 
-        protected void UpdateModeLayers(double deltaTime, MouseState mouse)
+        protected void UpdateModeLayers(EditorUpdateData updateData)
         {
-            GameData.Layers.FirstOrDefault(x => x.IsSelected)?.UpdateLayerEditing(deltaTime, mouse);
+            GameData.Layers.FirstOrDefault(x => x.IsSelected)?.UpdateLayerEditing(updateData);
         }
 
-        protected void UpdateModeObjects(double deltaTime, MouseState mouse)
+        protected void UpdateModeObjects(EditorUpdateData updateData)
         {
-            var mousePos = mouse.Position;
-            var mouseWorldPos = Cam.ToWorld(mousePos.ToVector2());
-
-            if (mouse.LeftButton == ButtonState.Pressed)
+            if (updateData.Mouse.LeftButton == ButtonState.Pressed)
             {
                 if (!IsDraggingObject)
                 {
@@ -255,19 +257,19 @@ namespace RayCarrot.Ray1Editor
                     {
                         IsDraggingObject = true;
                         SelectedObject = HoverObject;
-                        PrevMousePos = mouseWorldPos;
+                        PrevMousePos = updateData.MousePosition;
                         DraggingObjectInitialPosition = SelectedObject.Position;
                     }
                 }
 
                 if (IsDraggingObject && SelectedObject != null)
                 {
-                    SelectedObject.Position += (mouseWorldPos - PrevMousePos).ToPoint();
-                    PrevMousePos = mouseWorldPos;
+                    SelectedObject.Position += (updateData.MousePosition - PrevMousePos).ToPoint();
+                    PrevMousePos = updateData.MousePosition;
 
                     // Auto-scroll if the object has been dragged from its initial position and is near an edge
                     if (DraggingObjectInitialPosition != SelectedObject.Position)
-                        AutoScrollAtEdge(mousePos);
+                        AutoScrollAtEdge(updateData.Mouse.Position);
                 }
             }
             else
@@ -276,12 +278,9 @@ namespace RayCarrot.Ray1Editor
             }
         }
 
-        protected void UpdateModeLinks(double deltaTime, MouseState mouse)
+        protected void UpdateModeLinks(EditorUpdateData updateData)
         {
-            var mousePos = mouse.Position;
-            var mouseWorldPos = Cam.ToWorld(mousePos.ToVector2());
-
-            if (mouse.LeftButton == ButtonState.Pressed)
+            if (updateData.Mouse.LeftButton == ButtonState.Pressed)
             {
                 if (!IsDraggingLink)
                 {
@@ -293,17 +292,17 @@ namespace RayCarrot.Ray1Editor
                     {
                         IsDraggingLink = true;
                         SelectedLinkObject = HoverObject;
-                        PrevMousePos = mouseWorldPos;
-                        SelectedLinkObject.LinkGripPosition = mouseWorldPos.ToPoint();
+                        PrevMousePos = updateData.MousePosition;
+                        SelectedLinkObject.LinkGripPosition = updateData.MousePosition.ToPoint();
                     }
                 }
 
                 if (IsDraggingLink && SelectedLinkObject != null)
                 {
-                    SelectedLinkObject.LinkGripPosition += (mouseWorldPos - PrevMousePos).ToPoint();
-                    PrevMousePos = mouseWorldPos;
+                    SelectedLinkObject.LinkGripPosition += (updateData.MousePosition - PrevMousePos).ToPoint();
+                    PrevMousePos = updateData.MousePosition;
 
-                    AutoScrollAtEdge(mousePos);
+                    AutoScrollAtEdge(updateData.Mouse.Position);
                 }
             }
             else

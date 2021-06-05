@@ -28,10 +28,10 @@ namespace RayCarrot.Ray1Editor
         public abstract ObjAnimation CurrentAnimation { get; }
         public virtual int AnimationFrame { get; set; }
         public abstract int AnimSpeed { get; }
-        public double AnimationFrameFloat { get; set; }
+        public float AnimationFrameFloat { get; set; }
         public abstract TextureSheet SpriteSheet { get; }
         public virtual Point Pivot => Point.Zero;
-        public void UpdateFrame(double deltaTime)
+        public void UpdateFrame(float deltaTime)
         {
             if (!ShouldUpdateFrame() || CurrentAnimation == null)
                 return;
@@ -82,10 +82,10 @@ namespace RayCarrot.Ray1Editor
         public virtual string DebugText => null;
 
         // Update
-        public virtual void Update(double deltaTime)
+        public virtual void Update(EditorUpdateData updateData)
         {
             // Update the frame
-            UpdateFrame(deltaTime);
+            UpdateFrame(updateData.DeltaTime);
         }
         public virtual void Draw(SpriteBatch s)
         {

@@ -49,8 +49,8 @@ namespace RayCarrot.Ray1Editor
                 l.IsSelected = false;
         }
 
-        public virtual void Update() { }
-        public virtual void UpdateLayerEditing(double deltaTime, MouseState mouse)
+        public virtual void Update(EditorUpdateData updateData) { }
+        public virtual void UpdateLayerEditing(EditorUpdateData updateData)
         {
 
         }

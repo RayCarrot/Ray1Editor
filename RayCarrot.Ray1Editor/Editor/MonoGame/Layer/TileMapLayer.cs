@@ -113,7 +113,7 @@ namespace RayCarrot.Ray1Editor
             EditorState.UpdateMapSize(Data);
         }
 
-        public override void UpdateLayerEditing(double deltaTime, MouseState mouse)
+        public override void UpdateLayerEditing(EditorUpdateData updateData)
         {
             // TODO: Update layer editing
         }
