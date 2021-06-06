@@ -34,7 +34,7 @@ namespace RayCarrot.Ray1Editor
 
         #region Protected Properties
 
-        protected bool IsSelectingTiles { get; set; }
+        protected TileEditorState State { get; set; }
         protected Point MapSelectionPoint1 { get; set; }
         protected Point MapSelectionPoint2 { get; set; }
         protected Point? MapPreviewOrigin { get; set; }
@@ -90,13 +90,20 @@ namespace RayCarrot.Ray1Editor
                 y: Math.Clamp(tileMapPos.Y / TileSet.TileSize.Y, 0, MapSize.Y - 1));
         }
 
-        protected Point GetMapSelectionSource() => new Point(
-            Math.Min(MapSelectionPoint1.X, MapSelectionPoint2.X),
-            Math.Min(MapSelectionPoint1.Y, MapSelectionPoint2.Y));
+        protected Rectangle GetMapSelection()
+        {
+            var selectionSourcePoint = new Point(
+                Math.Min(MapSelectionPoint1.X, MapSelectionPoint2.X),
+                Math.Min(MapSelectionPoint1.Y, MapSelectionPoint2.Y));
+            var destPoint = new Point(
+                Math.Max(MapSelectionPoint1.X, MapSelectionPoint2.X),
+                Math.Max(MapSelectionPoint1.Y, MapSelectionPoint2.Y));
 
-        protected Point GetMapSelectionDestination() => new Point(
-            Math.Max(MapSelectionPoint1.X, MapSelectionPoint2.X),
-            Math.Max(MapSelectionPoint1.Y, MapSelectionPoint2.Y));
+            var w = destPoint.X - selectionSourcePoint.X + 1;
+            var h = destPoint.Y - selectionSourcePoint.Y + 1;
+
+            return new Rectangle(selectionSourcePoint, new Point(w, h));
+        }
 
         #endregion
 
@@ -146,6 +153,7 @@ namespace RayCarrot.Ray1Editor
         {
             return TileMap[y * MapSize.X + x];
         }
+
         public void SetTileAt(T tile, int x, int y)
         {
             TileMap[y * MapSize.X + x] = tile;
@@ -174,51 +182,80 @@ namespace RayCarrot.Ray1Editor
             var hoverTile = GetHoverTile(updateData.MousePosition);
 
             // If left mouse button is pressed down tiles are being selected
-            if (updateData.Mouse.LeftButton == ButtonState.Pressed)
+            if (updateData.Mouse.LeftButton == ButtonState.Pressed && !updateData.Keyboard.IsKeyDown(Keys.LeftControl))
             {
                 // Reset the preview origin. This gets set once the mouse button is released.
                 MapPreviewOrigin = null;
 
                 // Set the initial selection point if we were previously not selecting tiles
-                if (!IsSelectingTiles)
+                if (State != TileEditorState.Selecting)
                     MapSelectionPoint1 = hoverTile;
 
                 MapSelectionPoint2 = hoverTile;
 
-                IsSelectingTiles = true;
+                State = TileEditorState.Selecting;
             }
             else
             {
                 // Store the selected tiles if we were previously selecting tiles or no selection has been specified
-                if (IsSelectingTiles || SelectedTiles == null)
+                if (State == TileEditorState.Selecting || SelectedTiles == null)
                 {
-                    var sourcePoint = GetMapSelectionSource();
-                    var destPoint = GetMapSelectionDestination();
+                    var selection = GetMapSelection();
 
-                    var width = destPoint.X - sourcePoint.X + 1;
-                    var height = destPoint.Y - sourcePoint.Y + 1;
+                    SelectedTiles = new T[selection.Width, selection.Height];
 
-                    SelectedTiles = new T[width, height];
-
-                    for (int y = 0; y < height; y++)
+                    for (int y = 0; y < selection.Height; y++)
                     {
-                        var originY = sourcePoint.Y + y;
+                        var originY = selection.Y + y;
 
-                        for (int x = 0; x < width; x++)
+                        for (int x = 0; x < selection.Width; x++)
                         {
-                            var originX = sourcePoint.X + x;
+                            var originX = selection.X + x;
 
                             SelectedTiles[x, y] = GetTileAt(originX, originY);
                         }
                     }
                 }
 
-                IsSelectingTiles = false;
-
                 MapPreviewOrigin = Rectangle.Contains(updateData.MousePosition) ? hoverTile : null;
 
+                if (updateData.Mouse.LeftButton == ButtonState.Pressed && updateData.Keyboard.IsKeyDown(Keys.LeftControl))
+                {
+                    if (State != TileEditorState.Tiling)
+                        MapSelectionPoint1 = hoverTile;
+
+                    MapSelectionPoint2 = hoverTile;
+
+                    State = TileEditorState.Tiling;
+                }
+                else
+                {
+                    // Paste tiled tiles if switching from tiling mode
+                    if (State == TileEditorState.Tiling && MapPreviewOrigin != null)
+                    {
+                        var selection = GetMapSelection();
+
+                        var width = SelectedTilesWidth;
+                        var height = SelectedTilesHeight;
+
+                        for (int y = 0; y < selection.Height; y++)
+                        {
+                            var destY = selection.Y + y;
+
+                            for (int x = 0; x < selection.Width; x++)
+                            {
+                                var destX = selection.X + x;
+                                SetTileAt(CloneTile(SelectedTiles[x % width, y % height], GetTileAt(destX, destY)), destX, destY);
+                            }
+                        }
+                    }
+
+                    State = TileEditorState.Idle;
+                }
+
                 // Paste tiles with CTRL+V
-                if (MapPreviewOrigin != null &&
+                if (State == TileEditorState.Idle &&
+                    MapPreviewOrigin != null &&
                     !_isPasteKeyDown &&
                     updateData.Keyboard.IsKeyDown(Keys.LeftControl) && 
                     updateData.Keyboard.IsKeyDown(Keys.V))
@@ -251,24 +288,22 @@ namespace RayCarrot.Ray1Editor
             }
 
             updateData.DebugText.AppendLine($"Tile selection: {MapSelectionPoint1} -> {MapSelectionPoint2}");
+            updateData.DebugText.AppendLine($"Tile editing state: {State}");
         }
 
         public override void ResetLayerEditing()
         {
-            IsSelectingTiles = false;
-            MapPreviewOrigin = null;
+            State = TileEditorState.Idle;
         }
 
         public override void Draw(SpriteBatch s)
         {
             Rectangle? previewBox = null;
-            Point? selectionSourcePoint = null;
 
-            if (MapPreviewOrigin != null)
-            {
+            if (MapPreviewOrigin != null && State == TileEditorState.Idle)
                 previewBox = new Rectangle(MapPreviewOrigin.Value, new Point(SelectedTilesWidth, SelectedTilesHeight));
-                selectionSourcePoint = GetMapSelectionSource();
-            }
+            else if (State == TileEditorState.Tiling)
+                previewBox = GetMapSelection();
 
             // Draw map
             for (int y = 0; y < MapSize.Y; y++)
@@ -282,7 +317,7 @@ namespace RayCarrot.Ray1Editor
 
                     // Check if a preview tile should be drawn instead
                     if (previewBox?.Contains(x, y) == true)
-                        tile = SelectedTiles[sourceTileX - previewBox.Value.X, sourceTileY - previewBox.Value.Y];
+                        tile = SelectedTiles[(sourceTileX - previewBox.Value.X) % SelectedTilesWidth, (sourceTileY - previewBox.Value.Y) % SelectedTilesHeight];
                     else
                         tile = GetTileAt(sourceTileX, sourceTileY);
 
@@ -293,24 +328,41 @@ namespace RayCarrot.Ray1Editor
                 }
             }
 
-            // Draw selection
-            if (IsSelectingTiles)
+            // Draw selection border
+            if (State is TileEditorState.Selecting or TileEditorState.Tiling)
             {
-                selectionSourcePoint ??= GetMapSelectionSource();
-
-                var destPoint = GetMapSelectionDestination();
-
-                var w = destPoint.X - selectionSourcePoint.Value.X + 1;
-                var h = destPoint.Y - selectionSourcePoint.Value.Y + 1;
+                var selection = GetMapSelection();
 
                 var rect = new Rectangle(
-                    x: Position.X + selectionSourcePoint.Value.X * TileSet.TileSize.X,
-                    y: Position.Y + selectionSourcePoint.Value.Y * TileSet.TileSize.Y,
-                    width: w * TileSet.TileSize.X,
-                    height: h * TileSet.TileSize.Y);
+                    x: Position.X + selection.X * TileSet.TileSize.X,
+                    y: Position.Y + selection.Y * TileSet.TileSize.Y,
+                    width: selection.Width * TileSet.TileSize.X,
+                    height: selection.Height * TileSet.TileSize.Y);
 
-                s.DrawRectangle(rect, EditorState.Color_TileSelection, 1);
+                s.DrawRectangle(rect, State == TileEditorState.Selecting ? EditorState.Color_TileSelection : EditorState.Color_TileTiling, 1);
             }
+        }
+
+        #endregion
+
+        #region Data Types
+
+        protected enum TileEditorState
+        {
+            /// <summary>
+            /// The idle state. Should show the preview map as the cursor moves on the screen.
+            /// </summary>
+            Idle,
+
+            /// <summary>
+            /// Tiles are being selected.
+            /// </summary>
+            Selecting,
+
+            /// <summary>
+            /// Selected tiles are being tiled.
+            /// </summary>
+            Tiling,
         }
 
         #endregion

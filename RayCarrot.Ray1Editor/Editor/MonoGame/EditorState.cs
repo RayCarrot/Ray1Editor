@@ -18,6 +18,7 @@ namespace RayCarrot.Ray1Editor
         public Color Color_ObjOffsetPivot { get; set; } = new Color(0xFF, 0xC1, 0x07);
         public Color Color_ObjOffsetGeneric { get; set; } = new Color(0x7E, 0x57, 0xC2);
         public Color Color_TileSelection { get; set; } = new Color(0xFD, 0xD8, 0x35);
+        public Color Color_TileTiling { get; set; } = new Color(0xFF, 0x8F, 0x00);
 
         public Point MapSize { get; protected set; }
         public bool AnimateObjects { get; set; } = true;
