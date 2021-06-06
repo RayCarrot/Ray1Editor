@@ -123,7 +123,7 @@
                                                 <ToggleButton Grid.Column="1"
                                                               Style="{StaticResource MahApps.Styles.ToggleButton.Circle}"
                                                               IsChecked="{Binding Path=IsSelected}"
-                                                              Visibility="{Binding Path=Layer.CanEdit, Converter={local:BooleanToVisibilityConverter}, Mode=OneTime}"
+                                                              Visibility="{Binding Path=CanEdit, Converter={local:BooleanToVisibilityConverter}}"
                                                               ToolTip="Edit layer"
                                                               Width="28" Height="28"
                                                               Margin="5 0"
@@ -132,7 +132,7 @@
                                                 <ToggleButton Grid.Column="2"
                                                               Style="{StaticResource MahApps.Styles.ToggleButton.Circle}"
                                                               IsChecked="{Binding Path=IsVisible}"
-                                                              IsEnabled="{Binding Path=IsSelected, Converter={local:InvertedBooleanConverter}}"
+                                                              IsEnabled="{Binding Path=CanEditVisibility}"
                                                               ToolTip="Show layer"
                                                               Width="28" Height="28"
                                                               Content="{iconPacks:Material Kind=EyeOutline, Width=14, Height=14}" />

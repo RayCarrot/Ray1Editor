@@ -88,6 +88,52 @@ namespace RayCarrot.Ray1Editor
 
         #endregion
 
+        #region Public Methods (from scene)
+
+        public void OnEditorLoaded()
+        {
+            // Set up layers
+            Layers.AddRange(EditorScene.GameData.Layers.Select(x => new LayerEditorViewModel(this, x)));
+
+            // Create layer fields
+            foreach (var layer in Layers)
+            {
+                layer.RecreateFields();
+                layer.RefreshFields();
+            }
+
+            // Create object items
+            GameObjects.AddRange(EditorScene.GameData.Objects.Select(x => new GameObjectListItemViewModel(x)));
+
+            // Default to objects mode
+            Mode = EditorMode.Objects;
+        }
+
+        public void OnSelectedObjectChanged(GameObject obj)
+        {
+            SelectedObject = obj;
+
+            _selectedGameObjectItem = obj == null ? null : GameObjects.First(x => x.Obj == obj);
+            OnPropertyChanged(nameof(SelectedGameObjectItem));
+
+            SelectedObjectName = obj?.PrimaryName;
+            RefreshObjFields();
+        }
+
+        public void OnModeChanged(EditorMode oldMode, EditorMode newMode)
+        {
+            foreach (var l in Layers)
+            {
+                l.CanEdit = newMode == EditorMode.Layers && l.Layer.CanEdit;
+                l.CanEditVisibility = newMode != EditorMode.Layers || !l.IsSelected;
+
+                if (newMode == EditorMode.Layers && l.IsSelected)
+                    l.IsVisible = true;
+            }
+        }
+
+        #endregion
+
         #region Public Methods
 
         public override void Initialize()
@@ -116,25 +162,6 @@ namespace RayCarrot.Ray1Editor
                 gameSettings: CurrentGameSettings);
         }
 
-        public void OnEditorLoaded()
-        {
-            // Default to objects mode
-            Mode = EditorMode.Objects;
-
-            // Set up layers
-            Layers.AddRange(EditorScene.GameData.Layers.Select(x => new LayerEditorViewModel(this, x)));
-
-            // Create layer fields
-            foreach (var layer in Layers)
-            {
-                layer.RecreateFields();
-                layer.RefreshFields();
-            }
-
-            // Create object items
-            GameObjects.AddRange(EditorScene.GameData.Objects.Select(x => new GameObjectListItemViewModel(x)));
-        }
-
         public void UnloadEditor()
         {
             // Dispose the current instance (this will also unload the monogame resources)
@@ -147,17 +174,6 @@ namespace RayCarrot.Ray1Editor
             SelectedObjectName = null;
             Layers.Clear();
             ObjFields.Clear();
-        }
-
-        public void UpdateSelectedObject(GameObject obj)
-        {
-            SelectedObject = obj;
-
-            _selectedGameObjectItem = obj == null ? null : GameObjects.First(x => x.Obj == obj);
-            OnPropertyChanged(nameof(SelectedGameObjectItem));
-
-            SelectedObjectName = obj?.PrimaryName;
-            RefreshObjFields();
         }
 
         public void RecreateObjFields()

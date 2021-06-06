@@ -69,6 +69,8 @@ namespace RayCarrot.Ray1Editor
                 foreach (var l in GameData.Layers)
                     l.ResetLayerEditing();
 
+                VM.OnModeChanged(_mode, value);
+
                 _mode = value;
             }
         }
@@ -90,7 +92,7 @@ namespace RayCarrot.Ray1Editor
             set
             {
                 _selectedObject = value;
-                VM.UpdateSelectedObject(_selectedObject);
+                VM.OnSelectedObjectChanged(_selectedObject);
             }
         }
         public bool IsDraggingObject { get; protected set; }

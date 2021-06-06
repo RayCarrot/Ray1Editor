@@ -11,6 +11,7 @@ namespace RayCarrot.Ray1Editor
             EditorViewModel = editorViewModel;
             Layer = layer;
             Fields = new ObservableCollection<EditorFieldViewModel>();
+            CanEdit = Layer.CanEdit;
         }
 
         public ObservableCollection<EditorFieldViewModel> Fields { get; }
@@ -24,12 +25,18 @@ namespace RayCarrot.Ray1Editor
             set
             {
                 Layer.Select();
+                
                 OnPropertyChanged(nameof(IsVisible));
 
                 foreach (var l in EditorViewModel.Layers)
+                {
                     l.OnPropertyChanged(nameof(IsSelected));
+                    l.CanEditVisibility = !l.IsSelected;
+                }
             }
         }
+        public bool CanEdit { get; set; }
+        public bool CanEditVisibility { get; set; }
 
         public bool IsVisible
         {
