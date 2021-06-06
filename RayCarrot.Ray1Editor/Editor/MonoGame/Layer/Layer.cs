@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Xna.Framework.Input;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -41,6 +40,7 @@ namespace RayCarrot.Ray1Editor
         public virtual void Select()
         {
             IsSelected = true;
+            IsVisible = true;
 
             if (Data == null)
                 return;
@@ -50,10 +50,8 @@ namespace RayCarrot.Ray1Editor
         }
 
         public virtual void Update(EditorUpdateData updateData) { }
-        public virtual void UpdateLayerEditing(EditorUpdateData updateData)
-        {
-
-        }
+        public virtual void UpdateLayerEditing(EditorUpdateData updateData) { }
+        public virtual void ResetLayerEditing() { }
         public abstract void Draw(SpriteBatch s);
     }
 }

@@ -28,7 +28,10 @@ namespace RayCarrot.Ray1Editor
 
         #region Protected Properties
 
-        protected Rectangle? TileSelection { get; set; }
+        protected bool IsSelectingTiles { get; set; }
+        protected Point MapSelectionPoint1 { get; set; }
+        protected Point MapSelectionPoint2 { get; set; }
+        protected Point? MapPreviewOrigin { get; set; }
 
         #endregion
 
@@ -68,6 +71,22 @@ namespace RayCarrot.Ray1Editor
 
         protected abstract T CreateNewTile();
         protected abstract int GetTileSetIndex(T tile);
+
+        protected Point GetHoverTile(Vector2 mousePos)
+        {
+            var tileMapPos = mousePos.ToPoint() - Rectangle.Location;
+            return new Point(
+                x: Math.Clamp(tileMapPos.X / TileSet.TileSize.X, 0, MapSize.X - 1),
+                y: Math.Clamp(tileMapPos.Y / TileSet.TileSize.Y, 0, MapSize.Y - 1));
+        }
+
+        protected Point GetMapSelectionSource() => new Point(
+            Math.Min(MapSelectionPoint1.X, MapSelectionPoint2.X),
+            Math.Min(MapSelectionPoint1.Y, MapSelectionPoint2.Y));
+
+        protected Point GetMapSelectionDestination() => new Point(
+            Math.Max(MapSelectionPoint1.X, MapSelectionPoint2.X),
+            Math.Max(MapSelectionPoint1.Y, MapSelectionPoint2.Y));
 
         #endregion
 
@@ -113,28 +132,114 @@ namespace RayCarrot.Ray1Editor
             EditorState.UpdateMapSize(Data);
         }
 
+        public T GetTileAt(int x, int y)
+        {
+            return TileMap[y * MapSize.X + x];
+        }
+
+        protected Rectangle GetTileRect(int x, int y)
+        {
+            return new Rectangle(
+                x: x * TileSet.TileSize.X + Position.X,
+                y: y * TileSet.TileSize.Y + Position.Y,
+                width: TileSet.TileSize.X,
+                height: TileSet.TileSize.Y);
+        }
+
+        protected Rectangle GetTileSourceRect(T tile)
+        {
+            return TileSet.TileSheet.Entries[GetTileSetIndex(tile)].Source;
+        }
+
         public override void UpdateLayerEditing(EditorUpdateData updateData)
         {
-            // TODO: Update layer editing
+            var hoverTile = GetHoverTile(updateData.MousePosition);
+
+            if (updateData.Mouse.LeftButton == ButtonState.Pressed)
+            {
+                MapPreviewOrigin = null;
+
+                if (!IsSelectingTiles)
+                    MapSelectionPoint1 = hoverTile;
+
+                MapSelectionPoint2 = hoverTile;
+
+                IsSelectingTiles = true;
+            }
+            else
+            {
+                IsSelectingTiles = false;
+
+                MapPreviewOrigin = Rectangle.Contains(updateData.MousePosition) ? hoverTile : null;
+            }
+
+            updateData.DebugText.AppendLine($"Tile selection: {MapSelectionPoint1} -> {MapSelectionPoint2}");
+        }
+
+        public override void ResetLayerEditing()
+        {
+            IsSelectingTiles = false;
+            MapPreviewOrigin = null;
         }
 
         public override void Draw(SpriteBatch s)
         {
+            Rectangle? previewBox = null;
+            Point? selectionSourcePoint = null;
+
+            if (MapPreviewOrigin != null)
+            {
+                var preview = MapPreviewOrigin.Value;
+
+                selectionSourcePoint = GetMapSelectionSource();
+                var destPoint = GetMapSelectionDestination();
+
+                var width = destPoint.X - selectionSourcePoint.Value.X + 1;
+                var height = destPoint.Y - selectionSourcePoint.Value.Y + 1;
+
+                previewBox = new Rectangle(preview, new Point(width, height));
+            }
+
+            // Draw map
             for (int y = 0; y < MapSize.Y; y++)
             {
                 for (int x = 0; x < MapSize.X; x++)
                 {
-                    var tile = TileMap[y * MapSize.X + x];
+                    var sourceTileX = x;
+                    var sourceTileY = y;
 
-                    var dest = new Rectangle(
-                        x: x * TileSet.TileSize.X + Position.X,
-                        y: y * TileSet.TileSize.Y + Position.Y,
-                        width: TileSet.TileSize.X,
-                        height: TileSet.TileSize.Y);
-                    var src = TileSet.TileSheet.Entries[GetTileSetIndex(tile)].Source;
+                    // Check if a preview tile should be drawn instead
+                    if (previewBox?.Contains(x, y) == true)
+                    {
+                        sourceTileX = selectionSourcePoint.Value.X + (sourceTileX - previewBox.Value.X);
+                        sourceTileY = selectionSourcePoint.Value.Y + (sourceTileY - previewBox.Value.Y);
+                    }
+
+                    var tile = GetTileAt(sourceTileX, sourceTileY);
+
+                    var dest = GetTileRect(x, y);
+                    var src = GetTileSourceRect(tile);
 
                     s.Draw(TileSet.TileSheet.Sheet, dest, src, Color.White);
                 }
+            }
+
+            // Draw selection
+            if (IsSelectingTiles)
+            {
+                selectionSourcePoint ??= GetMapSelectionSource();
+                var destPoint = GetMapSelectionDestination();
+
+                var w = destPoint.X - selectionSourcePoint.Value.X + 1;
+                var h = destPoint.Y - selectionSourcePoint.Value.Y + 1;
+
+                var rect = new Rectangle(
+                    x: Position.X + selectionSourcePoint.Value.X * TileSet.TileSize.X,
+                    y: Position.Y + selectionSourcePoint.Value.Y * TileSet.TileSize.Y,
+                    width: w * TileSet.TileSize.X,
+                    height: h * TileSet.TileSize.Y);
+
+                s.DrawRectangle(rect, EditorState.Color_TileSelection, 1);
             }
         }
 

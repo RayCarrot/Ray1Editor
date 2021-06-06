@@ -84,6 +84,9 @@ namespace RayCarrot.Ray1Editor
             {
                 IsDraggingCamera = false;
             }
+
+            updateData.DebugText.AppendLine($"Zoom: {Zoom * 100} %");
+            updateData.DebugText.AppendLine($"Position: {Position}");
         }
 
         public void UpdateZoom(EditorUpdateData updateData)

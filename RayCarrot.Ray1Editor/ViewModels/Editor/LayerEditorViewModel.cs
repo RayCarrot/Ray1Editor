@@ -24,8 +24,9 @@ namespace RayCarrot.Ray1Editor
             set
             {
                 Layer.Select();
+                OnPropertyChanged(nameof(IsVisible));
 
-                foreach (var l in EditorViewModel.Layers.Where(x => x != this))
+                foreach (var l in EditorViewModel.Layers)
                     l.OnPropertyChanged(nameof(IsSelected));
             }
         }

@@ -66,6 +66,9 @@ namespace RayCarrot.Ray1Editor
                 SelectedLinkObject = null;
                 IsDraggingLink = false;
 
+                foreach (var l in GameData.Layers)
+                    l.ResetLayerEditing();
+
                 _mode = value;
             }
         }
@@ -199,6 +202,10 @@ namespace RayCarrot.Ray1Editor
             EditorUpdateData.Mouse = Mouse.GetState();
             EditorUpdateData.MousePosition = Cam.ToWorld(EditorUpdateData.Mouse.Position.ToVector2());
             EditorUpdateData.Keyboard = Keyboard.GetState();
+            EditorUpdateData.DebugText.Clear();
+
+            EditorUpdateData.DebugText.AppendLine($"Mouse (world): {EditorUpdateData.MousePosition}");
+            EditorUpdateData.DebugText.AppendLine($"Mouse (local): {EditorUpdateData.Mouse.Position}");
 
             // Update layers
             foreach (var layer in GameData.Layers)
@@ -231,11 +238,7 @@ namespace RayCarrot.Ray1Editor
                     break;
             }
 
-            // TODO: Remove or change implementation. Combining strings every frame is not good for performance. This is only here for debugging.
-            VM.DebugText = $"Mouse (world): {EditorUpdateData.MousePosition}{Environment.NewLine}" +
-                           $"Mouse (local): {EditorUpdateData.Mouse.Position}{Environment.NewLine}" +
-                           $"Zoom: {Cam.Zoom * 100} %{Environment.NewLine}" +
-                           $"Position: {Cam.Position}";
+            VM.DebugText = EditorUpdateData.DebugText.ToString();
         }
 
         protected void UpdateModeLayers(EditorUpdateData updateData)

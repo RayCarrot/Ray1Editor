@@ -132,6 +132,7 @@
                                                 <ToggleButton Grid.Column="2"
                                                               Style="{StaticResource MahApps.Styles.ToggleButton.Circle}"
                                                               IsChecked="{Binding Path=IsVisible}"
+                                                              IsEnabled="{Binding Path=IsSelected, Converter={local:InvertedBooleanConverter}}"
                                                               ToolTip="Show layer"
                                                               Width="28" Height="28"
                                                               Content="{iconPacks:Material Kind=EyeOutline, Width=14, Height=14}" />

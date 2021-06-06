@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Text;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace RayCarrot.Ray1Editor
@@ -9,5 +10,6 @@ namespace RayCarrot.Ray1Editor
         public MouseState Mouse { get; set; }
         public Vector2 MousePosition { get; set; }
         public KeyboardState Keyboard { get; set; }
+        public StringBuilder DebugText { get; } = new StringBuilder();
     }
 }
