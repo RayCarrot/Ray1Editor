@@ -34,19 +34,19 @@ namespace RayCarrot.Ray1Editor
 
         protected override int GetTileSetIndex(MapTile tile) => tile.BlockType;
 
-        protected override MapTile CloneTile(MapTile tile) => new MapTile
+        protected override MapTile CloneTile(MapTile srcTile, MapTile destTile) => new MapTile
         {
-            Pre_SNES_Is8PxTile = tile.Pre_SNES_Is8PxTile,
-            TileMapX = tile.TileMapX,
-            TileMapY = tile.TileMapY,
-            BlockType = tile.BlockType,
-            HorizontalFlip = tile.HorizontalFlip,
-            VerticalFlip = tile.VerticalFlip,
-            PC_Byte_03 = tile.PC_Byte_03,
-            TransparencyMode = tile.TransparencyMode,
-            PC_Byte_05 = tile.PC_Byte_05,
-            PaletteIndex = tile.PaletteIndex,
-            Priority = tile.Priority
+            Pre_SNES_Is8PxTile = destTile.Pre_SNES_Is8PxTile,
+            TileMapX = destTile.TileMapX,
+            TileMapY = destTile.TileMapY,
+            BlockType = srcTile.BlockType,
+            HorizontalFlip = destTile.HorizontalFlip,
+            VerticalFlip = destTile.VerticalFlip,
+            PC_Byte_03 = destTile.PC_Byte_03,
+            TransparencyMode = destTile.TransparencyMode,
+            PC_Byte_05 = destTile.PC_Byte_05,
+            PaletteIndex = destTile.PaletteIndex,
+            Priority = destTile.Priority
         };
     }
 }

@@ -80,7 +80,7 @@ namespace RayCarrot.Ray1Editor
 
         protected abstract T CreateNewTile();
         protected abstract int GetTileSetIndex(T tile);
-        protected abstract T CloneTile(T tile);
+        protected abstract T CloneTile(T srcTile, T destTile);
 
         protected Point GetHoverTile(Vector2 mousePos)
         {
@@ -244,7 +244,7 @@ namespace RayCarrot.Ray1Editor
                             if (destX >= MapSize.X)
                                 break;
 
-                            SetTileAt(CloneTile(SelectedTiles[x, y]), destX, destY);
+                            SetTileAt(CloneTile(SelectedTiles[x, y], GetTileAt(destX, destY)), destX, destY);
                         }
                     }
                 }
