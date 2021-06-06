@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework.Input;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -26,12 +26,21 @@ namespace RayCarrot.Ray1Editor
 
         #endregion
 
+        #region Private Fields
+
+        private bool _isPasteKeyDown;
+
+        #endregion
+
         #region Protected Properties
 
         protected bool IsSelectingTiles { get; set; }
         protected Point MapSelectionPoint1 { get; set; }
         protected Point MapSelectionPoint2 { get; set; }
         protected Point? MapPreviewOrigin { get; set; }
+        protected T[,] SelectedTiles { get; set; }
+        protected int SelectedTilesWidth => SelectedTiles.GetLength(0);
+        protected int SelectedTilesHeight => SelectedTiles.GetLength(1);
 
         #endregion
 
@@ -71,6 +80,7 @@ namespace RayCarrot.Ray1Editor
 
         protected abstract T CreateNewTile();
         protected abstract int GetTileSetIndex(T tile);
+        protected abstract T CloneTile(T tile);
 
         protected Point GetHoverTile(Vector2 mousePos)
         {
@@ -136,6 +146,10 @@ namespace RayCarrot.Ray1Editor
         {
             return TileMap[y * MapSize.X + x];
         }
+        public void SetTileAt(T tile, int x, int y)
+        {
+            TileMap[y * MapSize.X + x] = tile;
+        }
 
         protected Rectangle GetTileRect(int x, int y)
         {
@@ -153,12 +167,19 @@ namespace RayCarrot.Ray1Editor
 
         public override void UpdateLayerEditing(EditorUpdateData updateData)
         {
+            if (!updateData.Keyboard.IsKeyDown(Keys.V))
+                _isPasteKeyDown = false;
+
+            // Get the tile the mouse is over
             var hoverTile = GetHoverTile(updateData.MousePosition);
 
+            // If left mouse button is pressed down tiles are being selected
             if (updateData.Mouse.LeftButton == ButtonState.Pressed)
             {
+                // Reset the preview origin. This gets set once the mouse button is released.
                 MapPreviewOrigin = null;
 
+                // Set the initial selection point if we were previously not selecting tiles
                 if (!IsSelectingTiles)
                     MapSelectionPoint1 = hoverTile;
 
@@ -168,9 +189,65 @@ namespace RayCarrot.Ray1Editor
             }
             else
             {
+                // Store the selected tiles if we were previously selecting tiles or no selection has been specified
+                if (IsSelectingTiles || SelectedTiles == null)
+                {
+                    var sourcePoint = GetMapSelectionSource();
+                    var destPoint = GetMapSelectionDestination();
+
+                    var width = destPoint.X - sourcePoint.X + 1;
+                    var height = destPoint.Y - sourcePoint.Y + 1;
+
+                    SelectedTiles = new T[width, height];
+
+                    for (int y = 0; y < height; y++)
+                    {
+                        var originY = sourcePoint.Y + y;
+
+                        for (int x = 0; x < width; x++)
+                        {
+                            var originX = sourcePoint.X + x;
+
+                            SelectedTiles[x, y] = GetTileAt(originX, originY);
+                        }
+                    }
+                }
+
                 IsSelectingTiles = false;
 
                 MapPreviewOrigin = Rectangle.Contains(updateData.MousePosition) ? hoverTile : null;
+
+                // Paste tiles with CTRL+V
+                if (MapPreviewOrigin != null &&
+                    !_isPasteKeyDown &&
+                    updateData.Keyboard.IsKeyDown(Keys.LeftControl) && 
+                    updateData.Keyboard.IsKeyDown(Keys.V))
+                {
+                    _isPasteKeyDown = true;
+
+                    var previewOrigin = MapPreviewOrigin.Value;
+
+                    var width = SelectedTilesWidth;
+                    var height = SelectedTilesHeight;
+
+                    for (int y = 0; y < height; y++)
+                    {
+                        var destY = previewOrigin.Y + y;
+
+                        if (destY >= MapSize.Y)
+                            break;
+
+                        for (int x = 0; x < width; x++)
+                        {
+                            var destX = previewOrigin.X + x;
+
+                            if (destX >= MapSize.X)
+                                break;
+
+                            SetTileAt(CloneTile(SelectedTiles[x, y]), destX, destY);
+                        }
+                    }
+                }
             }
 
             updateData.DebugText.AppendLine($"Tile selection: {MapSelectionPoint1} -> {MapSelectionPoint2}");
@@ -189,15 +266,8 @@ namespace RayCarrot.Ray1Editor
 
             if (MapPreviewOrigin != null)
             {
-                var preview = MapPreviewOrigin.Value;
-
+                previewBox = new Rectangle(MapPreviewOrigin.Value, new Point(SelectedTilesWidth, SelectedTilesHeight));
                 selectionSourcePoint = GetMapSelectionSource();
-                var destPoint = GetMapSelectionDestination();
-
-                var width = destPoint.X - selectionSourcePoint.Value.X + 1;
-                var height = destPoint.Y - selectionSourcePoint.Value.Y + 1;
-
-                previewBox = new Rectangle(preview, new Point(width, height));
             }
 
             // Draw map
@@ -208,14 +278,13 @@ namespace RayCarrot.Ray1Editor
                     var sourceTileX = x;
                     var sourceTileY = y;
 
+                    T tile;
+
                     // Check if a preview tile should be drawn instead
                     if (previewBox?.Contains(x, y) == true)
-                    {
-                        sourceTileX = selectionSourcePoint.Value.X + (sourceTileX - previewBox.Value.X);
-                        sourceTileY = selectionSourcePoint.Value.Y + (sourceTileY - previewBox.Value.Y);
-                    }
-
-                    var tile = GetTileAt(sourceTileX, sourceTileY);
+                        tile = SelectedTiles[sourceTileX - previewBox.Value.X, sourceTileY - previewBox.Value.Y];
+                    else
+                        tile = GetTileAt(sourceTileX, sourceTileY);
 
                     var dest = GetTileRect(x, y);
                     var src = GetTileSourceRect(tile);
@@ -228,6 +297,7 @@ namespace RayCarrot.Ray1Editor
             if (IsSelectingTiles)
             {
                 selectionSourcePoint ??= GetMapSelectionSource();
+
                 var destPoint = GetMapSelectionDestination();
 
                 var w = destPoint.X - selectionSourcePoint.Value.X + 1;
