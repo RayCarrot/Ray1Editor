@@ -1,4 +1,6 @@
-﻿using BinarySerializer.Ray1;
+﻿using System.Linq;
+using BinarySerializer;
+using BinarySerializer.Ray1;
 using Microsoft.Xna.Framework;
 using RayCarrot.UI;
 
@@ -36,5 +38,10 @@ namespace RayCarrot.Ray1Editor
                 return vm;
             }
         }
+
+        public static EditPaletteViewModel EditPaletteViewModel => new EditPaletteViewModel(new Palette(Enumerable.Range(0, 256).Select(x => new BGR888Color()
+        {
+            R = (byte)x
+        }), "Design-time palette"));
     }
 }

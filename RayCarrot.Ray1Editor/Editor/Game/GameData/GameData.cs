@@ -35,6 +35,11 @@ namespace RayCarrot.Ray1Editor
         public List<Layer> Layers { get; }
 
         /// <summary>
+        /// The loaded palettes used by the game data
+        /// </summary>
+        public abstract IEnumerable<Palette> Palettes { get; }
+
+        /// <summary>
         /// Loads the editor elements stored in the data
         /// </summary>
         /// <param name="e">The editor scene to load to</param>

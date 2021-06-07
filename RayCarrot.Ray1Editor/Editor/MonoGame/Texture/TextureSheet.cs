@@ -8,13 +8,14 @@ namespace RayCarrot.Ray1Editor
 {
     /// <summary>
     /// A texture sheet, containing multiple textures. This is useful to avoid performance issues when dealing
-    /// with multiple small textures, such as sprites and tiles. The textures get mapped to the sheet on
-    /// construction and set on <see cref="InitEntry"/>.
+    /// with multiple small textures, such as sprites and tiles.
     /// </summary>
-    public class TextureSheet
+    public class TextureSheet : IDisposable
     {
-        public TextureSheet(GraphicsDevice g, IList<Point?> dimensions, int sheetWidth = 1024)
+        protected TextureSheet(TextureManager manager, IList<Point?> dimensions, int sheetWidth = 1024)
         {
+            manager.AddTextureSheet(this);
+
             Entries = new Entry[dimensions.Count];
             
             var x = 0;
@@ -49,29 +50,24 @@ namespace RayCarrot.Ray1Editor
 
             var height = y + maxHeight;
 
-            Sheet = new Texture2D(g, sheetWidth, height);
+            Sheet = new Texture2D(manager.GraphicsDevice, sheetWidth, height);
         }
 
-        public TextureSheet(GraphicsDevice g, string path, IEnumerable<Rectangle> textures)
+        public TextureSheet(TextureManager manager, string path, IEnumerable<Rectangle> textures)
         {
+            manager.AddTextureSheet(this);
+
             using var stream = Assets.GetAsset(path);
-            Sheet = Texture2D.FromStream(g, stream);
+            Sheet = Texture2D.FromStream(manager.GraphicsDevice, stream);
             Entries = textures.Select(x => new Entry(x)).ToArray();
         }
 
         public Texture2D Sheet { get; }
         public Entry[] Entries { get; }
 
-        public void InitEntry(Entry entry, Palette palette, IEnumerable<byte> imgData, int imgDataLength, ImageFormat format = ImageFormat.BPP_8)
+        public void Dispose()
         {
-            if (format == ImageFormat.BPP_8)
-            {
-                Sheet.SetData<Color>(0, entry.Source, imgData.Select(x => palette.Colors[x]).ToArray(), 0, imgDataLength);
-            }
-            else
-            {
-                throw new Exception($"Image format {format} is not supported");
-            }
+            Sheet?.Dispose();
         }
 
         public class Entry
@@ -82,11 +78,6 @@ namespace RayCarrot.Ray1Editor
             }
 
             public Rectangle Source { get; }
-        }
-
-        public enum ImageFormat
-        {
-            BPP_8,
         }
     }
 }

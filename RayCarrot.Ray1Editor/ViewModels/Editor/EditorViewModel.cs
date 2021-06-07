@@ -18,6 +18,7 @@ namespace RayCarrot.Ray1Editor
             CurrentGame = currentGame;
             CurrentGameManager = currentGameManager;
             CurrentGameSettings = currentGameSettings;
+            Palettes = new ObservableCollection<PaletteEditorViewModel>();
             Layers = new ObservableCollection<LayerEditorViewModel>();
             GameObjects = new ObservableCollection<GameObjectListItemViewModel>();
             ObjFields = new ObservableCollection<EditorFieldViewModel>();
@@ -66,6 +67,9 @@ namespace RayCarrot.Ray1Editor
         }
         public string DebugText { get; set; }
 
+        // General
+        public ObservableCollection<PaletteEditorViewModel> Palettes { get; }
+
         // Layers
         public ObservableCollection<LayerEditorViewModel> Layers { get; }
 
@@ -92,6 +96,9 @@ namespace RayCarrot.Ray1Editor
 
         public void OnEditorLoaded()
         {
+            // Set up palettes
+            Palettes.AddRange(EditorScene.GameData.Palettes.Select(x => new PaletteEditorViewModel(x)));
+
             // Set up layers
             Layers.AddRange(EditorScene.GameData.Layers.Select(x => new LayerEditorViewModel(x)));
 
@@ -162,6 +169,7 @@ namespace RayCarrot.Ray1Editor
             SelectedObject = null;
             DebugText = null;
             SelectedObjectName = null;
+            Palettes.Clear();
             Layers.Clear();
             ObjFields.Clear();
         }

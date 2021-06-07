@@ -186,9 +186,11 @@ namespace RayCarrot.Ray1Editor
 
         public void LoadPalettes(GameData_R1 data, PC_LevFile lev)
         {
-            // TODO: Allow multiple palettes, choose which to view in editor
-            data.Palette = new Palette(lev.MapData.ColorPalettes[0]);
-            data.Palette.SetFirstToTransparent();
+            data.PC_Palettes = lev.MapData.ColorPalettes.Select((x, i) => new Palette(x, $"Palette {i}")
+            {
+                CanEditAlpha = false,
+                IsFirstTransparent = true
+            }).ToArray();
         }
 
         public void LoadDES(GameData_R1 data, PC_AllfixFile fix, PC_WorldFile wld, TextureManager textureManager)
@@ -206,7 +208,7 @@ namespace RayCarrot.Ray1Editor
 
                 var processedImageData = des.RequiresBackgroundClearing ? PC_DES.ProcessImageData(des.ImageData) : des.ImageData;
 
-                data.Sprites[des.Sprites] = new TextureSheet(textureManager.GraphicsDevice, des.Sprites.Select(x => x.IsDummySprite() ? (Point?)null : new Point(x.Width, x.Height)).ToArray()).AddToManager(textureManager);
+                data.Sprites[des.Sprites] = new PalettedTextureSheet(textureManager, des.Sprites.Select(x => x.IsDummySprite() ? (Point?)null : new Point(x.Width, x.Height)).ToArray());
 
                 var spriteSheet = data.Sprites[des.Sprites];
 
@@ -219,7 +221,7 @@ namespace RayCarrot.Ray1Editor
 
                     var sprite = des.Sprites[j];
 
-                    spriteSheet.InitEntry(spriteSheetEntry, data.Palette, processedImageData.Skip((int)sprite.ImageBufferOffset).Take(sprite.Width * sprite.Height), sprite.Width * sprite.Height);
+                    spriteSheet.InitEntry(j, data.PC_SelectedPalette, processedImageData, imgDataStartIndex: (int)sprite.ImageBufferOffset, imgDataLength: sprite.Width * sprite.Height);
                 }
 
                 var loadedAnim = des.Animations.Select(x => new Animation
@@ -267,7 +269,7 @@ namespace RayCarrot.Ray1Editor
 
             var tileSize = new Point(Ray1Settings.CellSize, Ray1Settings.CellSize);
 
-            var tileSheet = new TextureSheet(textureManager.GraphicsDevice, Enumerable.Repeat((Point?)tileSize, lev.TileTextureData.TexturesOffsetTable.Length).ToArray()).AddToManager(textureManager);
+            var tileSheet = new PalettedTextureSheet(textureManager, Enumerable.Repeat((Point?)tileSize, lev.TileTextureData.TexturesOffsetTable.Length).ToArray());
 
             var tileSet = new TileSet(tileSheet, tileSize);
 
@@ -277,7 +279,7 @@ namespace RayCarrot.Ray1Editor
                     Concat(lev.TileTextureData.TransparentTextures).
                     First(x => x.Offset == lev.TileTextureData.TexturesOffsetTable[i]);
 
-                tileSet.TileSheet.InitEntry(tileSet.TileSheet.Entries[i], data.Palette, tex.ImgData.Select(x => (byte)(255 - x)), tex.ImgData.Length);
+                tileSheet.InitEntry(i, data.PC_SelectedPalette, tex.ImgData.Select(x => (byte)(255 - x)).ToArray());
             }
 
             var mapLayer = new TileMapLayer_R1(map.Tiles, Point.Zero, new Point(map.Width, map.Height), tileSet);
@@ -312,12 +314,15 @@ namespace RayCarrot.Ray1Editor
 
             var pcx = LoadArchiveFile<PCX>(data.Context, Path_VigFile, wld.Plan0NumPcx[parallax ? lev.ScrollDiffFNDIndex : lev.FNDIndex]);
 
-            var tex = new Texture2D(textureManager.GraphicsDevice, pcx.ImageWidth, pcx.ImageHeight).AddToManager(textureManager);
+            var imgData = pcx.ScanLines.SelectMany(x => x).ToArray();
 
-            for (int y = 0; y < pcx.ImageHeight; y++)
-                tex.SetData(0, new Rectangle(0, y, pcx.ImageWidth, 1), pcx.ScanLines[y].Select(x => data.Palette.Colors[x]).ToArray(), 0, pcx.ImageWidth);
+            var tex = new PalettedTextureData(textureManager.GraphicsDevice, imgData, new Point(pcx.ImageWidth, pcx.ImageHeight), PalettedTextureData.ImageFormat.BPP_8, data.PC_SelectedPalette);
 
-            return tex;
+            tex.Apply();
+
+            textureManager.AddPalettedTexture(tex);
+
+            return tex.Texture;
         }
 
         public T LoadArchiveFile<T>(Context context, string archivePath, int fileIndex)

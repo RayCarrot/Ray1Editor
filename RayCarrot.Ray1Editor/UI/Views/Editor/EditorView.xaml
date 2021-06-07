@@ -84,7 +84,48 @@
                     <local:SmallTabItem Header="General" IconKind="CogOutline" IconForeground="{StaticResource GenericActionBrush}">
 
                         <ScrollViewer Padding="5 10 5 5"
-                                      VerticalScrollBarVisibility="Auto" />
+                                      VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+
+                                <TextBlock Style="{StaticResource HeaderTextBlock}"
+                                           Text="Palettes"
+                                           Margin="0 0 0 7" />
+
+                                <ItemsControl Margin="0 0 0 7"
+                                              ItemsSource="{Binding Path=Palettes, Mode=OneTime}"
+                                              Grid.IsSharedSizeScope="True">
+
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0 0 0 7">
+
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" SharedSizeGroup="PaletteToggle" />
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <RadioButton Grid.Column="0" 
+                                                             GroupName="PaletteToggle"
+                                                             IsChecked="{Binding Path=IsSelected}" />
+
+                                                <TextBlock Grid.Column="1" 
+                                                           Text="{Binding Path=Header, Mode=OneTime}" />
+
+                                                <Button Grid.Column="2"
+                                                        Click="EditPaletteButton_OnClick"
+                                                        Style="{StaticResource FlatButton}">
+                                                    <iconPacks:PackIconMaterial Kind="PencilOutline" Background="Transparent" />
+                                                </Button>
+
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+
+                                </ItemsControl>
+
+                            </StackPanel>
+                        </ScrollViewer>
 
                     </local:SmallTabItem>
 
@@ -101,10 +142,10 @@
 
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Grid Margin="0 0 0 10">
+                                        <Grid Margin="0 0 0 15">
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="5" />
+                                                <RowDefinition Height="7" />
                                                 <RowDefinition Height="*" />
                                             </Grid.RowDefinitions>
 
@@ -167,20 +208,51 @@
                                         IconKind="{StaticResource ObjectsIcon}" 
                                         IconForeground="{StaticResource ObjectsBrush}">
 
-                        <!-- TODO: ListBox with all objects in the level -->
-                        <ListBox ItemsSource="{Binding Path=GameObjects, Mode=OneTime}"
-                                 SelectedItem="{Binding Path=SelectedGameObjectItem}">
-                            <ListBox.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Vertical" />
-                                </ItemsPanelTemplate>
-                            </ListBox.ItemsPanel>
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Path=Header, Mode=OneTime}" />
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                        <Grid Margin="5 10 5 5">
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0" Margin="0 0 0 7">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource HeaderTextBlock}"
+                                           Text="Objects" />
+
+                                <!-- TODO: Bind to obj visibility flag -->
+                                <ToggleButton Grid.Column="1" 
+                                              Style="{StaticResource MahApps.Styles.ToggleButton.Circle}"
+                                              ToolTip="Show objects"
+                                              Width="28" Height="28">
+                                    <iconPacks:PackIconMaterial Kind="EyeOutline" Width="14" Height="14"/>
+                                </ToggleButton>
+
+                            </Grid>
+
+                            <ListBox Grid.Row="1" 
+                                     ItemsSource="{Binding Path=GameObjects, Mode=OneTime}"
+                                     SelectedItem="{Binding Path=SelectedGameObjectItem}">
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Vertical" />
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <!-- TODO: Format better -->
+                                        <TextBlock Text="{Binding Path=Header, Mode=OneTime}" />
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+
+                        </Grid>
 
                     </local:SmallTabItem>
 
@@ -195,8 +267,7 @@
 
                             <Grid>
 
-                                <Grid
-                                    Visibility="{Binding Path=SelectedObject, Converter={local:InvertedObjectNullToVisibilityConverter}}">
+                                <Grid Visibility="{Binding Path=SelectedObject, Converter={local:InvertedObjectNullToVisibilityConverter}}">
 
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />

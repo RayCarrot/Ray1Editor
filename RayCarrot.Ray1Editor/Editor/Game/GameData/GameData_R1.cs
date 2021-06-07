@@ -11,18 +11,15 @@ namespace RayCarrot.Ray1Editor
     {
         public GameData_R1(Context context) : base(context)
         {
-            Sprites = new Dictionary<Sprite[], TextureSheet>();
+            Sprites = new Dictionary<Sprite[], PalettedTextureSheet>();
             Animations = new Dictionary<Animation[], ObjAnimation[]>();
             ETA = new List<ETA>();
         }
 
-        // TODO: Support multiple palettes. PC version has 3 it switches between and PS1/Saturn have multiple loaded at once.
-        public Palette Palette { get; set; }
-
         /// <summary>
         /// The loaded sprite sheets for each sprite array
         /// </summary>
-        public Dictionary<Sprite[], TextureSheet> Sprites { get; }
+        public Dictionary<Sprite[], PalettedTextureSheet> Sprites { get; }
 
         /// <summary>
         /// The loaded editor animations for each animation array
@@ -37,5 +34,9 @@ namespace RayCarrot.Ray1Editor
         // TODO: Create GameData_R1_PC and store these properties there
         public PC_DES[] PC_DES { get; set; }
         public Animation[][] PC_LoadedAnimations { get; set; }
+        public Palette[] PC_Palettes { get; set; }
+        public Palette PC_SelectedPalette => PC_Palettes[0];
+
+        public override IEnumerable<Palette> Palettes => PC_Palettes;
     }
 }

@@ -26,7 +26,7 @@ namespace RayCarrot.Ray1Editor
                 }
             }
 
-            var tex = new TextureSheet(textureManager.GraphicsDevice, Assets.R1_TypeCollision, tiles).AddToManager(textureManager);
+            var tex = new TextureSheet(textureManager, Assets.R1_TypeCollision, tiles);
 
             return new TileSet(tex, tileSize);
         }
