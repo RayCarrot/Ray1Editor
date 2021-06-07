@@ -186,7 +186,7 @@ namespace RayCarrot.Ray1Editor
 
         public void LoadPalettes(GameData_R1 data, PC_LevFile lev)
         {
-            data.PC_Palettes = lev.MapData.ColorPalettes.Select((x, i) => new Palette(x, $"Palette {i}")
+            data.PC_Palettes = lev.MapData.ColorPalettes.Select((x, i) => new Palette(x, $"Palette {i + 1}")
             {
                 CanEditAlpha = false,
                 IsFirstTransparent = true

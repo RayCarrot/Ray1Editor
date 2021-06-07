@@ -11,6 +11,7 @@ namespace RayCarrot.Ray1Editor
         {
             InitializeComponent();
             DataContext = viewModel;
+            Title = $"Edit Palette - {viewModel.Palette.Name}";
         }
 
         private void AcceptButton_OnClick(object sender, RoutedEventArgs e)

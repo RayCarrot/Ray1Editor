@@ -103,10 +103,10 @@ namespace RayCarrot.Ray1Editor
         public void OnEditorLoaded()
         {
             // Set up palettes
-            Palettes.AddRange(EditorScene.GameData.Palettes.Select((x, i) => new PaletteEditorViewModel(x, i == 0, x =>
+            Palettes.AddRange(EditorScene.GameData.Palettes.Select((x, i) => new PaletteEditorViewModel(x, i == 0, pal =>
             {
-                EditorScene.TextureManager.SwapPalettes(CurrentlySelectedPalette, x);
-                CurrentlySelectedPalette = x;
+                EditorScene.TextureManager.SwapPalettes(CurrentlySelectedPalette, pal);
+                CurrentlySelectedPalette = pal;
             })));
 
             CurrentlySelectedPalette = Palettes.FirstOrDefault()?.Palette;

@@ -50,31 +50,12 @@
         <MenuItem Header="Show Object HitBoxes"
                   IsCheckable="True"
                   IsEnabled="False" />
-        <Separator />
-        <MenuItem Header="Show/Hide Layers"
-                  ItemsSource="{Binding Path=Layers, Mode=OneTime}">
-            <MenuItem.ItemContainerStyle>
-                <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
-                    <Setter Property="Header" Value="{Binding Path=Header, Mode=OneTime}" />
-                    <Setter Property="IsCheckable" Value="True" />
-                    <Setter Property="IsChecked" Value="{Binding Path=IsVisible}" />
-                </Style>
-            </MenuItem.ItemContainerStyle>
-        </MenuItem>
-        <MenuItem Header="Show Objects"
-                  IsCheckable="True"
-                  IsEnabled="False"/>
-        <MenuItem Header="Show Object Links"
-                  IsCheckable="True"
-                  IsEnabled="False"/>
     </MenuItem>
 
     <!-- Tools -->
 
     <MenuItem Header="Tools">
         <MenuItem Header="View/Edit">
-            <MenuItem Header="Palette"
-                      IsEnabled="False" />
             <MenuItem Header="PS1 VRAM"
                       IsEnabled="False" />
             <MenuItem Header="Sprites"
@@ -83,12 +64,9 @@
                       IsEnabled="False" />
         </MenuItem>
         <Separator />
-        <MenuItem Header="Edit Colors"
-                  Icon="{iconPacks:Material Brush}">
-            <MenuItem Header="Background"
-                      IsEnabled="False" />
-        </MenuItem>
-        <Separator />
+        <MenuItem Header="Edit Editor Colors"
+                  Icon="{iconPacks:Material Brush}"
+                  IsEnabled="False" />
         <MenuItem Header="Options"
                   Icon="{iconPacks:Material CogOutline}"
                   IsEnabled="False" />
@@ -96,7 +74,14 @@
 
     <!-- Help -->
 
-    <MenuItem Header="Help" IsEnabled="False" />
+    <MenuItem Header="Help">
+        <MenuItem Header="Show Controls"
+                  Icon="{iconPacks:Material KeyboardOutline}"
+                  IsEnabled="False" />
+        <MenuItem Header="About Ray1Editor"
+                  Icon="{iconPacks:Material InformationOutline}"
+                  IsEnabled="False" />
+    </MenuItem>
 
     <!-- Debug -->
 
