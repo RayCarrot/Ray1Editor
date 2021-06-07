@@ -106,10 +106,14 @@ namespace RayCarrot.Ray1Editor
             EditorState.UpdateMapSize(Data);
         }
 
-        public override void ResetLayerEditing()
+        public override void OnModeChanged(EditorMode oldMode, EditorMode newMode)
         {
-            base.ResetLayerEditing();
+            base.OnModeChanged(oldMode, newMode);
+
             IsShowingTileSet = false;
+
+            if (EditorState.FullscreenLayer == this)
+                EditorState.FullscreenLayer = null;
         }
 
         public override void UpdateLayerEditing(EditorUpdateData updateData)

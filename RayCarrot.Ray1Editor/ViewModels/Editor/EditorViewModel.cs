@@ -93,7 +93,7 @@ namespace RayCarrot.Ray1Editor
         public void OnEditorLoaded()
         {
             // Set up layers
-            Layers.AddRange(EditorScene.GameData.Layers.Select(x => new LayerEditorViewModel(this, x)));
+            Layers.AddRange(EditorScene.GameData.Layers.Select(x => new LayerEditorViewModel(x)));
 
             // Create layer fields
             foreach (var layer in Layers)
@@ -120,17 +120,7 @@ namespace RayCarrot.Ray1Editor
             RefreshObjFields();
         }
 
-        public void OnModeChanged(EditorMode oldMode, EditorMode newMode)
-        {
-            foreach (var l in Layers)
-            {
-                l.CanEdit = newMode == EditorMode.Layers && l.Layer.CanEdit;
-                l.CanEditVisibility = newMode != EditorMode.Layers || !l.IsSelected;
-
-                if (newMode == EditorMode.Layers && l.IsSelected)
-                    l.IsVisible = true;
-            }
-        }
+        public void OnModeChanged(EditorMode oldMode, EditorMode newMode) { }
 
         #endregion
 

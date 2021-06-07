@@ -39,7 +39,7 @@ namespace RayCarrot.Ray1Editor
         /// </summary>
         public Layer FullscreenLayer
         {
-            get => _fullscreenLayer.IsSelected ? _fullscreenLayer : null;
+            get => _fullscreenLayer?.IsSelected == true ? _fullscreenLayer : null;
             set => _fullscreenLayer = value;
         }
 

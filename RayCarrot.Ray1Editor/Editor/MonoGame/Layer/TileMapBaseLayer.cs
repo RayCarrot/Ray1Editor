@@ -249,8 +249,10 @@ namespace RayCarrot.Ray1Editor
             updateData.DebugText.AppendLine($"Tile editing state: {State}");
         }
 
-        public override void ResetLayerEditing()
+        public override void OnModeChanged(EditorMode oldMode, EditorMode newMode)
         {
+            base.OnModeChanged(oldMode, newMode);
+
             State = TileEditorState.Idle;
         }
 

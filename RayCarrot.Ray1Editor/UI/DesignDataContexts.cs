@@ -26,8 +26,8 @@ namespace RayCarrot.Ray1Editor
 
                 vm.Layers.AddRange(new LayerEditorViewModel[]
                 {
-                    new LayerEditorViewModel(vm, new TileMapLayer_R1(new MapTile[4], Point.Zero, new Point(2, 2), new TileSet(null, new Point(16)))),
-                    new LayerEditorViewModel(vm, new TileMapLayer_R1(new MapTile[8], Point.Zero, new Point(4, 2), new TileSet(null, new Point(16)))),
+                    new LayerEditorViewModel(new TileMapLayer_R1(new MapTile[4], Point.Zero, new Point(2, 2), new TileSet(null, new Point(16)))),
+                    new LayerEditorViewModel(new TileMapLayer_R1(new MapTile[8], Point.Zero, new Point(4, 2), new TileSet(null, new Point(16)))),
                 });
 
                 foreach (LayerEditorViewModel l in vm.Layers)

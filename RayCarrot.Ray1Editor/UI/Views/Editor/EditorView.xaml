@@ -112,7 +112,6 @@
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="*" />
                                                     <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
 
                                                 <TextBlock Grid.Column="0"
@@ -120,22 +119,31 @@
                                                            Style="{StaticResource HeaderTextBlock}"
                                                            Text="{Binding Path=Header, Mode=OneTime}" />
 
-                                                <ToggleButton Grid.Column="1"
-                                                              Style="{StaticResource MahApps.Styles.ToggleButton.Circle}"
-                                                              IsChecked="{Binding Path=IsSelected}"
-                                                              Visibility="{Binding Path=CanEdit, Converter={local:BooleanToVisibilityConverter}}"
-                                                              ToolTip="Edit layer"
-                                                              Width="28" Height="28"
-                                                              Margin="5 0"
-                                                              Content="{iconPacks:Material Kind=PencilOutline, Width=14, Height=14}" />
+                                                <ItemsControl Grid.Column="1" ItemsSource="{Binding Path=ToggleFields, Mode=OneTime}">
 
-                                                <ToggleButton Grid.Column="2"
-                                                              Style="{StaticResource MahApps.Styles.ToggleButton.Circle}"
-                                                              IsChecked="{Binding Path=IsVisible}"
-                                                              IsEnabled="{Binding Path=CanEditVisibility}"
-                                                              ToolTip="Show layer"
-                                                              Width="28" Height="28"
-                                                              Content="{iconPacks:Material Kind=EyeOutline, Width=14, Height=14}" />
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate DataType="{x:Type local:EditorToggleIconViewModel}">
+
+                                                            <ToggleButton Style="{StaticResource MahApps.Styles.ToggleButton.Circle}"
+                                                                          IsChecked="{Binding Path=Value}"
+                                                                          IsEnabled="{Binding Path=IsEnabled}"
+                                                                          Visibility="{Binding Path=IsVisible, Converter={local:BooleanToVisibilityConverter}}"
+                                                                          ToolTip="{Binding Path=Info, Mode=OneTime}"
+                                                                          Width="28" Height="28"
+                                                                          Margin="5 0" >
+                                                                <iconPacks:PackIconMaterial Kind="{Binding Path=IconKind, Mode=OneTime}" Width="14" Height="14"/>
+                                                            </ToggleButton>
+
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <StackPanel Orientation="Horizontal" />
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+
+                                                </ItemsControl>
 
                                             </Grid>
 

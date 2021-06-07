@@ -67,7 +67,7 @@ namespace RayCarrot.Ray1Editor
                 IsDraggingLink = false;
 
                 foreach (var l in GameData.Layers)
-                    l.ResetLayerEditing();
+                    l.OnModeChanged(_mode, value);
 
                 VM.OnModeChanged(_mode, value);
 
