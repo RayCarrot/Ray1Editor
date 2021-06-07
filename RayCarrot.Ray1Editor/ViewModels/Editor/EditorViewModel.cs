@@ -206,7 +206,7 @@ namespace RayCarrot.Ray1Editor
 
         public void ResetPosition()
         {
-            EditorScene.ResetCamera();
+            EditorScene.Cam.ResetCamera();
         }
 
         public void Save()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using BinarySerializer.Ray1;
 using Microsoft.Xna.Framework;
 
@@ -31,6 +32,12 @@ namespace RayCarrot.Ray1Editor
         }
 
         protected override MapTile CreateNewTile() => throw new Exception("A collision tile can't be created from the collision map layer");
+        
+        protected override MapTile[] GetTileSetMap() => Enumerable.Range(0, TileSet.TileSheet.Entries.Length).Select(x => new MapTile()
+        {
+            BlockType = (ushort)x
+        }).ToArray();
+        protected override int GetTileSetMapWidth() => 8;
 
         protected override int GetTileSetIndex(MapTile tile) => tile.BlockType;
 

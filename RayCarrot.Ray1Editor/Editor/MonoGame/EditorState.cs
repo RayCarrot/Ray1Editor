@@ -8,6 +8,14 @@ namespace RayCarrot.Ray1Editor
     /// </summary>
     public class EditorState
     {
+        #region Private Fields
+
+        private Layer _fullscreenLayer;
+
+        #endregion
+
+        #region Colors
+
         // Colors
         // TODO: Allow to be modified
         public Color Color_Background { get; set; } = new Color(0x28, 0x35, 0x93);
@@ -20,16 +28,41 @@ namespace RayCarrot.Ray1Editor
         public Color Color_TileSelection { get; set; } = new Color(0xFD, 0xD8, 0x35);
         public Color Color_TileTiling { get; set; } = new Color(0xFF, 0x8F, 0x00);
 
-        public Point MapSize { get; protected set; }
-        public bool AnimateObjects { get; set; } = true;
+        #endregion
+
+        #region State
+
+        public Point MapSize { get; set; }
+
+        /// <summary>
+        /// The layer that is currently displaying in full screen mode, thus not showing anything else, or null if none
+        /// </summary>
+        public Layer FullscreenLayer
+        {
+            get => _fullscreenLayer.IsSelected ? _fullscreenLayer : null;
+            set => _fullscreenLayer = value;
+        }
+
         public bool LoadFromMemory { get; set; } = false;
+
+        #endregion
+
+        #region Settings
+
+        public bool AnimateObjects { get; set; } = true;
         public float FramesPerSecond { get; set; } = 60f;
         public int AutoScrollMargin { get; set; } = 40;
         public int AutoScrollSpeed { get; set; } = 7;
+
+        #endregion
+
+        #region Public Methods
 
         public void UpdateMapSize(GameData data)
         {
             MapSize = new Point(data.Layers.Max(x => x.Rectangle.Right), data.Layers.Max(x => x.Rectangle.Bottom));
         }
+
+        #endregion
     }
 }

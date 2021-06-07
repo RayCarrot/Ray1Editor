@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 
@@ -6,6 +7,14 @@ namespace RayCarrot.Ray1Editor
 {
     public class Camera
     {
+        public Camera(Viewport viewport)
+        {
+            Viewport = viewport;
+        }
+
+        // Data
+        protected Viewport Viewport { get; }
+
         // Current state
         public float Zoom { get; set; } = 1;
         public Vector2 Position { get; set; }
@@ -39,6 +48,12 @@ namespace RayCarrot.Ray1Editor
 
         public Vector2 ToWorld(Vector2 pos) => Vector2.Transform(pos, Matrix.Invert(TransformMatrix));
         public Vector2 ToScreen(Vector2 pos) => Vector2.Transform(pos, TransformMatrix);
+
+        public void ResetCamera()
+        {
+            Zoom = 1;
+            Position = new Vector2(Viewport.Width / 2f, Viewport.Height / 2f);
+        }
 
         public void Update(EditorUpdateData updateData)
         {

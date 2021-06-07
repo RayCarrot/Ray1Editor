@@ -129,10 +129,10 @@ namespace RayCarrot.Ray1Editor
             TextureManager = new TextureManager(GraphicsDevice);
 
             // Create the camera
-            Cam = new Camera();
+            Cam = new Camera(GraphicsDevice.Viewport);
 
             // Reset the camera
-            ResetCamera();
+            Cam.ResetCamera();
 
             // Initialize the base game
             base.Initialize();
@@ -209,20 +209,29 @@ namespace RayCarrot.Ray1Editor
             EditorUpdateData.DebugText.AppendLine($"Mouse (world): {EditorUpdateData.MousePosition}");
             EditorUpdateData.DebugText.AppendLine($"Mouse (local): {EditorUpdateData.Mouse.Position}");
 
-            // Update layers
-            foreach (var layer in GameData.Layers)
-                layer.Update(EditorUpdateData);
+            var fullScreenLayer = State.FullscreenLayer;
 
-            // Update objects
-            foreach (var obj in GameData.Objects)
-                obj.Update(EditorUpdateData);
+            if (fullScreenLayer == null)
+            {
+                // Update layers
+                foreach (var layer in GameData.Layers)
+                    layer.Update(EditorUpdateData);
+
+                // Update objects
+                foreach (var obj in GameData.Objects)
+                    obj.Update(EditorUpdateData);
+            }
+            else
+            {
+                fullScreenLayer.Update(EditorUpdateData);
+            }
 
             // Update the camera
             Cam.ViewArea = new Vector2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
             Cam.Update(EditorUpdateData);
 
             // Get the object we're hovering over
-            if (CanHoverOverObject)
+            if (CanHoverOverObject && fullScreenLayer == null)
                 HoverObject = GameData.Objects.FirstOrDefault(x => x.Bounds.Contains(EditorUpdateData.MousePosition));
 
             switch (Mode)
@@ -363,6 +372,14 @@ namespace RayCarrot.Ray1Editor
         // TODO: Only render what is in view
         protected void Draw(SpriteBatch s)
         {
+            var fullScreenLayer = State.FullscreenLayer;
+
+            if (fullScreenLayer != null)
+            {
+                fullScreenLayer.Draw(s);
+                return;
+            }
+
             // Draw each layer
             foreach (var layer in GameData.Layers.Where(x => x.IsVisible))
                 layer.Draw(s);
@@ -407,12 +424,6 @@ namespace RayCarrot.Ray1Editor
             element.Data = GameData;
 
             return element;
-        }
-
-        public void ResetCamera()
-        {
-            Cam.Zoom = 1;
-            Cam.Position = new Vector2(GraphicsDevice.Viewport.Width / 2f, GraphicsDevice.Viewport.Height / 2f);
         }
 
         public void GoToObject(GameObject obj)
