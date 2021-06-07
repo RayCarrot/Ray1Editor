@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using MahApps.Metro.IconPacks;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 
@@ -16,6 +16,7 @@ namespace RayCarrot.Ray1Editor
         #region Private Fields
 
         private TileSetLayer<T> _tileSetLayer;
+        private bool _isSelected;
 
         #endregion
 
@@ -44,6 +45,27 @@ namespace RayCarrot.Ray1Editor
             }
         }
 
+        public override bool IsSelected
+        {
+            get => _isSelected;
+            protected set
+            {
+                _isSelected = value;
+
+                if (ToggleField_TileSet != null)
+                    ToggleField_TileSet.IsEnabled = value;
+
+                if (!value)
+                    ToggleTileSet(false);
+            }
+        }
+
+        protected Vector2 SavedCamPos_Map { get; set; }
+        protected Vector2 SavedCamPos_TileSet { get; set; }
+        protected float SavedCamZoom_Map { get; set; } = 1;
+        protected float SavedCamZoom_TileSet { get; set; } = 1;
+        protected Point SavedMapSize_Map { get; set; }
+
         #endregion
 
         #region Public Properties
@@ -62,6 +84,39 @@ namespace RayCarrot.Ray1Editor
         protected abstract T[] GetTileSetMap();
         protected abstract int GetTileSetMapWidth();
 
+        protected void ToggleTileSet(bool isVisible)
+        {
+            if (isVisible == IsShowingTileSet)
+                return;
+
+            IsShowingTileSet = isVisible;
+
+            if (isVisible)
+            {
+                SavedCamPos_Map = Camera.Position;
+                SavedCamZoom_Map = Camera.Zoom;
+                SavedMapSize_Map = EditorState.MapSize;
+
+                Camera.Position = SavedCamPos_TileSet;
+                Camera.Zoom = SavedCamZoom_TileSet;
+                EditorState.MapSize = TileSetLayer.Rectangle.Size + TileSetLayer.Rectangle.Location;
+
+                EditorState.FullscreenLayer ??= this;
+            }
+            else
+            {
+                SavedCamPos_TileSet = Camera.Position;
+                SavedCamZoom_TileSet = Camera.Zoom;
+
+                Camera.Position = SavedCamPos_Map;
+                Camera.Zoom = SavedCamZoom_Map;
+                EditorState.MapSize = SavedMapSize_Map;
+
+                if (EditorState.FullscreenLayer == this)
+                    EditorState.FullscreenLayer = null;
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -76,6 +131,22 @@ namespace RayCarrot.Ray1Editor
                     setValueAction: UpdateMapSize,
                     min: 1,
                     max: Int16.MaxValue);
+        }
+
+        protected EditorToggleIconViewModel ToggleField_TileSet { get; set; }
+
+        public override IEnumerable<EditorToggleIconViewModel> GetToggleFields()
+        {
+            yield return ToggleField_TileSet = new EditorToggleIconViewModel(
+                iconKind: PackIconMaterialKind.Grid, 
+                info: "View tileset", 
+                getValueAction: () => IsShowingTileSet, 
+                setValueAction: ToggleTileSet);
+
+            ToggleField_TileSet.IsEnabled = IsSelected;
+
+            foreach (var f in base.GetToggleFields())
+                yield return f;
         }
 
         public void UpdateMapSize(Point newSize)
@@ -110,10 +181,9 @@ namespace RayCarrot.Ray1Editor
         {
             base.OnModeChanged(oldMode, newMode);
 
-            IsShowingTileSet = false;
+            ToggleField_TileSet.IsVisible = newMode == EditorMode.Layers && CanEdit;
 
-            if (EditorState.FullscreenLayer == this)
-                EditorState.FullscreenLayer = null;
+            ToggleTileSet(false);
         }
 
         public override void UpdateLayerEditing(EditorUpdateData updateData)

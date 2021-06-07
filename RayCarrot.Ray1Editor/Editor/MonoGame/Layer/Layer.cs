@@ -29,7 +29,7 @@ namespace RayCarrot.Ray1Editor
         /// <summary>
         /// Indicates if the layer is currently selected for editing
         /// </summary>
-        public bool IsSelected { get; protected set; }
+        public virtual bool IsSelected { get; protected set; }
 
         /// <summary>
         /// Indicates if the layer is currently visible
