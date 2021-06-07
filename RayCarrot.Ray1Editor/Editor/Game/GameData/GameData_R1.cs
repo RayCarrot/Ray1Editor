@@ -35,7 +35,6 @@ namespace RayCarrot.Ray1Editor
         public PC_DES[] PC_DES { get; set; }
         public Animation[][] PC_LoadedAnimations { get; set; }
         public Palette[] PC_Palettes { get; set; }
-        public Palette PC_SelectedPalette => PC_Palettes[0];
 
         public override IEnumerable<Palette> Palettes => PC_Palettes;
     }

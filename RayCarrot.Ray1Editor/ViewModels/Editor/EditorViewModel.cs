@@ -45,6 +45,12 @@ namespace RayCarrot.Ray1Editor
 
         #endregion
 
+        #region Protected Properties
+
+        protected Palette CurrentlySelectedPalette { get; set; }
+
+        #endregion
+
         #region Public Properties
 
         // Game data
@@ -97,7 +103,13 @@ namespace RayCarrot.Ray1Editor
         public void OnEditorLoaded()
         {
             // Set up palettes
-            Palettes.AddRange(EditorScene.GameData.Palettes.Select(x => new PaletteEditorViewModel(x)));
+            Palettes.AddRange(EditorScene.GameData.Palettes.Select((x, i) => new PaletteEditorViewModel(x, i == 0, x =>
+            {
+                EditorScene.TextureManager.SwapPalettes(CurrentlySelectedPalette, x);
+                CurrentlySelectedPalette = x;
+            })));
+
+            CurrentlySelectedPalette = Palettes.FirstOrDefault()?.Palette;
 
             // Set up layers
             Layers.AddRange(EditorScene.GameData.Layers.Select(x => new LayerEditorViewModel(x)));

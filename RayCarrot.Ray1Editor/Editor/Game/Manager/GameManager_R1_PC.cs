@@ -221,7 +221,7 @@ namespace RayCarrot.Ray1Editor
 
                     var sprite = des.Sprites[j];
 
-                    spriteSheet.InitEntry(j, data.PC_SelectedPalette, processedImageData, imgDataStartIndex: (int)sprite.ImageBufferOffset, imgDataLength: sprite.Width * sprite.Height);
+                    spriteSheet.InitEntry(j, data.PC_Palettes[0], processedImageData, imgDataStartIndex: (int)sprite.ImageBufferOffset, imgDataLength: sprite.Width * sprite.Height);
                 }
 
                 var loadedAnim = des.Animations.Select(x => new Animation
@@ -279,7 +279,7 @@ namespace RayCarrot.Ray1Editor
                     Concat(lev.TileTextureData.TransparentTextures).
                     First(x => x.Offset == lev.TileTextureData.TexturesOffsetTable[i]);
 
-                tileSheet.InitEntry(i, data.PC_SelectedPalette, tex.ImgData.Select(x => (byte)(255 - x)).ToArray());
+                tileSheet.InitEntry(i, data.PC_Palettes[0], tex.ImgData.Select(x => (byte)(255 - x)).ToArray());
             }
 
             var mapLayer = new TileMapLayer_R1(map.Tiles, Point.Zero, new Point(map.Width, map.Height), tileSet);
@@ -316,7 +316,7 @@ namespace RayCarrot.Ray1Editor
 
             var imgData = pcx.ScanLines.SelectMany(x => x).ToArray();
 
-            var tex = new PalettedTextureData(textureManager.GraphicsDevice, imgData, new Point(pcx.ImageWidth, pcx.ImageHeight), PalettedTextureData.ImageFormat.BPP_8, data.PC_SelectedPalette);
+            var tex = new PalettedTextureData(textureManager.GraphicsDevice, imgData, new Point(pcx.ImageWidth, pcx.ImageHeight), PalettedTextureData.ImageFormat.BPP_8, data.PC_Palettes[0]);
 
             tex.Apply();
 

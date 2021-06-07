@@ -20,6 +20,20 @@ namespace RayCarrot.Ray1Editor
         protected HashSet<TextureSheet> TextureSheets { get; }
         public GraphicsDevice GraphicsDevice { get; }
 
+        protected IEnumerable<PalettedTextureData> EnumeratePalettedData()
+        {
+            foreach (var sheet in TextureSheets.OfType<PalettedTextureSheet>())
+            {
+                foreach (var tex in sheet.PalettedTextureDatas.Where(x => x != null))
+                {
+                    yield return tex;
+                }
+            }
+
+            foreach (var tex in PalettedTextureDatas.Where(x => x != null))
+                yield return tex;
+        }
+
         public void AddTexture(Texture2D tex) => Textures.Add(tex);
         public void AddPalettedTexture(PalettedTextureData palData)
         {
@@ -31,16 +45,18 @@ namespace RayCarrot.Ray1Editor
 
         public void RefreshPalette(Palette pal)
         {
-            foreach (var sheet in TextureSheets.OfType<PalettedTextureSheet>())
-            {
-                foreach (var tex in sheet.PalettedTextureDatas.Where(x => x != null && x.Palette == pal))
-                {
-                    tex.Apply();
-                }
-            }
-
-            foreach (var tex in PalettedTextureDatas)
+            foreach (var tex in EnumeratePalettedData().Where(x => x.Palette == pal))
                 tex.Apply();
+        }
+
+        // TODO: Cache textures when swapping palettes?
+        public void SwapPalettes(Palette oldPal, Palette newPal)
+        {
+            foreach (var tex in EnumeratePalettedData().Where(x => x.Palette == oldPal))
+            {
+                tex.Palette = newPal;
+                tex.Apply();
+            }
         }
 
         public void Dispose()
