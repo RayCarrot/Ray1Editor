@@ -56,7 +56,10 @@ namespace RayCarrot.Ray1Editor
                     ToggleField_TileSet.IsEnabled = value;
 
                 if (!value)
+                {
                     ToggleTileSet(false);
+                    ToggleField_TileSet?.Refresh();
+                }
             }
         }
 
@@ -114,6 +117,9 @@ namespace RayCarrot.Ray1Editor
 
                 if (EditorState.FullscreenLayer == this)
                     EditorState.FullscreenLayer = null;
+
+                // Copy over the selected tiles from the tile set
+                SelectedTiles = TileSetLayer.SelectedTiles;
             }
         }
 

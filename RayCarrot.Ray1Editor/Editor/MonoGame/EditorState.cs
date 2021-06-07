@@ -8,12 +8,6 @@ namespace RayCarrot.Ray1Editor
     /// </summary>
     public class EditorState
     {
-        #region Private Fields
-
-        private Layer _fullscreenLayer;
-
-        #endregion
-
         #region Colors
 
         // Colors
@@ -37,11 +31,7 @@ namespace RayCarrot.Ray1Editor
         /// <summary>
         /// The layer that is currently displaying in full screen mode, thus not showing anything else, or null if none
         /// </summary>
-        public Layer FullscreenLayer
-        {
-            get => _fullscreenLayer?.IsSelected == true ? _fullscreenLayer : null;
-            set => _fullscreenLayer = value;
-        }
+        public Layer FullscreenLayer { get; set; }
 
         public bool LoadFromMemory { get; set; } = false;
 
@@ -62,6 +52,8 @@ namespace RayCarrot.Ray1Editor
         {
             MapSize = new Point(data.Layers.Max(x => x.Rectangle.Right), data.Layers.Max(x => x.Rectangle.Bottom));
         }
+
+        public Layer GetActiveFullScreenLayer() => FullscreenLayer?.IsSelected == true ? FullscreenLayer : null;
 
         #endregion
     }

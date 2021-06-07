@@ -209,7 +209,7 @@ namespace RayCarrot.Ray1Editor
             EditorUpdateData.DebugText.AppendLine($"Mouse (world): {EditorUpdateData.MousePosition}");
             EditorUpdateData.DebugText.AppendLine($"Mouse (local): {EditorUpdateData.Mouse.Position}");
 
-            var fullScreenLayer = State.FullscreenLayer;
+            var fullScreenLayer = State.GetActiveFullScreenLayer();
 
             if (fullScreenLayer == null)
             {
@@ -372,7 +372,7 @@ namespace RayCarrot.Ray1Editor
         // TODO: Only render what is in view
         protected void Draw(SpriteBatch s)
         {
-            var fullScreenLayer = State.FullscreenLayer;
+            var fullScreenLayer = State.GetActiveFullScreenLayer();
 
             if (fullScreenLayer != null)
             {
