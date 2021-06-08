@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
+using BinarySerializer;
 using MahApps.Metro.IconPacks;
 
 namespace RayCarrot.Ray1Editor
@@ -15,6 +16,11 @@ namespace RayCarrot.Ray1Editor
         /// The layer name to display
         /// </summary>
         public abstract string Name { get; }
+
+        /// <summary>
+        /// The pointer of the layer, if any
+        /// </summary>
+        public virtual Pointer Pointer { get; init; }
 
         /// <summary>
         /// The position and size of the layer

@@ -16,6 +16,7 @@ namespace RayCarrot.Ray1Editor
         public ObservableCollection<EditorToggleIconViewModel> ToggleFields { get; }
         public Layer Layer { get; }
         public string Header => Layer.Name;
+        public string Offset => Layer.Pointer?.ToString();
 
         public void RecreateFields()
         {

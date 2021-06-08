@@ -99,6 +99,7 @@ namespace RayCarrot.Ray1Editor
 
         // Properties
         public string SelectedObjectName { get; set; }
+        public string SelectedObjectOffset { get; set; }
         public ObservableCollection<EditorFieldViewModel> ObjFields { get; }
 
         #endregion
@@ -141,6 +142,7 @@ namespace RayCarrot.Ray1Editor
             OnPropertyChanged(nameof(SelectedGameObjectItem));
 
             SelectedObjectName = obj?.PrimaryName;
+            SelectedObjectOffset = obj?.SerializableData?.Offset?.ToString();
         }
 
         public void OnModeChanged(EditorMode oldMode, EditorMode newMode) { }

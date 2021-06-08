@@ -94,7 +94,8 @@
                                                 <StackPanel Grid.Column="1" 
                                                             Orientation="Horizontal">
 
-                                                    <TextBlock Text="{Binding Path=Header, Mode=OneTime}" />
+                                                    <TextBlock Text="{Binding Path=Header, Mode=OneTime}"
+                                                               VerticalAlignment="Center"/>
 
                                                     <iconPacks:PackIconMaterial Style="{StaticResource PointerInfoIcon}"
                                                                                 ToolTip="{Binding Path=Offset, Mode=OneTime}" />
@@ -144,10 +145,18 @@
                                                     <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
 
-                                                <TextBlock Grid.Column="0"
-                                                           VerticalAlignment="Center"
-                                                           Style="{StaticResource HeaderTextBlock}"
-                                                           Text="{Binding Path=Header, Mode=OneTime}" />
+                                                <StackPanel Grid.Column="0" 
+                                                            Orientation="Horizontal">
+
+                                                    <TextBlock VerticalAlignment="Center"
+                                                               Style="{StaticResource HeaderTextBlock}"
+                                                               Text="{Binding Path=Header, Mode=OneTime}" />
+
+                                                    <iconPacks:PackIconMaterial Style="{StaticResource PointerInfoIcon}"
+                                                                                ToolTip="{Binding Path=Offset, Mode=OneTime}" />
+
+                                                </StackPanel>
+
 
                                                 <ItemsControl Grid.Column="1" ItemsSource="{Binding Path=ToggleFields, Mode=OneTime}">
 
@@ -264,10 +273,18 @@
                                         <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
 
-                                    <TextBlock Grid.Row="0"
-                                               HorizontalAlignment="Center"
-                                               Text="{Binding Path=SelectedObjectName}"
-                                               FontSize="22" />
+                                    <StackPanel Grid.Column="0" 
+                                                HorizontalAlignment="Center"
+                                                Orientation="Horizontal">
+
+                                        <TextBlock Text="{Binding Path=SelectedObjectName}"
+                                                   FontSize="22" />
+
+                                        <iconPacks:PackIconMaterial Style="{StaticResource PointerInfoIcon}" 
+                                                                    Visibility="Visible"
+                                                                    ToolTip="{Binding Path=SelectedObjectOffset}" />
+
+                                    </StackPanel>
 
                                     <ItemsControl Grid.Row="2"
                                                   Style="{StaticResource FieldsItemsControl}"

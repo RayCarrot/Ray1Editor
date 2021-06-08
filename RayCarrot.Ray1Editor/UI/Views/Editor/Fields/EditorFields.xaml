@@ -24,7 +24,6 @@
                                        Text="{Binding Path=Header, Mode=OneTime}" />
 
                             <iconPacks:PackIconMaterial Style="{StaticResource InfoIcon}"
-                                                        Visibility="{Binding Path=Info, Converter={local:InvertedObjectNullToVisibilityConverter}, Mode=OneTime}"
                                                         ToolTip="{Binding Path=Info, Mode=OneTime}" />
 
                         </StackPanel>
