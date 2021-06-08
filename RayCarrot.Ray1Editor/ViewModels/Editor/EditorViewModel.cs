@@ -154,6 +154,7 @@ namespace RayCarrot.Ray1Editor
         public void LoadOtherMap()
         {
             App.ChangeView(AppViewModel.AppView.LoadMap, new LoadMapViewModel());
+            App.SetTitle(null);
         }
 
         public void LoadEditor()
