@@ -223,6 +223,8 @@ namespace RayCarrot.Ray1Editor
                 {
                     foreach (var obj in GameData.Objects)
                         obj.Update(EditorUpdateData);
+
+                    VM.RefreshObjFields();
                 }
             }
             else

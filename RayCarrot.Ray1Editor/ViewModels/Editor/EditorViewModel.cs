@@ -141,7 +141,6 @@ namespace RayCarrot.Ray1Editor
             OnPropertyChanged(nameof(SelectedGameObjectItem));
 
             SelectedObjectName = obj?.PrimaryName;
-            RefreshObjFields();
         }
 
         public void OnModeChanged(EditorMode oldMode, EditorMode newMode) { }
