@@ -278,7 +278,8 @@ namespace RayCarrot.Ray1Editor
 
                 if (IsDraggingObject && SelectedObject != null)
                 {
-                    SelectedObject.Position += (updateData.MousePosition - PrevMousePos).ToPoint();
+                    var change = updateData.MousePosition - PrevMousePos;
+                    SelectedObject.Position += new Point((int)Math.Round(change.X), (int)Math.Round(change.Y));
                     PrevMousePos = updateData.MousePosition;
 
                     // Auto-scroll if the object has been dragged from its initial position and is near an edge
