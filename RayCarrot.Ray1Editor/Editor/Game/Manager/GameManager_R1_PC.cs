@@ -98,27 +98,47 @@ namespace RayCarrot.Ray1Editor
         }
 
         // TODO: Is it better to move this to the GameObject class? Each object type can then have its own fields, but that also means the fields get recreated each time the selection changes.
-        public override IEnumerable<EditorFieldViewModel> GetEditorObjFields(Func<GameObject> getSelectedObj)
+        public override IEnumerable<EditorFieldViewModel> GetEditorObjFields(GameData gameData, Func<GameObject> getSelectedObj)
         {
             // Helper methods
             GameObject_R1 getObj() => (GameObject_R1)getSelectedObj();
             ObjData getObjData() => getObj().ObjData;
 
+            var data = (GameData_R1)gameData;
+
             // TODO: Do not include EDU/KIT types for R1
             var dropDownItems_type = Enum.GetValues(typeof(ObjType)).Cast<ObjType>().Select(x =>
                 new EditorDropDownFieldViewModel.DropDownItem<ObjType>(x.ToString(), x)).ToArray();
+            var dropDownItems_des = data.DES.Select((x, i) => new EditorDropDownFieldViewModel.DropDownItem<GameData_R1.DESData>($"DES {i + 1}", x)).ToArray();
+            var dropDownItems_eta = data.ETA.Select((x, i) => new EditorDropDownFieldViewModel.DropDownItem<ETA>($"ETA {i}", x)).ToArray();
             var dropDownItems_state = new Dictionary<ETA, EditorDropDownFieldViewModel.DropDownItem<DropDownFieldData_State>[]>();
 
-            // TODO: SpriteIndex, AnimIndex, ImgBufferIndex
-            // TODO: ETAIndex
-            // TODO: Commands, labels
-
+            // TODO: Optimize the get actions more by not doing FindItemIndex each time
             yield return new EditorDropDownFieldViewModel(
                 header: "Type",
                 info: null,
                 getValueAction: () => dropDownItems_type.FindItemIndex(x => x.Data == getObjData().Type),
                 setValueAction: x => getObjData().Type = dropDownItems_type[x].Data,
                 getItemsAction: () => dropDownItems_type);
+            
+            yield return new EditorDropDownFieldViewModel(
+                header: "DES",
+                info: "The group of sprites and animations to use.",
+                getValueAction: () => dropDownItems_des.FindItemIndex(x => x.Data.SpritesData == getObjData().Sprites),
+                setValueAction: x =>
+                {
+                    getObjData().Sprites = dropDownItems_des[x].Data.SpritesData;
+                    getObjData().Animations = dropDownItems_des[x].Data.AnimationsData;
+                    getObjData().ImageBuffer = dropDownItems_des[x].Data.ImageBuffer;
+                },
+                getItemsAction: () => dropDownItems_des);
+
+            yield return new EditorDropDownFieldViewModel(
+                header: "ETA",
+                info: "The group of states to use. This determines from which group the state indices are for.",
+                getValueAction: () => dropDownItems_eta.FindItemIndex(x => x.Data == getObjData().ETA),
+                setValueAction: x => getObjData().ETA = dropDownItems_eta[x].Data,
+                getItemsAction: () => dropDownItems_eta);
 
             yield return new EditorDropDownFieldViewModel(
                 header: "State",
@@ -140,9 +160,11 @@ namespace RayCarrot.Ray1Editor
                     return dropDownItems_state[eta];
                 });
 
+            // TODO: DisplayPrio?
+
             yield return new EditorPointFieldViewModel(
                 header: "Pivot",
-                info: "The object pivot (BX and BY)",
+                info: "The object pivot (BX and BY).",
                 getValueAction: () => getSelectedObj().Pivot,
                 setValueAction: x =>
                 {
@@ -153,12 +175,19 @@ namespace RayCarrot.Ray1Editor
 
             yield return new EditorIntFieldViewModel(
                 header: "Offset HY",
-                info: "This offset is relative to the follow sprite position and is usually used for certain platform collision",
+                info: "This offset is relative to the follow sprite position and is usually used for certain platform collision.",
                 getValueAction: () => getObjData().OffsetHY,
                 setValueAction: x => getObjData().OffsetHY = (byte)x,
                 max: Byte.MaxValue);
 
-            // TODO: FollowSprite
+            // TODO: FollowEnabled
+
+            yield return new EditorIntFieldViewModel(
+                header: "FollowSprite",
+                info: "The index of the sprite which has platform collision, if follow is enabled.",
+                getValueAction: () => getObjData().FollowSprite,
+                setValueAction: x => getObjData().FollowSprite = (byte)x,
+                max: 255);
 
             // TODO: Increase max for EDU/KIT
             yield return new EditorIntFieldViewModel(
@@ -168,16 +197,14 @@ namespace RayCarrot.Ray1Editor
                 setValueAction: x => getObjData().ActualHitPoints = (uint)x,
                 max: 255);
 
-            // TODO: DisplayPrio?
-
             yield return new EditorIntFieldViewModel(
                 header: "HitSprite",
-                info: null,
+                info: "If under 253 this is the index of the sprite which has collision, if above 253 the sprite uses type collision instead.",
                 getValueAction: () => getObjData().HitSprite,
                 setValueAction: x => getObjData().HitSprite = (byte)x,
                 max: 255);
 
-            // TODO: FollowEnabled
+            // TODO: Commands, labels
         }
 
         #endregion
@@ -208,9 +235,7 @@ namespace RayCarrot.Ray1Editor
 
                 var processedImageData = des.RequiresBackgroundClearing ? PC_DES.ProcessImageData(des.ImageData) : des.ImageData;
 
-                data.Sprites[des.Sprites] = new PalettedTextureSheet(textureManager, des.Sprites.Select(x => x.IsDummySprite() ? (Point?)null : new Point(x.Width, x.Height)).ToArray());
-
-                var spriteSheet = data.Sprites[des.Sprites];
+                var spriteSheet = new PalettedTextureSheet(textureManager, des.Sprites.Select(x => x.IsDummySprite() ? (Point?)null : new Point(x.Width, x.Height)).ToArray());
 
                 for (int j = 0; j < des.SpritesCount; j++)
                 {
@@ -232,7 +257,7 @@ namespace RayCarrot.Ray1Editor
                     Frames = x.Frames
                 }).ToArray();
                 data.PC_LoadedAnimations[i] = loadedAnim;
-                data.Animations[loadedAnim] = loadedAnim.Select(x => ToCommonAnimation(x)).ToArray();
+                data.AddDES(new GameData_R1.DESData(des.Sprites, spriteSheet, loadedAnim, loadedAnim.Select(x => ToCommonAnimation(x)).ToArray(), des.ImageData));
             }
         }
 

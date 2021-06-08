@@ -13,8 +13,11 @@ namespace RayCarrot.Ray1Editor
         {
             Sprites = new Dictionary<Sprite[], PalettedTextureSheet>();
             Animations = new Dictionary<Animation[], ObjAnimation[]>();
+            DES = new List<DESData>();
             ETA = new List<ETA>();
         }
+
+        public List<DESData> DES { get; }
 
         /// <summary>
         /// The loaded sprite sheets for each sprite array
@@ -37,5 +40,34 @@ namespace RayCarrot.Ray1Editor
         public Palette[] PC_Palettes { get; set; }
 
         public override IEnumerable<Palette> Palettes => PC_Palettes;
+
+        public void AddDES(DESData des)
+        {
+            DES.Add(des);
+
+            if (des == null)
+                return;
+
+            Sprites[des.SpritesData] = des.Sprites;
+            Animations[des.AnimationsData] = des.Animations;
+        }
+
+        public class DESData
+        {
+            public DESData(Sprite[] spritesData, PalettedTextureSheet sprites, Animation[] animationsData, ObjAnimation[] animations, byte[] imageBuffer)
+            {
+                SpritesData = spritesData;
+                Sprites = sprites;
+                AnimationsData = animationsData;
+                Animations = animations;
+                ImageBuffer = imageBuffer;
+            }
+
+            public Sprite[] SpritesData { get; }
+            public PalettedTextureSheet Sprites { get; }
+            public Animation[] AnimationsData { get; }
+            public ObjAnimation[] Animations { get; }
+            public byte[] ImageBuffer { get; }
+        }
     }
 }

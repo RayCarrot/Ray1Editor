@@ -11,7 +11,7 @@ namespace RayCarrot.Ray1Editor
         }
 
         public string Header { get; }
-        public string Info { get; } // TODO: Show info in UI
+        public string Info { get; }
 
         public abstract void Refresh();
     }

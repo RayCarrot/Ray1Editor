@@ -31,12 +31,13 @@ namespace RayCarrot.Ray1Editor
         /// <param name="context">The serializer context</param>
         /// <param name="gameData">The game data</param>
         public abstract void Save(Context context, GameData gameData);
-        
+
         /// <summary>
         /// Gets the editor fields for an object
         /// </summary>
+        /// <param name="gameData">The loaded game data</param>
         /// <param name="getSelectedObj">A func for getting the currently selected object</param>
         /// <returns>The editor fields</returns>
-        public abstract IEnumerable<EditorFieldViewModel> GetEditorObjFields(Func<GameObject> getSelectedObj);
+        public abstract IEnumerable<EditorFieldViewModel> GetEditorObjFields(GameData gameData, Func<GameObject> getSelectedObj);
     }
 }

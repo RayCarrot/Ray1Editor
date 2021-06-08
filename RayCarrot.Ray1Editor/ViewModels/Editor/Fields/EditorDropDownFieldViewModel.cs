@@ -1,14 +1,13 @@
-﻿using System;
+﻿using RayCarrot.UI;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using RayCarrot.UI;
 
 namespace RayCarrot.Ray1Editor
 {
     public class EditorDropDownFieldViewModel : EditorFieldViewModel
     {
-        public EditorDropDownFieldViewModel(string header, string info, Func<int> getValueAction, Action<int> setValueAction, Func<IEnumerable<DropDownItem>> getItemsAction) : base(header, info)
+        public EditorDropDownFieldViewModel(string header, string info, Func<int> getValueAction, Action<int> setValueAction, Func<IReadOnlyList<DropDownItem>> getItemsAction) : base(header, info)
         {
             GetValueAction = getValueAction;
             SetValueAction = setValueAction;
@@ -17,10 +16,11 @@ namespace RayCarrot.Ray1Editor
         }
 
         private int _selectedItem;
+        private IReadOnlyList<DropDownItem> _prevItems;
 
         protected Func<int> GetValueAction { get; }
         protected Action<int> SetValueAction { get; }
-        protected Func<IEnumerable<DropDownItem>> GetItemsAction { get; }
+        protected Func<IReadOnlyList<DropDownItem>> GetItemsAction { get; }
 
         public int SelectedItem
         {
@@ -35,12 +35,20 @@ namespace RayCarrot.Ray1Editor
 
         public override void Refresh()
         {
-            // Set selection to -1 to avoid clearing the collection calling SelectedItem.Set
-            _selectedItem = -1;
-            OnPropertyChanged(nameof(SelectedItem));
+            var newItems = GetItemsAction();
 
-            Items.Clear();
-            Items.AddRange(GetItemsAction());
+            // TODO: Maybe improve this by only resetting the items when a flag for it gets set to avoid always getting the items collection
+            if (!ReferenceEquals(newItems, _prevItems))
+            {
+                _prevItems = newItems;
+
+                // Set selection to -1 to avoid clearing the collection calling SelectedItem.Set
+                _selectedItem = -1;
+                OnPropertyChanged(nameof(SelectedItem));
+
+                Items.Clear();
+                Items.AddRange(GetItemsAction());
+            }
 
             _selectedItem = GetValueAction();
             OnPropertyChanged(nameof(SelectedItem));

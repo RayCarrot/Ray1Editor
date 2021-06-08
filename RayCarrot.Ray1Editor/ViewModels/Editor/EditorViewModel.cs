@@ -108,6 +108,9 @@ namespace RayCarrot.Ray1Editor
 
         public void OnEditorLoaded()
         {
+            // Recreate the object fields
+            RecreateObjFields();
+
             // Set up palettes
             Palettes.AddRange(EditorScene.GameData.Palettes.Select((x, i) => new PaletteEditorViewModel(x, i == 0, pal =>
             {
@@ -168,9 +171,6 @@ namespace RayCarrot.Ray1Editor
             // Make sure any old editor instance gets unloaded
             UnloadEditor();
 
-            // Recreate the fields
-            RecreateObjFields();
-            
             // Create a new editor scene instance for the current game
             EditorScene = new EditorScene(
                 manager: CurrentGameManager,
@@ -209,7 +209,7 @@ namespace RayCarrot.Ray1Editor
                 max: Int32.MaxValue));
             
             // Add game-specific fields
-            ObjFields.AddRange(CurrentGameManager.GetEditorObjFields(() => SelectedObject));
+            ObjFields.AddRange(CurrentGameManager.GetEditorObjFields(EditorScene.GameData, () => SelectedObject));
         }
 
         public void RefreshObjFields()
