@@ -8,17 +8,35 @@ namespace RayCarrot.Ray1Editor
 {
     public class Palette
     {
-        public Palette(IEnumerable<BaseColor> colors, string name, int? wrap = null) : this(colors.Select(x => new Color(x.Red, x.Green, x.Blue, x.Alpha)).ToArray(), name, wrap) { }
+        public Palette(IEnumerable<BaseColor> colors, string name, int? wrap = null)
+        {
+            Pointer pointer = null;
+            var convertedColors = colors.Select((x, i) =>
+            {
+                if (i == 0)
+                    pointer = x.Offset;
 
-        public Palette(IList<Color> colors, string name, int? wrap = null)
+                return new Color(x.Red, x.Green, x.Blue, x.Alpha);
+            }).ToArray();
+
+            Wrap = wrap ?? convertedColors.Length;
+            Colors = convertedColors;
+            Pointer = pointer;
+            Name = name;
+            SectionsCount = wrap != null ? (int)Math.Ceiling(TotalLength / (float)Wrap) : 1;
+        }
+
+        public Palette(IList<Color> colors, Pointer pointer, string name, int? wrap = null)
         {
             Wrap = wrap ?? colors.Count;
             Colors = colors;
+            Pointer = pointer;
             Name = name;
             SectionsCount = wrap != null ? (int)Math.Ceiling(TotalLength / (float) Wrap) : 1;
         }
 
         public IList<Color> Colors { get; }
+        public Pointer Pointer { get; }
         public string Name { get; }
         public int TotalLength => Colors.Count;
         public int SectionsCount { get; }

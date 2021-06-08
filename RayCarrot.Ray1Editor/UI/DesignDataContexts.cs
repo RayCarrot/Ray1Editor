@@ -47,13 +47,21 @@ namespace RayCarrot.Ray1Editor
                     })),
                 });
 
+                vm.Palettes.AddRange(new PaletteEditorViewModel[]
+                {
+                    new PaletteEditorViewModel(DummyPalette, true, _ => {}),
+                    new PaletteEditorViewModel(DummyPalette, false, _ => {}),
+                });
+
                 return vm;
             }
         }
 
-        public static EditPaletteViewModel EditPaletteViewModel => new EditPaletteViewModel(new Palette(Enumerable.Range(0, 256).Select(x => new BGR888Color()
+        public static EditPaletteViewModel EditPaletteViewModel => new EditPaletteViewModel(DummyPalette);
+
+        private static Palette DummyPalette => new Palette(Enumerable.Range(0, 256).Select(x => new BGR888Color()
         {
             R = (byte)x
-        }), "Design-time palette"));
+        }), "Design-time palette");
     }
 }

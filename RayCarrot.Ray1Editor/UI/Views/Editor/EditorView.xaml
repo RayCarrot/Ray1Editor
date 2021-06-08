@@ -91,8 +91,15 @@
                                                              GroupName="PaletteToggle"
                                                              IsChecked="{Binding Path=IsSelected}" />
 
-                                                <TextBlock Grid.Column="1" 
-                                                           Text="{Binding Path=Header, Mode=OneTime}" />
+                                                <StackPanel Grid.Column="1" 
+                                                            Orientation="Horizontal">
+
+                                                    <TextBlock Text="{Binding Path=Header, Mode=OneTime}" />
+
+                                                    <iconPacks:PackIconMaterial Style="{StaticResource PointerInfoIcon}"
+                                                                                ToolTip="{Binding Path=Offset, Mode=OneTime}" />
+
+                                                </StackPanel>
 
                                                 <Button Grid.Column="2"
                                                         Click="EditPaletteButton_OnClick"

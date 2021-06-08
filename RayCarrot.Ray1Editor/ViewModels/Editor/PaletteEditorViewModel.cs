@@ -17,6 +17,7 @@ namespace RayCarrot.Ray1Editor
         public Palette Palette { get; }
         public Action<Palette> OnSelectedAction { get; }
         public string Header => Palette.Name;
+        public string Offset => Palette.Pointer?.ToString();
 
         public bool IsSelected
         {

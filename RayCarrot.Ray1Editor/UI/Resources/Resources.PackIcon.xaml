@@ -11,4 +11,8 @@
         <Setter Property="ToolTipService.ShowDuration" Value="1000000" />
     </Style>
 
+    <Style x:Key="PointerInfoIcon" TargetType="{x:Type iconPacks:PackIconMaterial}" BasedOn="{StaticResource InfoIcon}">
+        <Setter Property="Kind" Value="MapMarkerOutline" />
+    </Style>
+
 </ResourceDictionary>
