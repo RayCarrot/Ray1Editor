@@ -238,7 +238,7 @@ namespace RayCarrot.Ray1Editor
 
             // Get the object we're hovering over
             if (CanHoverOverObject && fullScreenLayer == null && ShowObjects)
-                HoverObject = GameData.Objects.FirstOrDefault(x => x.Bounds.Contains(EditorUpdateData.MousePosition));
+                HoverObject = GameData.Objects.FirstOrDefault(x => x.WorldBounds.Contains(EditorUpdateData.MousePosition));
 
             switch (Mode)
             {
@@ -412,11 +412,11 @@ namespace RayCarrot.Ray1Editor
                     // When in links mode we show the bounds for the object the link is being
                     // moved for.
                     if (SelectedObject != null)
-                        s.DrawRectangle(SelectedObject.Bounds, State.Color_ObjBounds);
+                        s.DrawRectangle(SelectedObject.WorldBounds, State.Color_ObjBounds);
                     if (HoverObject != null && !IsDraggingObject && !IsDraggingLink)
-                        s.DrawRectangle(HoverObject.Bounds, State.Color_ObjBounds);
+                        s.DrawRectangle(HoverObject.WorldBounds, State.Color_ObjBounds);
                     else if (SelectedLinkObject != null)
-                        s.DrawRectangle(SelectedLinkObject.Bounds, State.Color_ObjBounds);
+                        s.DrawRectangle(SelectedLinkObject.WorldBounds, State.Color_ObjBounds);
                 }
 
                 // Draw offsets for the currently selected object

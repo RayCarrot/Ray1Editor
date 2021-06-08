@@ -23,6 +23,7 @@ namespace RayCarrot.Ray1Editor
 
         // Animations
         public Rectangle Bounds { get; set; }
+        public Rectangle WorldBounds => new Rectangle(Bounds.Location + Position, Bounds.Size);
         public Point Center { get; set; }
         public virtual ObjAnimation_HitBoxLayer[] HitBoxLayers => new ObjAnimation_HitBoxLayer[0];
         public abstract ObjAnimation CurrentAnimation { get; }
@@ -143,9 +144,8 @@ namespace RayCarrot.Ray1Editor
                     first = false;
             }
 
-            // TODO: Make these relative to the position rather than absolute positions?
-            Bounds = new Rectangle(new Point(Position.X + leftX, Position.Y + topY), new Point(rightX - leftX, bottomY - topY));
-            Center = new Point(Position.X + leftX + (rightX - leftX) / 2, Position.Y + topY + (bottomY - topY) / 2);
+            Bounds = new Rectangle(new Point(leftX, topY), new Point(rightX - leftX, bottomY - topY));
+            Center = new Point(leftX + (rightX - leftX) / 2, topY + (bottomY - topY) / 2);
         }
         public virtual void DrawLinks(SpriteBatch s)
         {
@@ -153,7 +153,7 @@ namespace RayCarrot.Ray1Editor
             {
                 var linkGrip = GetLinkGripSnappedPosition.ToVector2();
 
-                s.DrawLine(Center.ToVector2(), linkGrip, EditorState.Color_ObjLinks, LinkLineThickness);
+                s.DrawLine(new Vector2(Position.X + Center.X, Position.Y + Center.Y), linkGrip, EditorState.Color_ObjLinks, LinkLineThickness);
                 s.DrawFilledRectangle(linkGrip - new Vector2(LinkGripSize / 2f), new Vector2(LinkGripSize), EditorState.Color_ObjLinks);
             }
         }
