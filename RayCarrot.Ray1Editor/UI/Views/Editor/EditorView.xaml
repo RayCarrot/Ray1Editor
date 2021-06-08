@@ -11,24 +11,6 @@
              Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}"
              d:DataContext="{x:Static local:DesignDataContexts.EditorViewModel}">
 
-    <UserControl.Resources>
-        <!-- TODO: Move to resource dictionary -->
-        <Style x:Key="FieldsItemsControl" TargetType="{x:Type ItemsControl}" BasedOn="{StaticResource {x:Type ItemsControl}}">
-            <Setter Property="Grid.IsSharedSizeScope" Value="True" />
-            <Setter Property="ItemTemplate">
-                <Setter.Value>
-                    <DataTemplate>
-                        <ContentPresenter Margin="0 0 0 10">
-                            <ContentPresenter.ContentTemplateSelector>
-                                <local:EditorFieldTemplateSelector />
-                            </ContentPresenter.ContentTemplateSelector>
-                        </ContentPresenter>
-                    </DataTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </UserControl.Resources>
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
