@@ -85,6 +85,7 @@ namespace RayCarrot.Ray1Editor
         public GameData GameData { get; protected set; }
 
         // Objects
+        public bool ShowObjects { get; set; } = true;
         public GameObject HoverObject { get; protected set; }
         public GameObject SelectedObject
         {
@@ -218,8 +219,11 @@ namespace RayCarrot.Ray1Editor
                     layer.Update(EditorUpdateData);
 
                 // Update objects
-                foreach (var obj in GameData.Objects)
-                    obj.Update(EditorUpdateData);
+                if (ShowObjects)
+                {
+                    foreach (var obj in GameData.Objects)
+                        obj.Update(EditorUpdateData);
+                }
             }
             else
             {
@@ -231,7 +235,7 @@ namespace RayCarrot.Ray1Editor
             Cam.Update(EditorUpdateData);
 
             // Get the object we're hovering over
-            if (CanHoverOverObject && fullScreenLayer == null)
+            if (CanHoverOverObject && fullScreenLayer == null && ShowObjects)
                 HoverObject = GameData.Objects.FirstOrDefault(x => x.Bounds.Contains(EditorUpdateData.MousePosition));
 
             switch (Mode)
@@ -241,11 +245,13 @@ namespace RayCarrot.Ray1Editor
                     break;
                 
                 case EditorMode.Objects:
-                    UpdateModeObjects(EditorUpdateData);
+                    if (ShowObjects)
+                        UpdateModeObjects(EditorUpdateData);
                     break;
 
                 case EditorMode.Links:
-                    UpdateModeLinks(EditorUpdateData);
+                    if (ShowObjects)
+                        UpdateModeLinks(EditorUpdateData);
                     break;
             }
 
@@ -385,32 +391,35 @@ namespace RayCarrot.Ray1Editor
             foreach (var layer in GameData.Layers.Where(x => x.IsVisible))
                 layer.Draw(s);
 
-            // Draw objects
-            foreach (var obj in GameData.Objects)
-                obj.Draw(s);
-
-            // Draw links if in links mode
-            if (Mode == EditorMode.Links)
-                foreach (var obj in GameData.Objects)
-                    obj.DrawLinks(s);
-
-            if (CanHoverOverObject)
+            if (ShowObjects)
             {
-                // Draw object bounds. Always show the bounds for the selected object.
-                // Then if we're hovering over another object without dragging we can
-                // show that too (the object we're dragging will always be selected!).
-                // When in links mode we show the bounds for the object the link is being
-                // moved for.
-                if (SelectedObject != null)
-                    s.DrawRectangle(SelectedObject.Bounds, State.Color_ObjBounds);
-                if (HoverObject != null && !IsDraggingObject && !IsDraggingLink)
-                    s.DrawRectangle(HoverObject.Bounds, State.Color_ObjBounds);
-                else if (SelectedLinkObject != null)
-                    s.DrawRectangle(SelectedLinkObject.Bounds, State.Color_ObjBounds);
-            }
+                // Draw objects
+                foreach (var obj in GameData.Objects)
+                    obj.Draw(s);
 
-            // Draw offsets for the currently selected object
-            SelectedObject?.DrawOffsets(s);
+                // Draw links if in links mode
+                if (Mode == EditorMode.Links)
+                    foreach (var obj in GameData.Objects)
+                        obj.DrawLinks(s);
+
+                if (CanHoverOverObject)
+                {
+                    // Draw object bounds. Always show the bounds for the selected object.
+                    // Then if we're hovering over another object without dragging we can
+                    // show that too (the object we're dragging will always be selected!).
+                    // When in links mode we show the bounds for the object the link is being
+                    // moved for.
+                    if (SelectedObject != null)
+                        s.DrawRectangle(SelectedObject.Bounds, State.Color_ObjBounds);
+                    if (HoverObject != null && !IsDraggingObject && !IsDraggingLink)
+                        s.DrawRectangle(HoverObject.Bounds, State.Color_ObjBounds);
+                    else if (SelectedLinkObject != null)
+                        s.DrawRectangle(SelectedLinkObject.Bounds, State.Color_ObjBounds);
+                }
+
+                // Draw offsets for the currently selected object
+                SelectedObject?.DrawOffsets(s);
+            }
         }
 
         #endregion

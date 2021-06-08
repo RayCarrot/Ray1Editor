@@ -208,9 +208,9 @@
                                            Style="{StaticResource HeaderTextBlock}"
                                            Text="Objects" />
 
-                                <!-- TODO: Bind to obj visibility flag -->
                                 <ToggleButton Grid.Column="1" 
                                               Style="{StaticResource MahApps.Styles.ToggleButton.Circle}"
+                                              IsChecked="{Binding Path=ShowObjects}"
                                               ToolTip="Show objects"
                                               Width="28" Height="28">
                                     <iconPacks:PackIconMaterial Kind="EyeOutline" Width="14" Height="14"/>

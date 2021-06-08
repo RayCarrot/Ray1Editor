@@ -35,6 +35,18 @@ namespace RayCarrot.Ray1Editor
                 foreach (LayerEditorViewModel l in vm.Layers)
                     l.RecreateFields();
 
+                vm.GameObjects.AddRange(new GameObjectListItemViewModel[]
+                {
+                    new GameObjectListItemViewModel(new GameObject_R1(new ObjData()
+                    {
+                        Type = ObjType.TYPE_BB1
+                    })),
+                    new GameObjectListItemViewModel(new GameObject_R1(new ObjData()
+                    {
+                        Type = ObjType.TYPE_RAY_POS
+                    })),
+                });
+
                 return vm;
             }
         }

@@ -71,6 +71,11 @@ namespace RayCarrot.Ray1Editor
             get => EditorScene?.IsPaused ?? false;
             set => EditorScene.IsPaused = value;
         }
+        public bool ShowObjects
+        {
+            get => EditorScene?.ShowObjects ?? true;
+            set => EditorScene.ShowObjects = value;
+        }
         public string DebugText { get; set; }
 
         // General
