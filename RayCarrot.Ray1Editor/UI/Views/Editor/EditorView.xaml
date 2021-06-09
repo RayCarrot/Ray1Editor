@@ -102,6 +102,7 @@
                                                 </StackPanel>
 
                                                 <Button Grid.Column="2"
+                                                        ToolTip="Edit palette"
                                                         Click="EditPaletteButton_OnClick"
                                                         Style="{StaticResource FlatButton}">
                                                     <iconPacks:PackIconMaterial Kind="PencilOutline" Background="Transparent" />
@@ -277,19 +278,34 @@
 
                                     <!-- Header -->
 
-                                    <StackPanel Grid.Column="0" 
-                                                HorizontalAlignment="Center"
-                                                Orientation="Horizontal"
-                                                Margin="0 0 0 15">
+                                    <Grid Grid.Row="0" Margin="0 0 0 15">
 
-                                        <TextBlock Text="{Binding Path=SelectedObjectName}"
-                                                   FontSize="22" />
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
 
-                                        <iconPacks:PackIconMaterial Style="{StaticResource PointerInfoIcon}" 
-                                                                    Visibility="Visible"
-                                                                    ToolTip="{Binding Path=SelectedObjectOffset}" />
+                                        <StackPanel Grid.Column="0"
+                                                    Orientation="Horizontal">
 
-                                    </StackPanel>
+                                            <TextBlock Text="{Binding Path=SelectedObjectName}"
+                                                       FontSize="22" />
+
+                                            <iconPacks:PackIconMaterial Style="{StaticResource PointerInfoIcon}" 
+                                                                        Visibility="Visible"
+                                                                        ToolTip="{Binding Path=SelectedObjectOffset}" />
+
+                                        </StackPanel>
+
+                                        <Button Grid.Column="1"
+                                                VerticalAlignment="Center"
+                                                ToolTip="Delete object"
+                                                Command="{Binding Path=DeleteSelectedObjectCommand, Mode=OneTime}"
+                                                Style="{StaticResource FlatButton}">
+                                            <iconPacks:PackIconMaterial Kind="DeleteOutline" Background="Transparent" />
+                                        </Button>
+
+                                    </Grid>
 
                                     <!-- Object Fields -->
 

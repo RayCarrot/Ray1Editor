@@ -267,6 +267,12 @@ namespace RayCarrot.Ray1Editor
 
         protected void UpdateModeObjects(EditorUpdateData updateData)
         {
+            if (updateData.Keyboard.IsKeyDown(Keys.Delete) && SelectedObject != null)
+            {
+                RemoveObject(SelectedObject);
+                return;
+            }
+
             if (updateData.Mouse.LeftButton == ButtonState.Pressed)
             {
                 if (!IsDraggingObject)
@@ -442,6 +448,16 @@ namespace RayCarrot.Ray1Editor
         {
             Cam.TargetPosition = obj.Position.ToVector2();
             Cam.TargetZoom = 2;
+        }
+
+        public void RemoveObject(GameObject obj)
+        {
+            GameData.Objects.Remove(SelectedObject);
+
+            if (SelectedObject == obj)
+                SelectedObject = null;
+
+            VM.OnObjectRemoved(obj);
         }
 
         public void Save()
