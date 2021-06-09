@@ -109,22 +109,28 @@ namespace RayCarrot.Ray1Editor
             // TODO: Do not include EDU/KIT types for R1
             var dropDownItems_type = Enum.GetValues(typeof(ObjType)).Cast<ObjType>().Select(x =>
                 new EditorDropDownFieldViewModel.DropDownItem<ObjType>(x.ToString(), x)).ToArray();
+            var dropDownLookup_type = dropDownItems_type.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data, x => x.i);
+            
             var dropDownItems_des = data.DES.Select((x, i) => new EditorDropDownFieldViewModel.DropDownItem<GameData_R1.DESData>($"DES {i + 1}", x)).ToArray();
+            var dropDownLookup_des = dropDownItems_des.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data.SpritesData, x => x.i);
+            
             var dropDownItems_eta = data.ETA.Select((x, i) => new EditorDropDownFieldViewModel.DropDownItem<ETA>($"ETA {i}", x)).ToArray();
+            var dropDownLookup_eta = dropDownItems_eta.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data, x => x.i);
+            
             var dropDownItems_state = new Dictionary<ETA, EditorDropDownFieldViewModel.DropDownItem<DropDownFieldData_State>[]>();
+            var dropDownLookup_state = new Dictionary<ETA, Dictionary<int, int>>();
 
-            // TODO: Optimize the get actions more by not doing FindItemIndex each time
             yield return new EditorDropDownFieldViewModel(
                 header: "Type",
                 info: null,
-                getValueAction: () => dropDownItems_type.FindItemIndex(x => x.Data == getObjData().Type),
+                getValueAction: () => dropDownLookup_type[getObjData().Type],
                 setValueAction: x => getObjData().Type = dropDownItems_type[x].Data,
                 getItemsAction: () => dropDownItems_type);
             
             yield return new EditorDropDownFieldViewModel(
                 header: "DES",
                 info: "The group of sprites and animations to use.",
-                getValueAction: () => dropDownItems_des.FindItemIndex(x => x.Data.SpritesData == getObjData().Sprites),
+                getValueAction: () => dropDownLookup_des[getObjData().Sprites],
                 setValueAction: x =>
                 {
                     getObjData().Sprites = dropDownItems_des[x].Data.SpritesData;
@@ -136,14 +142,14 @@ namespace RayCarrot.Ray1Editor
             yield return new EditorDropDownFieldViewModel(
                 header: "ETA",
                 info: "The group of states to use. This determines from which group the state indices are for.",
-                getValueAction: () => dropDownItems_eta.FindItemIndex(x => x.Data == getObjData().ETA),
+                getValueAction: () => dropDownLookup_eta[getObjData().ETA],
                 setValueAction: x => getObjData().ETA = dropDownItems_eta[x].Data,
                 getItemsAction: () => dropDownItems_eta);
 
             yield return new EditorDropDownFieldViewModel(
                 header: "State",
                 info: "The object state (ETA), grouped by the primary state (etat) and sub-state (sub-etat). The state primarily determines which animation to play, but also other factors such as how the object should behave (based on the type).",
-                getValueAction: () => dropDownItems_state[getObjData().ETA].FindItemIndex(x => x.Data.Etat == getObjData().Etat && x.Data.SubEtat == getObjData().SubEtat),
+                getValueAction: () => dropDownLookup_state[getObjData().ETA][DropDownFieldData_State.GetID(getObjData().Etat, getObjData().SubEtat)],
                 setValueAction: x =>
                 {
                     getObjData().Etat = dropDownItems_state[getObjData().ETA][x].Data.Etat;
@@ -154,8 +160,11 @@ namespace RayCarrot.Ray1Editor
                     var eta = getObjData().ETA;
 
                     if (!dropDownItems_state.ContainsKey(eta))
+                    {
                         dropDownItems_state[eta] = eta.States.Select((etat, etatIndex) => etat.Select((subEtat, subEtatIndex) =>
                             new EditorDropDownFieldViewModel.DropDownItem<DropDownFieldData_State>($"State {etatIndex}-{subEtatIndex} (Animation {subEtat.AnimationIndex})", new DropDownFieldData_State((byte)etatIndex, (byte)subEtatIndex)))).SelectMany(x => x).ToArray();
+                        dropDownLookup_state[eta] = dropDownItems_state[eta].Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data.ID, x => x.i);
+                    }
 
                     return dropDownItems_state[eta];
                 });
@@ -407,7 +416,15 @@ namespace RayCarrot.Ray1Editor
 
         #region Field Records
 
-        protected record DropDownFieldData_State(byte Etat, byte SubEtat);
+        protected record DropDownFieldData_State(byte Etat, byte SubEtat)
+        {
+            /// <summary>
+            /// A unique ID for the state, used for comparisons
+            /// </summary>
+            public int ID => GetID(Etat, SubEtat);
+
+            public static int GetID(byte etat, byte subEtat) => etat * 256 + subEtat;
+        }
 
         #endregion
     }
