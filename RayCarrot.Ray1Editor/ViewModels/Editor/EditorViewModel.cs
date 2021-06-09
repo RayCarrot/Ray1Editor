@@ -201,7 +201,6 @@ namespace RayCarrot.Ray1Editor
             ObjFields.Clear();
 
             // Add general fields
-            // TODO: Update position when object moves
             ObjFields.Add(new EditorPointFieldViewModel(
                 header: "Position", 
                 info: null, 

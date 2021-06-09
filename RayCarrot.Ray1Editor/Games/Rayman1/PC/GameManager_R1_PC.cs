@@ -26,6 +26,12 @@ namespace RayCarrot.Ray1Editor
 
         #endregion
 
+        #region R1 Manager
+
+        protected override int MaxObjType => (int)ObjType.TYPE_EDU_DIRECTION;
+
+        #endregion
+
         #region Manager
 
         public override IEnumerable<LoadGameLevelViewModel> GetLevels()
@@ -86,12 +92,61 @@ namespace RayCarrot.Ray1Editor
             var world = ray1Settings.World;
             var level = ray1Settings.Level;
 
+            var data = (GameData_R1)gameData;
+
             // Get the level data
             var lvlData = context.GetMainFileObject<PC_LevFile>(Path_LevelFile(world, level));
 
-            // TODO: Update tiles
-            // TODO: Update objects
-            // TODO: Update links
+            // Save the palettes
+            lvlData.MapData.ColorPalettes = data.PC_Palettes.Select(x => x.ToBaseColorArray<RGB666Color>()).ToArray();
+
+            // Save the objects
+            var objData = lvlData.ObjData;
+            objData.ObjCount = (ushort)gameData.Objects.Count;
+            objData.Objects = gameData.Objects.Cast<GameObject_R1>().Select(x => x.ObjData).ToArray();
+
+            var objCmds = new List<PC_CommandCollection>();
+
+            foreach (var obj in objData.Objects)
+            {
+                obj.PC_AnimationsIndex = (uint)data.PC_LoadedAnimations.FindItemIndex(x => x == obj.Animations);
+                obj.AnimationsCount = (byte)obj.Animations.Length;
+                obj.PC_ImageBufferIndex = (uint)data.PC_DES.FindItemIndex(x => x?.ImageData == obj.ImageBuffer);
+                obj.PC_SpritesIndex = (uint)data.PC_DES.FindItemIndex(x => x?.Sprites == obj.Sprites);
+                obj.SpritesCount = (byte)obj.Sprites.Length;
+                obj.PC_ETAIndex = (uint)data.ETA.IndexOf(obj.ETA);
+
+                var cmds = obj.Commands ?? new CommandCollection()
+                {
+                    Commands = new Command[0]
+                };
+                var labelOffsets = obj.LabelOffsets ?? new ushort[0];
+
+                // Add the event commands
+                objCmds.Add(new PC_CommandCollection()
+                {
+                    CommandLength = (ushort)cmds.Commands.Select(x => x.Length).Sum(),
+                    Commands = cmds,
+                    LabelOffsetCount = (ushort)labelOffsets.Length,
+                    LabelOffsetTable = labelOffsets
+                });
+            }
+
+            objData.ObjCommands = objCmds.ToArray();
+            objData.ObjLinkingTable = SaveLinkGroups(gameData.Objects);
+
+            // Save the map
+            var mapData = lvlData.MapData;
+            var mapLayer = data.Layers.OfType<TileMapLayer_R1>().First();
+
+            mapData.Width = (ushort)mapLayer.MapSize.X;
+            mapData.Height = (ushort)mapLayer.MapSize.Y;
+
+            mapData.Tiles = mapLayer.TileMap;
+
+            // Save the background
+            lvlData.FNDIndex = data.PC_FondIndex;
+            lvlData.ScrollDiffFNDIndex = data.PC_ScrollDiffFondIndex;
 
             // Save the file
             FileFactory.Write<PC_LevFile>(Path_LevelFile(world, level), context);
@@ -107,9 +162,11 @@ namespace RayCarrot.Ray1Editor
             var data = (GameData_R1)gameData;
             var settings = data.Context.GetSettings<Ray1Settings>();
 
-            // TODO: Do not include EDU/KIT types for R1
-            var dropDownItems_type = Enum.GetValues(typeof(ObjType)).Cast<ObjType>().Select(x =>
-                new EditorDropDownFieldViewModel.DropDownItem<ObjType>(x.ToString(), x)).ToArray();
+            var dropDownItems_type = Enum.GetValues(typeof(ObjType)).
+                Cast<ObjType>().
+                Where(x => (int)x <= MaxObjType && x != ObjType.ObjType_255).
+                Select(x => new EditorDropDownFieldViewModel.DropDownItem<ObjType>(x.ToString(), x)).
+                ToArray();
             var dropDownLookup_type = dropDownItems_type.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data, x => x.i);
             
             var dropDownItems_des = data.DES.Select((x, i) => new EditorDropDownFieldViewModel.DropDownItem<GameData_R1.DESData>($"DES {i + 1}", x)).ToArray();
@@ -170,8 +227,6 @@ namespace RayCarrot.Ray1Editor
                     return dropDownItems_state[eta];
                 });
 
-            // TODO: DisplayPrio?
-
             yield return new EditorPointFieldViewModel(
                 header: "Pivot",
                 info: "The object pivot (BX and BY).",
@@ -201,22 +256,21 @@ namespace RayCarrot.Ray1Editor
                 info: "The index of the sprite which has platform collision, if follow is enabled.",
                 getValueAction: () => getObjData().FollowSprite,
                 setValueAction: x => getObjData().FollowSprite = (byte)x,
-                max: 255);
+                max: Byte.MaxValue);
 
-            // TODO: Increase max for EDU/KIT
             yield return new EditorIntFieldViewModel(
                 header: "Hit-Points",
                 info: "This value usually determines how many hits it takes to defeat the enemy. For non-enemy objects this can have other usages, such as determining the color or changing other specific attributes.",
                 getValueAction: () => getObjData().ActualHitPoints,
                 setValueAction: x => getObjData().ActualHitPoints = (uint)x,
-                max: 255);
+                max: settings.EngineVersion is Ray1EngineVersion.PC_Edu or Ray1EngineVersion.PS1_Edu or Ray1EngineVersion.PC_Kit or Ray1EngineVersion.PC_Fan ? Int32.MaxValue : Byte.MaxValue);
 
             yield return new EditorIntFieldViewModel(
                 header: "Hit-Sprite",
                 info: "If under 253 this is the index of the sprite which has collision, if above 253 the sprite uses type collision instead.",
                 getValueAction: () => getObjData().HitSprite,
                 setValueAction: x => getObjData().HitSprite = (byte)x,
-                max: 255);
+                max: Byte.MaxValue);
         }
 
         #endregion
@@ -350,6 +404,9 @@ namespace RayCarrot.Ray1Editor
 
             if (scrollDiffFnd != null)
                 data.Layers.Add(scrollDiffFnd);
+
+            data.PC_FondIndex = lev.FNDIndex;
+            data.PC_ScrollDiffFondIndex = lev.ScrollDiffFNDIndex;
         }
 
         public BackgroundLayer LoadFond(GameData_R1 data, PC_WorldFile wld, PC_LevFile lev, TextureManager textureManager, bool parallax, string name)
@@ -419,6 +476,51 @@ namespace RayCarrot.Ray1Editor
             }
 
             return currentId;
+        }
+
+        public ushort[] SaveLinkGroups(IList<GameObject> objects)
+        {
+            var linkTable = new ushort[objects.Count];
+
+            List<int> alreadyChained = new List<int>();
+
+            for (ushort i = 0; i < objects.Count; i++)
+            {
+                var obj = objects[i];
+
+                // No link
+                if (obj.LinkGroup == 0)
+                {
+                    linkTable[i] = i;
+                }
+                else
+                {
+                    // Skip if already chained
+                    if (alreadyChained.Contains(i))
+                        continue;
+
+                    // Find all the events with the same linkId and store their indexes
+                    List<ushort> indexesOfSameId = new List<ushort>();
+                    int cur = obj.LinkGroup;
+                    foreach (var e in objects.Where(e => e.LinkGroup == cur))
+                    {
+                        indexesOfSameId.Add((ushort)objects.IndexOf(e));
+                        alreadyChained.Add(objects.IndexOf(e));
+                    }
+
+                    // Loop through and chain them
+                    for (int j = 0; j < indexesOfSameId.Count; j++)
+                    {
+                        int next = j + 1;
+                        if (next == indexesOfSameId.Count)
+                            next = 0;
+
+                        linkTable[indexesOfSameId[j]] = indexesOfSameId[next];
+                    }
+                }
+            }
+
+            return linkTable;
         }
 
         #endregion

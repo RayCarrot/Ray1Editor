@@ -46,5 +46,13 @@ namespace RayCarrot.Ray1Editor
 
         public Color GetColor(int index) => IsFirstTransparent && index == 0 ? Color.Transparent : Colors[index];
         public Color GetColor(int primaryIndex, int secondaryIndex) => GetColor(primaryIndex * Wrap + secondaryIndex);
+
+        public T[] ToBaseColorArray<T>() where T : BaseColor, new() => Colors.Select(x => new T()
+        {
+            Red = x.R / 255f,
+            Green = x.G / 255f,
+            Blue = x.B / 255f,
+            Alpha = x.A / 255f,
+        }).ToArray();
     }
 }

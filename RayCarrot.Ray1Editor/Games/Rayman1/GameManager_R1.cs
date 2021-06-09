@@ -9,6 +9,8 @@ namespace RayCarrot.Ray1Editor
     /// </summary>
     public abstract class GameManager_R1 : GameManager
     {
+        protected abstract int MaxObjType { get; }
+
         public IEnumerable<LoadGameLevelViewModel> GetLevels(Ray1EngineVersion engineVersion, Ray1PCVersion pcVersion = Ray1PCVersion.None, string volume = null)
         {
             // TODO: Breakout is only in PC version. GBA version has extra multiplayer maps. Saturn version has unused maps (include those?).
