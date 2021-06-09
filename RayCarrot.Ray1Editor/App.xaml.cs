@@ -10,6 +10,7 @@ namespace RayCarrot.Ray1Editor
     public partial class App : Application
     {
         public const string EditorIntFieldTemplateKey = "EditorIntFieldTemplate";
+        public const string EditorBoolFieldTemplateKey = "EditorBoolFieldTemplate";
         public const string EditorDropDownFieldTemplateKey = "EditorDropDownFieldTemplate";
         public const string EditorPointFieldTemplateKey = "EditorPointFieldTemplate";
 

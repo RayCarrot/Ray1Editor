@@ -46,7 +46,14 @@
                   DataType="{x:Type local:EditorIntFieldViewModel}">
         <metro:NumericUpDown Minimum="{Binding Path=Min, Mode=OneTime}"
                              Maximum="{Binding Path=Max, Mode=OneTime}"
-                             Value="{Binding Path=Value, UpdateSourceTrigger=LostFocus}" />
+                             Value="{Binding Path=Value}" />
+    </DataTemplate>
+
+    <!-- Bool -->
+
+    <DataTemplate x:Key="EditorBoolFieldTemplate"
+                  DataType="{x:Type local:EditorBoolFieldViewModel}">
+        <CheckBox IsChecked="{Binding Path=Value}" />
     </DataTemplate>
 
     <!-- Drop-down -->

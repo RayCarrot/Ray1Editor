@@ -10,6 +10,7 @@ namespace RayCarrot.Ray1Editor
             return item switch
             {
                 EditorIntFieldViewModel _ => (DataTemplate)Application.Current.FindResource(App.EditorIntFieldTemplateKey),
+                EditorBoolFieldViewModel _ => (DataTemplate)Application.Current.FindResource(App.EditorBoolFieldTemplateKey),
                 EditorDropDownFieldViewModel _ => (DataTemplate)Application.Current.FindResource(App.EditorDropDownFieldTemplateKey),
                 EditorPointFieldViewModel _ => (DataTemplate)Application.Current.FindResource(App.EditorPointFieldTemplateKey),
                 _ => null

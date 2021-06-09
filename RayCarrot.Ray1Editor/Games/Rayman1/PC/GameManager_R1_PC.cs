@@ -105,6 +105,7 @@ namespace RayCarrot.Ray1Editor
             ObjData getObjData() => getObj().ObjData;
 
             var data = (GameData_R1)gameData;
+            var settings = data.Context.GetSettings<Ray1Settings>();
 
             // TODO: Do not include EDU/KIT types for R1
             var dropDownItems_type = Enum.GetValues(typeof(ObjType)).Cast<ObjType>().Select(x =>
@@ -189,10 +190,14 @@ namespace RayCarrot.Ray1Editor
                 setValueAction: x => getObjData().OffsetHY = (byte)x,
                 max: Byte.MaxValue);
 
-            // TODO: FollowEnabled
+            yield return new EditorBoolFieldViewModel(
+                header: "Follow",
+                info: "This indicates if the object has platform collision, such as that used on clouds and plums.",
+                getValueAction: () => getObjData().GetFollowEnabled(settings),
+                setValueAction: x => getObjData().SetFollowEnabled(settings, x));
 
             yield return new EditorIntFieldViewModel(
-                header: "FollowSprite",
+                header: "Follow-Sprite",
                 info: "The index of the sprite which has platform collision, if follow is enabled.",
                 getValueAction: () => getObjData().FollowSprite,
                 setValueAction: x => getObjData().FollowSprite = (byte)x,
@@ -200,14 +205,14 @@ namespace RayCarrot.Ray1Editor
 
             // TODO: Increase max for EDU/KIT
             yield return new EditorIntFieldViewModel(
-                header: "HitPoints",
+                header: "Hit-Points",
                 info: "This value usually determines how many hits it takes to defeat the enemy. For non-enemy objects this can have other usages, such as determining the color or changing other specific attributes.",
                 getValueAction: () => getObjData().ActualHitPoints,
                 setValueAction: x => getObjData().ActualHitPoints = (uint)x,
                 max: 255);
 
             yield return new EditorIntFieldViewModel(
-                header: "HitSprite",
+                header: "Hit-Sprite",
                 info: "If under 253 this is the index of the sprite which has collision, if above 253 the sprite uses type collision instead.",
                 getValueAction: () => getObjData().HitSprite,
                 setValueAction: x => getObjData().HitSprite = (byte)x,
