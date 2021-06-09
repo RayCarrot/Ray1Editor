@@ -10,16 +10,56 @@ namespace RayCarrot.Ray1Editor
         public Camera(Viewport viewport)
         {
             Viewport = viewport;
+            Zoom = 1;
+            _isDirty = true;
         }
+
+        private bool _isDirty;
+        private float _zoom;
+        private Vector2 _position;
+        private Vector2 _viewArea;
+        private Matrix _transformMatrix;
 
         // Data
         protected Viewport Viewport { get; }
 
         // Current state
-        public float Zoom { get; set; } = 1;
-        public Vector2 Position { get; set; }
-        public float Rotation { get; set; }
-        public Vector2 ViewArea { get; set; }
+        public float Zoom
+        {
+            get => _zoom;
+            set
+            {
+                if (_zoom != value)
+                    _isDirty = true;
+
+                _zoom = value;
+            }
+        }
+
+        public Vector2 Position
+        {
+            get => _position;
+            set
+            {
+                if (_position != value)
+                    _isDirty = true;
+
+                _position = value;
+            }
+        }
+
+        //public float Rotation { get; set; }
+        public Vector2 ViewArea
+        {
+            get => _viewArea;
+            set
+            {
+                if (_viewArea != value)
+                    _isDirty = true;
+
+                _viewArea = value;
+            }
+        }
 
         // Zoom
         public float MinZoom { get; set; } = 0.2f;
@@ -39,12 +79,22 @@ namespace RayCarrot.Ray1Editor
         protected Vector2 PrevMousePos { get; set; }
         protected int PrevScrollWheelValue { get; set; }
 
-        // TODO: Cache this, only recreate when a value is modified
-        public Matrix TransformMatrix =>
-            Matrix.CreateTranslation(new Vector3(-Position.X, -Position.Y, 0)) *
-            Matrix.CreateRotationZ(Rotation) *
-            Matrix.CreateScale(Zoom) *
-            Matrix.CreateTranslation(new Vector3(ViewArea / 2, 0));
+        public Matrix TransformMatrix
+        {
+            get
+            {
+                if (_isDirty)
+                {
+                    _transformMatrix = Matrix.CreateTranslation(new Vector3(-Position.X, -Position.Y, 0)) * 
+                                       //Matrix.CreateRotationZ(Rotation) *
+                                       Matrix.CreateScale(Zoom) * 
+                                       Matrix.CreateTranslation(new Vector3(ViewArea / 2, 0));
+                    _isDirty = false;
+                }
+
+                return _transformMatrix;
+            }
+        }
 
         public Vector2 ToWorld(Vector2 pos) => Vector2.Transform(pos, Matrix.Invert(TransformMatrix));
         public Vector2 ToScreen(Vector2 pos) => Vector2.Transform(pos, TransformMatrix);
