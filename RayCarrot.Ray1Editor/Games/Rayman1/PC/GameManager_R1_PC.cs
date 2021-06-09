@@ -62,7 +62,7 @@ namespace RayCarrot.Ray1Editor
             // Read the files
             var fix = FileFactory.Read<PC_AllfixFile>(Path_FixFile, context);
             var wld = FileFactory.Read<PC_WorldFile>(Path_WorldFile(world), context);
-            var lev = FileFactory.Read<PC_LevFile>(Path_LevelFile(world, level), context);
+            var lev = FileFactory.Read<SerializableEditorFile<PC_LevFile>>(Path_LevelFile(world, level), context).FileData;
 
             // Load palettes
             LoadPalettes(data, lev);
@@ -95,7 +95,7 @@ namespace RayCarrot.Ray1Editor
             var data = (GameData_R1)gameData;
 
             // Get the level data
-            var lvlData = context.GetMainFileObject<PC_LevFile>(Path_LevelFile(world, level));
+            var lvlData = context.GetMainFileObject<SerializableEditorFile<PC_LevFile>>(Path_LevelFile(world, level)).FileData;
 
             // Save the palettes
             lvlData.MapData.ColorPalettes = data.PC_Palettes.Select(x => x.ToBaseColorArray<RGB666Color>()).ToArray();
@@ -149,7 +149,7 @@ namespace RayCarrot.Ray1Editor
             lvlData.ScrollDiffFNDIndex = data.PC_ScrollDiffFondIndex;
 
             // Save the file
-            FileFactory.Write<PC_LevFile>(Path_LevelFile(world, level), context);
+            FileFactory.Write<SerializableEditorFile<PC_LevFile>>(Path_LevelFile(world, level), context);
         }
 
         // TODO: Is it better to move this to the GameObject class? Each object type can then have its own fields, but that also means the fields get recreated each time the selection changes.
