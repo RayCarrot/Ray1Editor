@@ -7,6 +7,7 @@
              xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:avalon="http://icsharpcode.net/sharpdevelop/avalonedit"
+             xmlns:dd="urn:gong-wpf-dragdrop"
              mc:Ignorable="d"
              d:Height="600" d:Width="1024" 
              Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}"
@@ -234,7 +235,10 @@
 
                             </Grid>
 
-                            <ListBox Grid.Row="1" 
+                            <ListBox x:Name="ObjList"
+                                     Grid.Row="1" 
+                                     dd:DragDrop.IsDragSource="True"
+                                     dd:DragDrop.IsDropTarget="True"
                                      ItemsSource="{Binding Path=GameObjects, Mode=OneTime}"
                                      SelectedItem="{Binding Path=SelectedGameObjectItem}">
                                 <ListBox.ItemsPanel>

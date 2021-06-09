@@ -1,7 +1,10 @@
 ﻿using BinarySerializer;
 using RayCarrot.UI;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -87,6 +90,7 @@ namespace RayCarrot.Ray1Editor
         public ObservableCollection<LayerEditorViewModel> Layers { get; }
 
         // Objects
+        public bool IsSelectingObjFromList { get; set; }
         public ObservableCollection<GameObjectListItemViewModel> GameObjects { get; }
         public GameObjectListItemViewModel SelectedGameObjectItem
         {
@@ -94,7 +98,10 @@ namespace RayCarrot.Ray1Editor
             set
             {
                 _selectedGameObjectItem = value;
+
+                IsSelectingObjFromList = true;
                 EditorScene.SelectedObject = value?.Obj;
+                IsSelectingObjFromList = false;
 
                 if (value != null)
                     EditorScene.GoToObject(value.Obj);

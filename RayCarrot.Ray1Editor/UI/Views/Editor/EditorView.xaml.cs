@@ -1,8 +1,8 @@
 ﻿using ICSharpCode.AvalonEdit.Highlighting;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
+using DragDrop = GongSolutions.Wpf.DragDrop.DragDrop;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -17,12 +17,14 @@ namespace RayCarrot.Ray1Editor
             ViewModel = viewModel;
             viewModel.PropertyChanged += (_, e) =>
             {
-                if (e.PropertyName == nameof(EditorViewModel.SelectedObject) && viewModel.SelectedObject != null)
+                if (!viewModel.IsSelectingObjFromList && e.PropertyName == nameof(EditorViewModel.SelectedObject) && viewModel.SelectedObject != null)
                     EditorTabControl.SelectedIndex = 3;
 
                 if (e.PropertyName == nameof(EditorViewModel.SelectedObjectScript))
                     ScriptTextEditor.Text = viewModel.SelectedObjectScript;
             };
+
+            DragDrop.SetDropHandler(ObjList, new EditorObjListDropTarget(ViewModel));
 
             // Hacky way of modifying some of the highlight colors so they're visible in dark mode
             foreach (var c in ScriptTextEditor.SyntaxHighlighting.NamedHighlightingColors)

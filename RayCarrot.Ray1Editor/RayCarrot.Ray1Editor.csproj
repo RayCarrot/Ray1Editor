@@ -20,8 +20,13 @@
 
   <!-- Package references -->
   <ItemGroup>
-    <!-- Theme -->
+    <!-- For the obj scripts text box formatting (line numbers and syntax highlight) -->
     <PackageReference Include="AvalonEdit" Version="6.1.2.30" />
+
+    <!-- For item drag-drop -->
+    <PackageReference Include="gong-wpf-dragdrop" Version="2.3.2" />
+    
+    <!-- Theme -->
     <PackageReference Include="MahApps.Metro" Version="2.4.5" />
     <PackageReference Include="MahApps.Metro.IconPacks.Material" Version="4.8.0" />
 
