@@ -1,13 +1,10 @@
 ﻿<UserControl x:Class="RayCarrot.Ray1Editor.EditorView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:local="clr-namespace:RayCarrot.Ray1Editor"
-             xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
-             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-             xmlns:avalon="http://icsharpcode.net/sharpdevelop/avalonedit"
-             xmlns:dd="urn:gong-wpf-dragdrop"
              mc:Ignorable="d"
              d:Height="600" d:Width="1024" 
              Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}"
@@ -65,58 +62,7 @@
 
                     <local:SmallTabItem Header="General" IconKind="CogOutline" IconForeground="{StaticResource GenericActionBrush}">
 
-                        <ScrollViewer Padding="5 10 5 5"
-                                      VerticalScrollBarVisibility="Auto">
-                            <StackPanel>
-
-                                <TextBlock Style="{StaticResource HeaderTextBlock}"
-                                           Text="Palettes"
-                                           Margin="0 0 0 7" />
-
-                                <ItemsControl Margin="0 0 0 7"
-                                              ItemsSource="{Binding Path=Palettes, Mode=OneTime}"
-                                              Grid.IsSharedSizeScope="True">
-
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid Margin="0 0 0 7">
-
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto" SharedSizeGroup="PaletteToggle" />
-                                                    <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                </Grid.ColumnDefinitions>
-
-                                                <RadioButton Grid.Column="0" 
-                                                             GroupName="PaletteToggle"
-                                                             IsChecked="{Binding Path=IsSelected}" />
-
-                                                <StackPanel Grid.Column="1" 
-                                                            Orientation="Horizontal">
-
-                                                    <TextBlock Text="{Binding Path=Header, Mode=OneTime}"
-                                                               VerticalAlignment="Center"/>
-
-                                                    <iconPacks:PackIconMaterial Style="{StaticResource PointerInfoIcon}"
-                                                                                ToolTip="{Binding Path=Offset, Mode=OneTime}" />
-
-                                                </StackPanel>
-
-                                                <Button Grid.Column="2"
-                                                        ToolTip="Edit palette"
-                                                        Click="EditPaletteButton_OnClick"
-                                                        Style="{StaticResource FlatButton}">
-                                                    <iconPacks:PackIconMaterial Kind="PencilOutline" Background="Transparent" />
-                                                </Button>
-
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-
-                                </ItemsControl>
-
-                            </StackPanel>
-                        </ScrollViewer>
+                        <local:EditorTab_General />
 
                     </local:SmallTabItem>
 
@@ -126,78 +72,7 @@
                                         IconKind="{StaticResource LayersIcon}" 
                                         IconForeground="{StaticResource LayersBrush}">
 
-                        <ScrollViewer Padding="5 10 5 5"
-                                      VerticalScrollBarVisibility="Auto">
-
-                            <ItemsControl ItemsSource="{Binding Path=Layers, Mode=OneTime}">
-
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid Margin="0 0 0 15">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="7" />
-                                                <RowDefinition Height="*" />
-                                            </Grid.RowDefinitions>
-
-                                            <Grid Grid.Row="0">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                </Grid.ColumnDefinitions>
-
-                                                <StackPanel Grid.Column="0" 
-                                                            Orientation="Horizontal">
-
-                                                    <TextBlock VerticalAlignment="Center"
-                                                               Style="{StaticResource HeaderTextBlock}"
-                                                               Text="{Binding Path=Header, Mode=OneTime}" />
-
-                                                    <iconPacks:PackIconMaterial Style="{StaticResource PointerInfoIcon}"
-                                                                                ToolTip="{Binding Path=Offset, Mode=OneTime}" />
-
-                                                </StackPanel>
-
-
-                                                <ItemsControl Grid.Column="1" ItemsSource="{Binding Path=ToggleFields, Mode=OneTime}">
-
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate DataType="{x:Type local:EditorToggleIconViewModel}">
-
-                                                            <ToggleButton Style="{StaticResource MahApps.Styles.ToggleButton.Circle}"
-                                                                          IsChecked="{Binding Path=Value}"
-                                                                          IsEnabled="{Binding Path=IsEnabled}"
-                                                                          Visibility="{Binding Path=IsVisible, Converter={local:BooleanToVisibilityConverter}}"
-                                                                          ToolTip="{Binding Path=Info, Mode=OneTime}"
-                                                                          Width="28" Height="28"
-                                                                          Margin="5 0" >
-                                                                <iconPacks:PackIconMaterial Kind="{Binding Path=IconKind, Mode=OneTime}" Width="14" Height="14"/>
-                                                            </ToggleButton>
-
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-
-                                                    <ItemsControl.ItemsPanel>
-                                                        <ItemsPanelTemplate>
-                                                            <StackPanel Orientation="Horizontal" />
-                                                        </ItemsPanelTemplate>
-                                                    </ItemsControl.ItemsPanel>
-
-                                                </ItemsControl>
-
-                                            </Grid>
-
-                                            <ItemsControl Grid.Row="2" 
-                                                          Style="{StaticResource FieldsItemsControl}"
-                                                          ItemsSource="{Binding Path=Fields, Mode=OneTime}" />
-
-                                        </Grid>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-
-                            </ItemsControl>
-
-                        </ScrollViewer>
+                        <local:EditorTab_Layers />
 
                     </local:SmallTabItem>
 
@@ -207,54 +82,7 @@
                                         IconKind="{StaticResource ObjectsIcon}" 
                                         IconForeground="{StaticResource ObjectsBrush}">
 
-                        <Grid Margin="5 10 5 5">
-
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-
-                            <Grid Grid.Row="0" Margin="0 0 0 7">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Grid.Column="0"
-                                           VerticalAlignment="Center"
-                                           Style="{StaticResource HeaderTextBlock}"
-                                           Text="Objects" />
-
-                                <ToggleButton Grid.Column="1" 
-                                              Style="{StaticResource MahApps.Styles.ToggleButton.Circle}"
-                                              IsChecked="{Binding Path=ShowObjects}"
-                                              ToolTip="Show objects"
-                                              Width="28" Height="28">
-                                    <iconPacks:PackIconMaterial Kind="EyeOutline" Width="14" Height="14"/>
-                                </ToggleButton>
-
-                            </Grid>
-
-                            <ListBox x:Name="ObjList"
-                                     Grid.Row="1" 
-                                     dd:DragDrop.IsDragSource="True"
-                                     dd:DragDrop.IsDropTarget="True"
-                                     ItemsSource="{Binding Path=GameObjects, Mode=OneTime}"
-                                     SelectedItem="{Binding Path=SelectedGameObjectItem}">
-                                <ListBox.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Vertical" />
-                                    </ItemsPanelTemplate>
-                                </ListBox.ItemsPanel>
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <!-- TODO: Format better -->
-                                        <TextBlock Text="{Binding Path=Header, Mode=OneTime}" />
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-
-                        </Grid>
+                        <local:EditorTab_Objects />
 
                     </local:SmallTabItem>
 
@@ -264,120 +92,7 @@
                                         IconKind="FileDocumentEditOutline" 
                                         IconForeground="{StaticResource PropertiesBrush}">
 
-                        <ScrollViewer Padding="5 10 5 5"
-                                      VerticalScrollBarVisibility="Auto">
-
-                            <Grid>
-
-                                <!-- Object Properties -->
-
-                                <Grid Visibility="{Binding Path=SelectedObject, Converter={local:InvertedObjectNullToVisibilityConverter}}">
-
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-
-                                    <!-- Header -->
-
-                                    <Grid Grid.Row="0" Margin="0 0 0 15">
-
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
-
-                                        <StackPanel Grid.Column="0"
-                                                    Orientation="Horizontal">
-
-                                            <TextBlock Text="{Binding Path=SelectedObjectName}"
-                                                       FontSize="22" />
-
-                                            <iconPacks:PackIconMaterial Style="{StaticResource PointerInfoIcon}" 
-                                                                        Visibility="Visible"
-                                                                        ToolTip="{Binding Path=SelectedObjectOffset}" />
-
-                                        </StackPanel>
-
-                                        <Button Grid.Column="1"
-                                                VerticalAlignment="Center"
-                                                ToolTip="Delete object"
-                                                Command="{Binding Path=DeleteSelectedObjectCommand, Mode=OneTime}"
-                                                Style="{StaticResource FlatButton}">
-                                            <iconPacks:PackIconMaterial Kind="DeleteOutline" Background="Transparent" />
-                                        </Button>
-
-                                    </Grid>
-
-                                    <!-- Object Fields -->
-
-                                    <StackPanel Grid.Row="1" Margin="0 0 0 7">
-
-                                        <TextBlock Style="{StaticResource HeaderTextBlock}"
-                                                   Text="Object Fields"
-                                                   Margin="0 0 0 7" />
-
-                                        <ItemsControl Style="{StaticResource FieldsItemsControl}"
-                                                      ItemsSource="{Binding Path=ObjFields, Mode=OneTime}" />
-
-                                    </StackPanel>
-
-                                    <!-- Object Scripts -->
-
-                                    <StackPanel Grid.Row="2" 
-                                                Margin="0 0 0 7" 
-                                                Visibility="{Binding Path=SelectedObjectScript, Converter={local:InvertedObjectNullToVisibilityConverter}}">
-
-                                        <TextBlock Style="{StaticResource HeaderTextBlock}"
-                                                   Text="Object Commands"
-                                                   Margin="0 0 0 7" />
-
-                                        <avalon:TextEditor x:Name="ScriptTextEditor"
-                                                           ShowLineNumbers="True"
-                                                           SyntaxHighlighting="C++"
-                                                           HorizontalScrollBarVisibility="Disabled"
-                                                           VerticalScrollBarVisibility="Disabled"
-                                                           IsReadOnly="True"
-                                                           Margin="0 0 0 7" />
-
-                                    </StackPanel>
-
-                                    <!-- Object Data -->
-
-                                    <StackPanel Grid.Row="3" Margin="0 0 0 7">
-
-                                        <TextBlock Style="{StaticResource HeaderTextBlock}"
-                                                   Text="Object Data"
-                                                   Margin="0 0 0 7" />
-
-                                        <!-- TODO: Show serializable data here -->
-
-                                    </StackPanel>
-
-                                </Grid>
-
-                                <!-- Default (no object selected) -->
-
-                                <Viewbox Visibility="{Binding Path=SelectedObject, Converter={local:ObjectNullToVisibilityConverter}}">
-                                    <Grid Margin="20">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="5" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-
-                                        <iconPacks:PackIconMaterial Grid.Column="0" 
-                                                                    Kind="{StaticResource ObjectsIcon}" 
-                                                                    Foreground="{StaticResource ObjectsBrush}" />
-                                        <TextBlock Grid.Column="2" Text="Select an Object" />
-                                    </Grid>
-                                </Viewbox>
-
-                            </Grid>
-
-                        </ScrollViewer>
+                        <local:EditorTab_Properties />
 
                     </local:SmallTabItem>
 
