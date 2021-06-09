@@ -21,6 +21,7 @@
   <!-- Package references -->
   <ItemGroup>
     <!-- Theme -->
+    <PackageReference Include="AvalonEdit" Version="6.1.2.30" />
     <PackageReference Include="MahApps.Metro" Version="2.4.5" />
     <PackageReference Include="MahApps.Metro.IconPacks.Material" Version="4.8.0" />
 

@@ -1,5 +1,8 @@
-﻿using System.Windows;
+﻿using ICSharpCode.AvalonEdit.Highlighting;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -16,7 +19,61 @@ namespace RayCarrot.Ray1Editor
             {
                 if (e.PropertyName == nameof(EditorViewModel.SelectedObject) && viewModel.SelectedObject != null)
                     EditorTabControl.SelectedIndex = 3;
+
+                if (e.PropertyName == nameof(EditorViewModel.SelectedObjectScript))
+                    ScriptTextEditor.Text = viewModel.SelectedObjectScript;
             };
+
+            // Hacky way of modifying some of the highlight colors so they're visible in dark mode
+            foreach (var c in ScriptTextEditor.SyntaxHighlighting.NamedHighlightingColors)
+            {
+                switch (c.Name)
+                {
+                    case "Comment":
+                        break;
+                    case "Character":
+                        break;
+                    case "String":
+                        break;
+                    case "Preprocessor":
+                        break;
+                    case "Punctuation": // ==
+                        c.Foreground = new SimpleHighlightingBrush(Color.FromRgb(0x00, 0x96, 0x88));
+                        break;
+                    case "MethodName": // IF ()
+                        c.Foreground = new SimpleHighlightingBrush(Color.FromRgb(0x8B, 0xC3, 0x4A));
+                        break;
+                    case "Digits":
+                        c.Foreground = new SimpleHighlightingBrush(Color.FromRgb(0xFF, 0xEB, 0x3B));
+                        break;
+                    case "CompoundKeywords":
+                        break;
+                    case "This":
+                        break;
+                    case "Operators":
+                        break;
+                    case "Namespace":
+                        break;
+                    case "Friend":
+                        break;
+                    case "Modifiers":
+                        break;
+                    case "TypeKeywords":
+                        break;
+                    case "BooleanConstants":
+                        break;
+                    case "Keywords":
+                        break;
+                    case "LoopKeywords":
+                        break;
+                    case "JumpKeywords":
+                        break;
+                    case "ExceptionHandling":
+                        break;
+                    case "ControlFlow":
+                        break;
+                }
+            }
         }
 
         public EditorViewModel ViewModel

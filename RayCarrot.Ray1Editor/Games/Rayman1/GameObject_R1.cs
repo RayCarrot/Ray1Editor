@@ -1,4 +1,5 @@
-﻿using BinarySerializer;
+﻿using System;
+using BinarySerializer;
 using BinarySerializer.Ray1;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -11,6 +12,11 @@ namespace RayCarrot.Ray1Editor
         public GameObject_R1(ObjData objData)
         {
             ObjData = objData;
+
+            var cmdLines = objData.Commands?.ToTranslatedStrings(objData.LabelOffsets, 1);
+
+            if (cmdLines != null) 
+                Scripts = String.Join(Environment.NewLine, cmdLines);
         }
 
         // Data
@@ -99,6 +105,7 @@ namespace RayCarrot.Ray1Editor
         // Info
         public override string PrimaryName => (ushort)ObjData.Type < 262 ? $"{ObjData.Type.ToString().Replace("TYPE_", "")}" : $"TYPE_{(ushort)ObjData.Type}";
         public override string SecondaryName => null; // TODO: Set from event csv
+        public override string Scripts { get; }
 
         // Animations
         public override ObjAnimation_HitBoxLayer[] HitBoxLayers => null; // TODO: Implement from ZDC

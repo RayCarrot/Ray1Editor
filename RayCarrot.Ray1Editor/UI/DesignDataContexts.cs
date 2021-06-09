@@ -53,6 +53,8 @@ namespace RayCarrot.Ray1Editor
                     new PaletteEditorViewModel(DummyPalette, false, _ => {}),
                 });
 
+                vm.SelectedObjectScript = $"LABEL 2:\r\n\tLEFT 200;\r\n\tGOTO LINE 1;\r\nLABEL 3:\r\n\tRIGHT 200;\r\n\tGOTO LINE 4;\r\nLABEL 1:\r\n\tNOP 200;\r\n\tGOTO LINE 7;\r\n\tINVALID_CMD 255;";
+
                 return vm;
             }
         }

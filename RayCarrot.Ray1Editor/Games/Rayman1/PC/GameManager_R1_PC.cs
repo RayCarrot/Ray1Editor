@@ -217,8 +217,6 @@ namespace RayCarrot.Ray1Editor
                 getValueAction: () => getObjData().HitSprite,
                 setValueAction: x => getObjData().HitSprite = (byte)x,
                 max: 255);
-
-            // TODO: Commands, labels
         }
 
         #endregion
@@ -289,14 +287,20 @@ namespace RayCarrot.Ray1Editor
 
         public void LoadObjects(GameData_R1 data, PC_LevFile lev)
         {
-            data.Objects.AddRange(lev.ObjData.Objects.Select(x => new GameObject_R1(x)));
+            var objIndex = 0;
 
-            foreach (var obj in data.Objects.Cast<GameObject_R1>())
+            foreach (var obj in lev.ObjData.Objects)
             {
-                obj.ObjData.Animations = data.PC_LoadedAnimations[(int)obj.ObjData.PC_AnimationsIndex];
-                obj.ObjData.ImageBuffer = data.PC_DES[obj.ObjData.PC_SpritesIndex].ImageData;
-                obj.ObjData.Sprites = data.PC_DES[obj.ObjData.PC_SpritesIndex].Sprites;
-                obj.ObjData.ETA = data.ETA[(int)obj.ObjData.PC_ETAIndex];
+                obj.Animations = data.PC_LoadedAnimations[(int)obj.PC_AnimationsIndex];
+                obj.ImageBuffer = data.PC_DES[obj.PC_SpritesIndex].ImageData;
+                obj.Sprites = data.PC_DES[obj.PC_SpritesIndex].Sprites;
+                obj.ETA = data.ETA[(int)obj.PC_ETAIndex];
+                obj.Commands = lev.ObjData.ObjCommands[objIndex].Commands;
+                obj.LabelOffsets = lev.ObjData.ObjCommands[objIndex].LabelOffsetTable;
+
+                data.Objects.Add(new GameObject_R1(obj));
+
+                objIndex++;
             }
 
             InitLinkGroups(data.Objects, lev.ObjData.ObjLinkingTable);

@@ -80,7 +80,8 @@ namespace RayCarrot.Ray1Editor
         // Info
         public abstract string PrimaryName { get; } // Official
         public abstract string SecondaryName { get; } // Unofficial
-        public virtual string DebugText => null;
+        //public virtual string DebugText => null;
+        public virtual string Scripts => null;
 
         // Update
         public virtual void Update(EditorUpdateData updateData)

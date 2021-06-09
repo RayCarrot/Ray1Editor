@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:RayCarrot.Ray1Editor"
              xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:avalon="http://icsharpcode.net/sharpdevelop/avalonedit"
              mc:Ignorable="d"
              d:Height="600" d:Width="1024" 
              Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}"
@@ -47,9 +48,7 @@
                           Background="Transparent"
                           Width="10"  />
 
-            <!--<Separator Grid.Column="1" Style="{StaticResource MahApps.Styles.Separator.StatusBar}" HorizontalAlignment="Center" />-->
-            
-            <!-- Object Fields -->
+            <!-- Editor Fields -->
 
             <Grid Grid.Column="2" >
                 <Grid.RowDefinitions>
@@ -265,17 +264,23 @@
 
                             <Grid>
 
+                                <!-- Object Properties -->
+
                                 <Grid Visibility="{Binding Path=SelectedObject, Converter={local:InvertedObjectNullToVisibilityConverter}}">
 
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="20" />
-                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
+
+                                    <!-- Header -->
 
                                     <StackPanel Grid.Column="0" 
                                                 HorizontalAlignment="Center"
-                                                Orientation="Horizontal">
+                                                Orientation="Horizontal"
+                                                Margin="0 0 0 15">
 
                                         <TextBlock Text="{Binding Path=SelectedObjectName}"
                                                    FontSize="22" />
@@ -286,14 +291,56 @@
 
                                     </StackPanel>
 
-                                    <ItemsControl Grid.Row="2"
-                                                  Style="{StaticResource FieldsItemsControl}"
-                                                  ItemsSource="{Binding Path=ObjFields, Mode=OneTime}" />
+                                    <!-- Object Fields -->
+
+                                    <StackPanel Grid.Row="1" Margin="0 0 0 7">
+
+                                        <TextBlock Style="{StaticResource HeaderTextBlock}"
+                                                   Text="Object Fields"
+                                                   Margin="0 0 0 7" />
+
+                                        <ItemsControl Style="{StaticResource FieldsItemsControl}"
+                                                      ItemsSource="{Binding Path=ObjFields, Mode=OneTime}" />
+
+                                    </StackPanel>
+
+                                    <!-- Object Scripts -->
+
+                                    <StackPanel Grid.Row="2" 
+                                                Margin="0 0 0 7" 
+                                                Visibility="{Binding Path=SelectedObjectScript, Converter={local:InvertedObjectNullToVisibilityConverter}}">
+
+                                        <TextBlock Style="{StaticResource HeaderTextBlock}"
+                                                   Text="Object Commands"
+                                                   Margin="0 0 0 7" />
+
+                                        <avalon:TextEditor x:Name="ScriptTextEditor"
+                                                           ShowLineNumbers="True"
+                                                           SyntaxHighlighting="C++"
+                                                           HorizontalScrollBarVisibility="Disabled"
+                                                           VerticalScrollBarVisibility="Disabled"
+                                                           IsReadOnly="True"
+                                                           Margin="0 0 0 7" />
+
+                                    </StackPanel>
+
+                                    <!-- Object Data -->
+
+                                    <StackPanel Grid.Row="3" Margin="0 0 0 7">
+
+                                        <TextBlock Style="{StaticResource HeaderTextBlock}"
+                                                   Text="Object Data"
+                                                   Margin="0 0 0 7" />
+
+                                        <!-- TODO: Show serializable data here -->
+
+                                    </StackPanel>
 
                                 </Grid>
 
-                                <Viewbox
-                                    Visibility="{Binding Path=SelectedObject, Converter={local:ObjectNullToVisibilityConverter}}">
+                                <!-- Default (no object selected) -->
+
+                                <Viewbox Visibility="{Binding Path=SelectedObject, Converter={local:ObjectNullToVisibilityConverter}}">
                                     <Grid Margin="20">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
