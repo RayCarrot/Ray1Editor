@@ -32,7 +32,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" MinWidth="400" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="320" MinWidth="200" />
+                <ColumnDefinition Width="340" MinWidth="250" />
             </Grid.ColumnDefinitions>
 
             <!-- Scene -->

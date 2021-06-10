@@ -6,7 +6,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:local="clr-namespace:RayCarrot.Ray1Editor"
              mc:Ignorable="d"
-             d:Width="320"
+             d:Width="340"
              d:DataContext="{x:Static local:DesignDataContexts.EditorViewModel}"
              Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}">
 
@@ -26,8 +26,8 @@
 
                         <Grid Grid.Row="0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Grid.Column="0"
@@ -43,7 +43,10 @@
                             </StackPanel>
 
 
-                            <ItemsControl Grid.Column="1" ItemsSource="{Binding Path=ToggleFields, Mode=OneTime}">
+                            <ItemsControl Grid.Column="1" 
+                                          HorizontalAlignment="Right" 
+                                          ItemsSource="{Binding Path=ToggleFields, Mode=OneTime}" 
+                                          Margin="0 0 0 -7">
 
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="{x:Type local:EditorToggleIconViewModel}">
@@ -54,7 +57,7 @@
                                                       Visibility="{Binding Path=IsVisible, Converter={local:BooleanToVisibilityConverter}}"
                                                       ToolTip="{Binding Path=Info, Mode=OneTime}"
                                                       Width="28" Height="28"
-                                                      Margin="5 0">
+                                                      Margin="5 0 5 7">
                                             <iconPacks:PackIconMaterial Kind="{Binding Path=IconKind, Mode=OneTime}"
                                                                         Width="14" Height="14" />
                                         </ToggleButton>
@@ -64,7 +67,7 @@
 
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal" />
+                                        <WrapPanel Orientation="Horizontal" />
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
 

@@ -40,7 +40,7 @@
                   IsCheckable="True"
                   IsChecked="{Binding Path=IsPaused}" />
         <MenuItem Header="Reset Position"
-                  Icon="{iconPacks:Material MapMarker}"
+                  Icon="{iconPacks:Material CameraControl}"
                   Command="{Binding Path=ResetPositionCommand, Mode=OneTime}" />
         <Separator />
         <MenuItem Header="Animate Objects"

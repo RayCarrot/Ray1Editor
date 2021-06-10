@@ -1,10 +1,7 @@
 ﻿using BinarySerializer;
 using RayCarrot.UI;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -126,7 +123,7 @@ namespace RayCarrot.Ray1Editor
             // Set up palettes
             Palettes.AddRange(EditorScene.GameData.Palettes.Select((x, i) => new PaletteEditorViewModel(x, i == 0, pal =>
             {
-                EditorScene.TextureManager.SwapPalettes(CurrentlySelectedPalette, pal);
+                EditorScene.GameData.TextureManager.SwapPalettes(CurrentlySelectedPalette, pal);
                 CurrentlySelectedPalette = pal;
             })));
 

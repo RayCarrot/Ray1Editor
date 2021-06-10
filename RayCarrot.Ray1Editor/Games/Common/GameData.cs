@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using BinarySerializer;
 
 namespace RayCarrot.Ray1Editor
@@ -6,15 +7,17 @@ namespace RayCarrot.Ray1Editor
     /// <summary>
     /// Game data to be stored for the editor and used by the game manager
     /// </summary>
-    public abstract class GameData
+    public abstract class GameData : IDisposable
     {
         /// <summary>
         /// Default constructor
         /// </summary>
         /// <param name="context">The serializer context</param>
-        protected GameData(Context context)
+        /// <param name="textureManager">The texture manager</param>
+        protected GameData(Context context, TextureManager textureManager)
         {
             Context = context;
+            TextureManager = textureManager;
             Objects = new List<GameObject>();
             Layers = new List<Layer>();
         }
@@ -23,6 +26,11 @@ namespace RayCarrot.Ray1Editor
         /// The serializer context
         /// </summary>
         public Context Context { get; }
+
+        /// <summary>
+        /// The texture manager
+        /// </summary>
+        public TextureManager TextureManager { get; }
 
         /// <summary>
         /// The objects
@@ -52,6 +60,12 @@ namespace RayCarrot.Ray1Editor
             // Load layers
             foreach (var layer in Layers)
                 layer.LoadElement(e);
+        }
+
+        public void Dispose()
+        {
+            Context?.Dispose();
+            TextureManager?.Dispose();
         }
     }
 }

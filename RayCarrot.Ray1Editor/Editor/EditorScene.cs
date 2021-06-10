@@ -52,7 +52,6 @@ namespace RayCarrot.Ray1Editor
         public bool IsPaused { get; set; } // TODO: Add setting
         public EditorState State { get; }
         public Context Context { get; }
-        public TextureManager TextureManager { get; protected set; }
 
         // Mode
         public EditorMode Mode
@@ -126,9 +125,6 @@ namespace RayCarrot.Ray1Editor
             // Create a sprite batch
             SpriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // Create a texture manager
-            TextureManager = new TextureManager(GraphicsDevice);
-
             // Create the camera
             Cam = new Camera(GraphicsDevice.Viewport);
 
@@ -145,7 +141,7 @@ namespace RayCarrot.Ray1Editor
         {
             // Load the game data
             using (Context)
-                GameData = GameManager.Load(Context, GameSettings, TextureManager);
+                GameData = GameManager.Load(Context, GameSettings, new TextureManager(GraphicsDevice));
 
             // Load elements
             GameData.LoadElements(this);
@@ -187,7 +183,7 @@ namespace RayCarrot.Ray1Editor
             base.UnloadContent();
 
             SpriteBatch?.Dispose();
-            TextureManager?.Dispose();
+            GameData?.Dispose();
             Primitives2D.Dipose();
         }
 
@@ -467,7 +463,8 @@ namespace RayCarrot.Ray1Editor
             foreach (var obj in GameData.Objects)
                 obj.Save();
 
-            GameManager.Save(Context, GameData);
+            using (Context)
+                GameManager.Save(Context, GameData);
         }
 
         protected override void Dispose(bool disposing)

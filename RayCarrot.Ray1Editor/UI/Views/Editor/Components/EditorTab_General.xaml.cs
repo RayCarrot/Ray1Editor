@@ -42,7 +42,7 @@ namespace RayCarrot.Ray1Editor
             // Update the palette with the modifications
             editVM.UpdatePalette();
 
-            ViewModel.EditorScene.TextureManager.RefreshPalette(editVM.Palette);
+            ViewModel.EditorScene.GameData.TextureManager.RefreshPalette(editVM.Palette);
         }
     }
 }

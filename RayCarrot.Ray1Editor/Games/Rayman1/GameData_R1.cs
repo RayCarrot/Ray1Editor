@@ -9,7 +9,7 @@ namespace RayCarrot.Ray1Editor
     /// </summary>
     public class GameData_R1 : GameData
     {
-        public GameData_R1(Context context) : base(context)
+        public GameData_R1(Context context, TextureManager textureManager) : base(context, textureManager)
         {
             Sprites = new Dictionary<Sprite[], PalettedTextureSheet>();
             Animations = new Dictionary<Animation[], ObjAnimation[]>();

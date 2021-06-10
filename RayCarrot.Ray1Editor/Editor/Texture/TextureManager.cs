@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace RayCarrot.Ray1Editor
@@ -45,6 +46,8 @@ namespace RayCarrot.Ray1Editor
 
         public void RefreshPalette(Palette pal)
         {
+            Debug.WriteLine($"Refreshed palette {pal.Name}");
+
             foreach (var tex in EnumeratePalettedData().Where(x => x.Palette == pal))
                 tex.Apply();
         }
