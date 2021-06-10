@@ -9,7 +9,7 @@ namespace RayCarrot.Ray1Editor
 {
     public class R1_GameObject : GameObject
     {
-        public R1_GameObject(ObjData objData)
+        public R1_GameObject(ObjData objData, R1_EventDefinition def = null)
         {
             ObjData = objData;
 
@@ -17,6 +17,8 @@ namespace RayCarrot.Ray1Editor
 
             if (cmdLines != null) 
                 Scripts = String.Join(Environment.NewLine, cmdLines);
+
+            SecondaryName = def?.Name;
         }
 
         // Data
@@ -104,7 +106,7 @@ namespace RayCarrot.Ray1Editor
 
         // Info
         public override string PrimaryName => (ushort)ObjData.Type < 262 ? $"{ObjData.Type.ToString().Replace("TYPE_", "")}" : $"TYPE_{(ushort)ObjData.Type}";
-        public override string SecondaryName => null; // TODO: Set from event csv
+        public override string SecondaryName { get; }
         public override string Scripts { get; }
 
         // Animations

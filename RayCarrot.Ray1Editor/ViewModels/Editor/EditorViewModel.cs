@@ -89,6 +89,11 @@ namespace RayCarrot.Ray1Editor
 
         // Objects
         public ObservableCollection<string> AvailableObjects { get; }
+        public int SelectedNewObjIndex
+        {
+            get => EditorScene?.SelectedNewObjIndex ?? 0;
+            set => EditorScene.SelectedNewObjIndex = value;
+        }
         public bool IsSelectingObjFromList { get; set; }
         public ObservableCollection<GameObjectListItemViewModel> GameObjects { get; }
         public GameObjectListItemViewModel SelectedGameObjectItem
@@ -157,12 +162,17 @@ namespace RayCarrot.Ray1Editor
             _selectedGameObjectItem = obj == null ? null : GameObjects.First(x => x.Obj == obj);
             OnPropertyChanged(nameof(SelectedGameObjectItem));
 
-            SelectedObjectName = obj?.PrimaryName;
+            SelectedObjectName = obj?.SecondaryName ?? obj?.PrimaryName;
             SelectedObjectOffset = obj?.SerializableData?.Offset?.ToString();
             SelectedObjectScript = obj?.Scripts;
         }
 
         public void OnModeChanged(EditorMode oldMode, EditorMode newMode) { }
+        
+        public void OnObjectAdded(GameObject obj)
+        {
+            GameObjects.Add(new GameObjectListItemViewModel(obj));
+        }
 
         public void OnObjectRemoved(GameObject obj)
         {

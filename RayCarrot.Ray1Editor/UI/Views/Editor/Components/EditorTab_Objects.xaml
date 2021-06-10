@@ -20,6 +20,8 @@
         </Grid.RowDefinitions>
 
         <ComboBox Grid.Row="0"
+                  Margin="0 0 0 7"
+                  SelectedIndex="{Binding Path=SelectedNewObjIndex}"
                   ItemsSource="{Binding Path=AvailableObjects, Mode=OneTime}"/>
 
         <Grid Grid.Row="1" Margin="0 0 0 7">

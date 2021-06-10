@@ -35,6 +35,7 @@ namespace RayCarrot.Ray1Editor
 
         private GameObject _selectedObject;
         private EditorMode _mode;
+        private bool _isAddObjButtonDown;
 
         #endregion
 
@@ -84,6 +85,7 @@ namespace RayCarrot.Ray1Editor
         public GameData GameData { get; protected set; }
 
         // Objects
+        public int SelectedNewObjIndex { get; set; }
         public bool ShowObjects { get; set; } = true;
         public GameObject HoverObject { get; protected set; }
         public GameObject SelectedObject
@@ -264,12 +266,31 @@ namespace RayCarrot.Ray1Editor
 
         protected void UpdateModeObjects(EditorUpdateData updateData)
         {
+            // Delete object
             if (updateData.Keyboard.IsKeyDown(Keys.Delete) && SelectedObject != null)
             {
                 RemoveObject(SelectedObject);
                 return;
             }
 
+            if (updateData.Mouse.MiddleButton != ButtonState.Pressed)
+                _isAddObjButtonDown = false;
+
+            // Add object
+            if (updateData.Mouse.MiddleButton == ButtonState.Pressed && !_isAddObjButtonDown)
+            {
+                _isAddObjButtonDown = true;
+
+                var obj = GameManager.CreateGameObject(GameData, SelectedNewObjIndex);
+                obj.Position = updateData.MousePosition.ToPoint();
+                obj.LoadElement(this);
+                obj.Load();
+                GameData.Objects.Add(obj);
+                VM.OnObjectAdded(obj);
+                return;
+            }
+
+            // Move object
             if (updateData.Mouse.LeftButton == ButtonState.Pressed)
             {
                 if (!IsDraggingObject)

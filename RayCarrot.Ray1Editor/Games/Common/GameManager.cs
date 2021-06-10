@@ -1,7 +1,6 @@
-﻿using System;
+﻿using BinarySerializer;
+using System;
 using System.Collections.Generic;
-using BinarySerializer;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -46,5 +45,13 @@ namespace RayCarrot.Ray1Editor
         /// <param name="gameData">The game data</param>
         /// <returns>The object names</returns>
         public abstract IEnumerable<string> GetAvailableObjects(GameData gameData);
+
+        /// <summary>
+        /// Creates a new game object from the collection of available objects
+        /// </summary>
+        /// <param name="gameData">The game data</param>
+        /// <param name="index">The index from the available objects</param>
+        /// <returns>The new object</returns>
+        public abstract GameObject CreateGameObject(GameData gameData, int index);
     }
 }

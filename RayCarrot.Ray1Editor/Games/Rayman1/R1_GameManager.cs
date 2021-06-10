@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using BinarySerializer.Ray1;
+﻿using BinarySerializer.Ray1;
 using Microsoft.Xna.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using BinarySerializer;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -15,6 +17,7 @@ namespace RayCarrot.Ray1Editor
         public const string AssetPath_EventsFile = AssetPath_EventsDir + "Events.csv";
 
         protected abstract int MaxObjType { get; }
+        protected virtual bool UsesLocalCommands => false;
 
         public IEnumerable<LoadGameLevelViewModel> GetLevels(Ray1EngineVersion engineVersion, Ray1PCVersion pcVersion = Ray1PCVersion.None, string volume = null)
         {
@@ -191,9 +194,154 @@ namespace RayCarrot.Ray1Editor
                 ToArray();
         }
 
+        public R1_EventDefinition FindMatchingEventDefinition(R1_GameData data, ObjData e)
+        {
+            byte[] compiledCmds;
+            ushort[] labelOffsets;
+
+            if (UsesLocalCommands)
+            {
+                var compiledData = e.Commands == null ? null : ObjCommandCompiler.Compile(e.Commands);
+                compiledCmds = compiledData?.Commands?.ToBytes(() =>
+                {
+                    var c = new Context(data.Context.BasePath);
+                    c.AddSettings(data.Context.GetSettings<Ray1Settings>());
+                    return c;
+                }) ?? new byte[0];
+                labelOffsets = compiledData?.LabelOffsets ?? new ushort[0];
+            }
+            else
+            {
+                compiledCmds = e.Commands?.ToBytes(() =>
+                {
+                    var c = new Context(data.Context.BasePath);
+                    c.AddSettings(data.Context.GetSettings<Ray1Settings>());
+                    return c;
+                }) ?? new byte[0];
+                labelOffsets = e.LabelOffsets ?? new ushort[0];
+            }
+
+            // Helper method for comparing the commands
+            bool compareCommands(R1_EventDefinition eventInfo) =>
+                eventInfo.LabelOffsets.SequenceEqual(labelOffsets) &&
+                eventInfo.Commands.SequenceEqual(compiledCmds);
+
+            // Find a matching item
+            var match = findMatch(EventMatchFlags.All) ??
+                        findMatch(EventMatchFlags.All & ~EventMatchFlags.HitSprite & ~EventMatchFlags.Commands) ??
+                        findMatch(EventMatchFlags.Type | EventMatchFlags.Etat | EventMatchFlags.SubEtat);
+
+            R1_EventDefinition findMatch(EventMatchFlags flags)
+            {
+                return data.EventDefinitions.FirstOrDefault(x => 
+                    (!flags.HasFlag(EventMatchFlags.Type) || x.Type == (ushort)e.Type) &&
+                    (!flags.HasFlag(EventMatchFlags.Etat) || x.Etat == e.Etat) &&
+                    (!flags.HasFlag(EventMatchFlags.SubEtat) || x.SubEtat == e.SubEtat) &&
+                    (!flags.HasFlag(EventMatchFlags.OffsetBX) || x.OffsetBX == e.OffsetBX) &&
+                    (!flags.HasFlag(EventMatchFlags.OffsetBY) || x.OffsetBY == e.OffsetBY) &&
+                    (!flags.HasFlag(EventMatchFlags.OffsetHY) || x.OffsetHY == e.OffsetHY) &&
+                    (!flags.HasFlag(EventMatchFlags.FollowSprite) || x.FollowSprite == e.FollowSprite) &&
+                    (!flags.HasFlag(EventMatchFlags.HitPoints) || x.HitPoints == e.ActualHitPoints) &&
+                    (!flags.HasFlag(EventMatchFlags.HitSprite) || x.HitSprite == e.HitSprite) &&
+                    (!flags.HasFlag(EventMatchFlags.FollowEnabled) || x.FollowEnabled == e.GetFollowEnabled(data.Context.GetSettings<Ray1Settings>())) && 
+                    (!flags.HasFlag(EventMatchFlags.Commands) || compareCommands(x)));
+            }
+
+            // Log if not found
+            if (match == null && data.EventDefinitions.Any())
+            {
+                // TODO: Logging
+                //Debug.LogWarning($"Matching event not found for event with type {e.Type}, etat {e.Etat} & subetat {e.SubEtat} in level {Settings.World}-{Settings.Level}");
+            }
+
+            // Return the item
+            return match;
+        }
+
+        [Flags]
+        protected enum EventMatchFlags : ushort
+        {
+            None = 0,
+
+            Type = 1 << 0,
+            Etat = 1 << 1,
+            SubEtat = 1 << 2,
+            OffsetBX = 1 << 3,
+            OffsetBY = 1 << 4,
+            OffsetHY = 1 << 5,
+            FollowSprite = 1 << 6,
+            HitPoints = 1 << 7,
+            HitSprite = 1 << 8,
+            FollowEnabled = 1 << 9,
+            Commands = 1 << 10,
+
+            All = UInt16.MaxValue,
+        }
+
         public override IEnumerable<string> GetAvailableObjects(GameData gameData)
         {
             return ((R1_GameData)gameData).EventDefinitions.Select(x => x.Name);
+        }
+
+        public override GameObject CreateGameObject(GameData gameData, int index)
+        {
+            var data = (R1_GameData)gameData;
+            var def = data.EventDefinitions[index];
+
+            // Get the commands and label offsets
+            CommandCollection cmds = null;
+            ushort[] labelOffsets = null;
+
+            // If local (non-compiled) commands are used, attempt to get them from the event info or decompile the compiled ones
+            if (UsesLocalCommands)
+            {
+                cmds = ObjCommandCompiler.Decompile(new ObjCommandCompiler.CompiledObjCommandData(CommandCollection.FromBytes(def.Commands, () =>
+                {
+                    var c = new Context(data.Context.BasePath);
+                    c.AddSettings(data.Context.GetSettings<Ray1Settings>());
+                    return c;
+                }), def.LabelOffsets), def.Commands);
+            }
+            else if (def.Commands.Any())
+            {
+                cmds = CommandCollection.FromBytes(def.Commands, () =>
+                {
+                    var c = new Context(data.Context.BasePath);
+                    c.AddSettings(data.Context.GetSettings<Ray1Settings>());
+                    return c;
+                });
+                labelOffsets = def.LabelOffsets.Any() ? def.LabelOffsets : null;
+            }
+
+            var des = data.DES.First(x => x.Name == def.DES);
+            var eta = data.ETA.First(x => x.Name == def.ETA);
+
+            var obj = new R1_GameObject(new ObjData()
+            {
+                Type = (ObjType)def.Type,
+                Etat = def.Etat,
+                SubEtat = def.SubEtat,
+                OffsetBX = def.OffsetBX,
+                OffsetBY = def.OffsetBY,
+                OffsetHY = def.OffsetHY,
+                FollowSprite = def.FollowSprite,
+                DisplayPrio = 0,
+                HitSprite = def.HitSprite,
+                Commands = cmds,
+                LabelOffsets = labelOffsets,
+                Animations = des.AnimationsData,
+                ImageBuffer = des.ImageBuffer,
+                Sprites = des.SpritesData,
+                ETA = eta.ETA,
+
+            }, def);
+
+            obj.ObjData.SetFollowEnabled(data.Context.GetSettings<Ray1Settings>(), def.FollowEnabled);
+
+            // We need to set the hit points after the type
+            obj.ObjData.ActualHitPoints = def.HitPoints;
+
+            return obj;
         }
     }
 }

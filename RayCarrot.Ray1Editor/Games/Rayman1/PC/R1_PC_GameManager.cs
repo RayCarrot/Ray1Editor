@@ -84,11 +84,11 @@ namespace RayCarrot.Ray1Editor
             // Load ETA (states)
             LoadETA(data, fix, wld, etaNames);
 
-            // Load objects
-            LoadObjects(data, lev);
-
             // Load the editor event definitions
             LoadEditorEventDefinitions(data);
+
+            // Load objects
+            LoadObjects(data, lev);
 
             return data;
         }
@@ -177,10 +177,10 @@ namespace RayCarrot.Ray1Editor
                 ToArray();
             var dropDownLookup_type = dropDownItems_type.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data, x => x.i);
             
-            var dropDownItems_des = data.DES.Select((x, i) => new EditorDropDownFieldViewModel.DropDownItem<R1_GameData.DESData>($"DES {i + 1}", x)).ToArray();
+            var dropDownItems_des = data.DES.Select((x, i) => new EditorDropDownFieldViewModel.DropDownItem<R1_GameData.DESData>($"DES {i + 1}{(x.Name != null ? $" ({x.Name})" : "")}", x)).ToArray();
             var dropDownLookup_des = dropDownItems_des.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data.SpritesData, x => x.i);
             
-            var dropDownItems_eta = data.ETA.Select((x, i) => new EditorDropDownFieldViewModel.DropDownItem<ETA>($"ETA {i}", x.ETA)).ToArray();
+            var dropDownItems_eta = data.ETA.Select((x, i) => new EditorDropDownFieldViewModel.DropDownItem<ETA>($"ETA {i}{(x.Name != null ? $" ({x.Name})" : "")}", x.ETA)).ToArray();
             var dropDownLookup_eta = dropDownItems_eta.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data, x => x.i);
             
             var dropDownItems_state = new Dictionary<ETA, EditorDropDownFieldViewModel.DropDownItem<DropDownFieldData_State>[]>();
@@ -345,12 +345,14 @@ namespace RayCarrot.Ray1Editor
 
             void loadETA(IEnumerable<PC_ETA> eta)
             {
+                var offset = data.ETA.Count;
+
                 data.ETA.AddRange(eta.Select((x, i) => new R1_GameData.ETAData(new ETA()
                 {
                     States = x.States
                 })
                 {
-                    Name = names[i]
+                    Name = names[offset + i]
                 }));
             }
         }
@@ -368,7 +370,7 @@ namespace RayCarrot.Ray1Editor
                 obj.Commands = lev.ObjData.ObjCommands[objIndex].Commands;
                 obj.LabelOffsets = lev.ObjData.ObjCommands[objIndex].LabelOffsetTable;
 
-                data.Objects.Add(new R1_GameObject(obj));
+                data.Objects.Add(new R1_GameObject(obj, FindMatchingEventDefinition(data, obj)));
 
                 objIndex++;
             }
