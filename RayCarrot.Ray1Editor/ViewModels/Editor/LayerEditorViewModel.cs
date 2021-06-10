@@ -1,5 +1,6 @@
 ﻿using RayCarrot.UI;
 using System.Collections.ObjectModel;
+using BinarySerializer;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -10,7 +11,10 @@ namespace RayCarrot.Ray1Editor
             Layer = layer;
             Fields = new ObservableCollection<EditorFieldViewModel>();
             ToggleFields = new ObservableCollection<EditorToggleIconViewModel>();
+            _prevPointer = layer.Pointer;
         }
+
+        private Pointer _prevPointer;
 
         public ObservableCollection<EditorFieldViewModel> Fields { get; }
         public ObservableCollection<EditorToggleIconViewModel> ToggleFields { get; }
@@ -34,6 +38,15 @@ namespace RayCarrot.Ray1Editor
 
             foreach (var field in ToggleFields)
                 field.Refresh();
+        }
+
+        public void Update()
+        {
+            if (Layer.Pointer != _prevPointer)
+            {
+                OnPropertyChanged(nameof(Offset));
+                _prevPointer = Layer.Pointer;
+            }
         }
     }
 }

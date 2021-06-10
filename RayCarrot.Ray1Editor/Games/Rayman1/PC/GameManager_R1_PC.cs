@@ -145,8 +145,8 @@ namespace RayCarrot.Ray1Editor
             mapData.Tiles = mapLayer.TileMap;
 
             // Save the background
-            lvlData.FNDIndex = data.PC_FondIndex;
-            lvlData.ScrollDiffFNDIndex = data.PC_ScrollDiffFondIndex;
+            lvlData.FNDIndex = (byte)data.Layers.OfType<BackgroundLayer>().ElementAt(0).SelectedBackgroundIndex;
+            lvlData.ScrollDiffFNDIndex = (byte)data.Layers.OfType<BackgroundLayer>().ElementAt(1).SelectedBackgroundIndex;
 
             // Save the file
             FileFactory.Write<SerializableEditorFile<PC_LevFile>>(Path_LevelFile(world, level), context);
@@ -397,25 +397,20 @@ namespace RayCarrot.Ray1Editor
 
         public void LoadFond(GameData_R1 data, PC_WorldFile wld, PC_LevFile lev, TextureManager textureManager)
         {
-            var normalFnd = LoadFond(data, wld, lev, textureManager, false, "Background");
-            var scrollDiffFnd = LoadFond(data, wld, lev, textureManager, true, "Parallax Background");
+            // Load every available background
+            var fondOptions = wld.Plan0NumPcx.Select(x => LoadFond(data, textureManager, x)).ToArray();
 
-            data.Layers.Add(normalFnd);
-
-            if (scrollDiffFnd != null)
-                data.Layers.Add(scrollDiffFnd);
-
-            data.PC_FondIndex = lev.FNDIndex;
-            data.PC_ScrollDiffFondIndex = lev.ScrollDiffFNDIndex;
+            // Create a layer for the normal and parallax backgrounds
+            data.Layers.Add(new BackgroundLayer(fondOptions, Point.Zero, lev.FNDIndex, name: "Background"));
+            data.Layers.Add(new BackgroundLayer(fondOptions, Point.Zero, lev.ScrollDiffFNDIndex, name: "Parallax Background")
+            {
+                IsVisible = false
+            });
         }
 
-        public BackgroundLayer LoadFond(GameData_R1 data, PC_WorldFile wld, PC_LevFile lev, TextureManager textureManager, bool parallax, string name)
+        public BackgroundLayer.BackgroundEntry LoadFond(GameData_R1 data, TextureManager textureManager, int index)
         {
-            // Return null if the parallax bg is the same as the normal one
-            if (parallax && lev.ScrollDiffFNDIndex == lev.FNDIndex)
-                return null;
-
-            var pcx = LoadArchiveFile<PCX>(data.Context, Path_VigFile, wld.Plan0NumPcx[parallax ? lev.ScrollDiffFNDIndex : lev.FNDIndex]);
+            var pcx = LoadArchiveFile<PCX>(data.Context, Path_VigFile, index);
 
             var imgData = pcx.ScanLines.SelectMany(x => x).ToArray();
 
@@ -425,11 +420,7 @@ namespace RayCarrot.Ray1Editor
 
             textureManager.AddPalettedTexture(tex);
 
-            return new BackgroundLayer(tex.Texture, Point.Zero, name)
-            {
-                IsVisible = !parallax,
-                Pointer = pcx.Offset
-            };
+            return new BackgroundLayer.BackgroundEntry(tex.Texture, pcx.Offset, $"{index}.pcx");
         }
 
         public T LoadArchiveFile<T>(Context context, string archivePath, int fileIndex)

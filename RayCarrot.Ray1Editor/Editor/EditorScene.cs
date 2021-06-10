@@ -258,6 +258,7 @@ namespace RayCarrot.Ray1Editor
             }
 
             VM.DebugText = EditorUpdateData.DebugText.ToString();
+            VM.OnUpdate();
         }
 
         protected void UpdateModeLayers(EditorUpdateData updateData)

@@ -38,7 +38,7 @@
                                            Text="{Binding Path=Header, Mode=OneTime}" />
 
                                 <iconPacks:PackIconMaterial Style="{StaticResource PointerInfoIcon}"
-                                                            ToolTip="{Binding Path=Offset, Mode=OneTime}" />
+                                                            ToolTip="{Binding Path=Offset}" />
 
                             </StackPanel>
 

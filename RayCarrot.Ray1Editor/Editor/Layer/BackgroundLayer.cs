@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using System.Linq;
+using BinarySerializer;
 using MahApps.Metro.IconPacks;
 
 namespace RayCarrot.Ray1Editor
@@ -10,27 +12,39 @@ namespace RayCarrot.Ray1Editor
     /// </summary>
     public class BackgroundLayer : Layer
     {
-        // TODO: Pass in list of available backgrounds to select, each with a name
-        public BackgroundLayer(Texture2D texture, Point position, string name = "Background")
+        public BackgroundLayer(BackgroundEntry[] backgroundEntries, Point position, int defaultIndex, string name = "Background")
         {
-            Texture = texture;
-            Rectangle = new Rectangle(position, Texture.Bounds.Size);
+            BackgroundEntries = backgroundEntries;
+            Position = position;
             Name = name;
-
             IsVisible = true;
+
+            ChangeBackground(defaultIndex);
         }
 
+        private Rectangle _rectangle;
+
         public override string Name { get; }
-        public override Rectangle Rectangle { get; }
+        public override Rectangle Rectangle => _rectangle;
         public override bool CanEdit => false;
-        public Texture2D Texture { get; }
+        public override Pointer Pointer => BackgroundEntries[SelectedBackgroundIndex].Offset;
+        public BackgroundEntry[] BackgroundEntries { get; }
+        public Point Position { get; }
+        public int SelectedBackgroundIndex { get; protected set; }
+        public Texture2D Texture => BackgroundEntries[SelectedBackgroundIndex].Tex;
         public bool RepeatX { get; set; }
         public bool RepeatY { get; set; }
 
         public override IEnumerable<EditorFieldViewModel> GetFields()
         {
-            // TODO: Add background selection which differs per game
-            return new EditorFieldViewModel[0];
+            var items = BackgroundEntries.Select(x => new EditorDropDownFieldViewModel.DropDownItem(x.Name, x)).ToArray();
+
+            yield return new EditorDropDownFieldViewModel(
+                header: "Selected Background",
+                info: null,
+                getValueAction: () => SelectedBackgroundIndex,
+                setValueAction: ChangeBackground,
+                getItemsAction: () => items);
         }
 
         public override IEnumerable<EditorToggleIconViewModel> GetToggleFields()
@@ -49,6 +63,12 @@ namespace RayCarrot.Ray1Editor
 
             foreach (var f in base.GetToggleFields())
                 yield return f;
+        }
+
+        public void ChangeBackground(int newIndex)
+        {
+            SelectedBackgroundIndex = newIndex;
+            _rectangle = new Rectangle(Position, Texture.Bounds.Size);
         }
 
         public override void Draw(SpriteBatch s)
@@ -79,5 +99,8 @@ namespace RayCarrot.Ray1Editor
                 }
             }
         }
+
+
+        public record BackgroundEntry(Texture2D Tex, Pointer Offset, string Name);
     }
 }

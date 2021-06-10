@@ -168,6 +168,12 @@ namespace RayCarrot.Ray1Editor
             GameObjects.Remove(GameObjects.First(x => x.Obj == obj));
         }
 
+        public void OnUpdate()
+        {
+            foreach (var l in Layers)
+                l.Update();
+        }
+
         #endregion
 
         #region Public Methods

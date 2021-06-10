@@ -39,10 +39,6 @@ namespace RayCarrot.Ray1Editor
         public Animation[][] PC_LoadedAnimations { get; set; }
         public Palette[] PC_Palettes { get; set; }
 
-        // TODO: Allow these to be modified
-        public byte PC_FondIndex { get; set; }
-        public byte PC_ScrollDiffFondIndex { get; set; }
-
         public override IEnumerable<Palette> Palettes => PC_Palettes;
 
         public void AddDES(DESData des)
