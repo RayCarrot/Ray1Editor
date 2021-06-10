@@ -12,9 +12,9 @@ namespace RayCarrot.Ray1Editor
         {
             get
             {
-                var vm = new EditorViewModel(new UserData_Game(), new GameManager_R1_PC(), null)
+                var vm = new EditorViewModel(new UserData_Game(), new R1_PC_GameManager(), null)
                 {
-                    SelectedObject = new GameObject_R1(new ObjData()),
+                    SelectedObject = new R1_GameObject(new ObjData()),
                     DebugText = "Debug Text",
                     SelectedObjectName = "Object Name",
                 };
@@ -28,8 +28,8 @@ namespace RayCarrot.Ray1Editor
 
                 vm.Layers.AddRange(new LayerEditorViewModel[]
                 {
-                    new LayerEditorViewModel(new TileMapLayer_R1(new MapTile[4], Point.Zero, new Point(2, 2), new TileSet(null, new Point(16)))),
-                    new LayerEditorViewModel(new TileMapLayer_R1(new MapTile[8], Point.Zero, new Point(4, 2), new TileSet(null, new Point(16)))),
+                    new LayerEditorViewModel(new R1_TileMapLayer(new MapTile[4], Point.Zero, new Point(2, 2), new TileSet(null, new Point(16)))),
+                    new LayerEditorViewModel(new R1_TileMapLayer(new MapTile[8], Point.Zero, new Point(4, 2), new TileSet(null, new Point(16)))),
                 });
 
                 foreach (LayerEditorViewModel l in vm.Layers)
@@ -37,11 +37,11 @@ namespace RayCarrot.Ray1Editor
 
                 vm.GameObjects.AddRange(new GameObjectListItemViewModel[]
                 {
-                    new GameObjectListItemViewModel(new GameObject_R1(new ObjData()
+                    new GameObjectListItemViewModel(new R1_GameObject(new ObjData()
                     {
                         Type = ObjType.TYPE_BB1
                     })),
-                    new GameObjectListItemViewModel(new GameObject_R1(new ObjData()
+                    new GameObjectListItemViewModel(new R1_GameObject(new ObjData()
                     {
                         Type = ObjType.TYPE_RAY_POS
                     })),

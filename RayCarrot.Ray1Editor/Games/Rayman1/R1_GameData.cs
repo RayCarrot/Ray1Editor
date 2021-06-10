@@ -7,15 +7,17 @@ namespace RayCarrot.Ray1Editor
     /// <summary>
     /// Rayman 1 game data
     /// </summary>
-    public class GameData_R1 : GameData
+    public class R1_GameData : GameData
     {
-        public GameData_R1(Context context, TextureManager textureManager) : base(context, textureManager)
+        public R1_GameData(Context context, TextureManager textureManager) : base(context, textureManager)
         {
             Sprites = new Dictionary<Sprite[], PalettedTextureSheet>();
             Animations = new Dictionary<Animation[], ObjAnimation[]>();
             DES = new List<DESData>();
-            ETA = new List<ETA>();
+            ETA = new List<ETAData>();
         }
+
+        public R1_EventDefinition[] EventDefinitions { get; set; }
 
         public List<DESData> DES { get; }
 
@@ -32,7 +34,7 @@ namespace RayCarrot.Ray1Editor
         /// <summary>
         /// The loaded ETA
         /// </summary>
-        public List<ETA> ETA { get; }
+        public List<ETAData> ETA { get; }
 
         // TODO: Create GameData_R1_PC and store these properties there
         public PC_DES[] PC_DES { get; set; }
@@ -68,6 +70,18 @@ namespace RayCarrot.Ray1Editor
             public Animation[] AnimationsData { get; }
             public ObjAnimation[] Animations { get; }
             public byte[] ImageBuffer { get; }
+            public string Name { get; init; }
+        }
+
+        public class ETAData
+        {
+            public ETAData(ETA eta)
+            {
+                ETA = eta;
+            }
+
+            public ETA ETA { get; }
+            public string Name { get; init; }
         }
     }
 }

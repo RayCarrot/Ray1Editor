@@ -15,10 +15,14 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="0 0 0 7">
+        <ComboBox Grid.Row="0"
+                  ItemsSource="{Binding Path=AvailableObjects, Mode=OneTime}"/>
+
+        <Grid Grid.Row="1" Margin="0 0 0 7">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
@@ -40,7 +44,7 @@
         </Grid>
 
         <ListBox x:Name="ObjList"
-                 Grid.Row="1"
+                 Grid.Row="2"
                  dd:DragDrop.IsDragSource="True"
                  dd:DragDrop.IsDropTarget="True"
                  ItemsSource="{Binding Path=GameObjects, Mode=OneTime}"

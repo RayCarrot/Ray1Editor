@@ -7,9 +7,9 @@ using System.Linq;
 
 namespace RayCarrot.Ray1Editor
 {
-    public class GameObject_R1 : GameObject
+    public class R1_GameObject : GameObject
     {
-        public GameObject_R1(ObjData objData)
+        public R1_GameObject(ObjData objData)
         {
             ObjData = objData;
 
@@ -22,7 +22,7 @@ namespace RayCarrot.Ray1Editor
         // Data
         public ObjData ObjData { get; }
         public override BinarySerializable SerializableData => ObjData;
-        public new GameData_R1 Data => (GameData_R1)base.Data;
+        public new R1_GameData Data => (R1_GameData)base.Data;
         public override void Load()
         {
             ObjData.InitialEtat = ObjData.Etat;

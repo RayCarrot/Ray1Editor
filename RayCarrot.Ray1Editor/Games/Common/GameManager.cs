@@ -39,5 +39,12 @@ namespace RayCarrot.Ray1Editor
         /// <param name="getSelectedObj">A func for getting the currently selected object</param>
         /// <returns>The editor fields</returns>
         public abstract IEnumerable<EditorFieldViewModel> GetEditorObjFields(GameData gameData, Func<GameObject> getSelectedObj);
+
+        /// <summary>
+        /// Gets the available objects which can be added to the level
+        /// </summary>
+        /// <param name="gameData">The game data</param>
+        /// <returns>The object names</returns>
+        public abstract IEnumerable<string> GetAvailableObjects(GameData gameData);
     }
 }

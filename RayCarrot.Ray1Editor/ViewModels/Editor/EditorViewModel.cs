@@ -20,6 +20,7 @@ namespace RayCarrot.Ray1Editor
             CurrentGameSettings = currentGameSettings;
             Palettes = new ObservableCollection<PaletteEditorViewModel>();
             Layers = new ObservableCollection<LayerEditorViewModel>();
+            AvailableObjects = new ObservableCollection<string>();
             GameObjects = new ObservableCollection<GameObjectListItemViewModel>();
             ObjFields = new ObservableCollection<EditorFieldViewModel>();
 
@@ -87,6 +88,7 @@ namespace RayCarrot.Ray1Editor
         public ObservableCollection<LayerEditorViewModel> Layers { get; }
 
         // Objects
+        public ObservableCollection<string> AvailableObjects { get; }
         public bool IsSelectingObjFromList { get; set; }
         public ObservableCollection<GameObjectListItemViewModel> GameObjects { get; }
         public GameObjectListItemViewModel SelectedGameObjectItem
@@ -117,6 +119,8 @@ namespace RayCarrot.Ray1Editor
 
         public void OnEditorLoaded()
         {
+            AvailableObjects.AddRange(CurrentGameManager.GetAvailableObjects(EditorScene.GameData));
+
             // Recreate the object fields
             RecreateObjFields();
 

@@ -1,18 +1,19 @@
 ﻿using BinarySerializer;
+using BinarySerializer.Image;
 using BinarySerializer.Ray1;
 using Microsoft.Xna.Framework;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using BinarySerializer.Image;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace RayCarrot.Ray1Editor
 {
     /// <summary>
     /// Game manager for Rayman 1 on PC
     /// </summary>
-    public class GameManager_R1_PC : GameManager_R1
+    public class R1_PC_GameManager : R1_GameManager
     {
         // TODO: Move some load code out from here and into R1 base class so it can be reused
 
@@ -57,12 +58,16 @@ namespace RayCarrot.Ray1Editor
             context.AddFile(new LinearSerializedFile(context, Path_LevelFile(world, level)));
 
             // Create the data
-            var data = new GameData_R1(context, textureManager);
+            var data = new R1_GameData(context, textureManager);
 
             // Read the files
             var fix = FileFactory.Read<PC_AllfixFile>(Path_FixFile, context);
             var wld = FileFactory.Read<PC_WorldFile>(Path_WorldFile(world), context);
             var lev = FileFactory.Read<SerializableEditorFile<PC_LevFile>>(Path_LevelFile(world, level), context).FileData;
+
+            // Load the editor name tables
+            var desNames = LoadEditorNameTable($"r1_pc_des.json")[(int)ray1Settings.World - 1];
+            var etaNames = LoadEditorNameTable($"r1_pc_eta.json")[(int)ray1Settings.World - 1];
 
             // Load palettes
             LoadPalettes(data, lev);
@@ -74,13 +79,16 @@ namespace RayCarrot.Ray1Editor
             LoadMap(data, lev, textureManager);
 
             // Load DES (sprites & animations)
-            LoadDES(data, fix, wld, textureManager);
+            LoadDES(data, fix, wld, textureManager, desNames);
 
             // Load ETA (states)
-            LoadETA(data, fix, wld);
+            LoadETA(data, fix, wld, etaNames);
 
             // Load objects
             LoadObjects(data, lev);
+
+            // Load the editor event definitions
+            LoadEditorEventDefinitions(data);
 
             return data;
         }
@@ -92,7 +100,7 @@ namespace RayCarrot.Ray1Editor
             var world = ray1Settings.World;
             var level = ray1Settings.Level;
 
-            var data = (GameData_R1)gameData;
+            var data = (R1_GameData)gameData;
 
             // Get the level data
             var lvlData = context.GetMainFileObject<SerializableEditorFile<PC_LevFile>>(Path_LevelFile(world, level)).FileData;
@@ -103,7 +111,7 @@ namespace RayCarrot.Ray1Editor
             // Save the objects
             var objData = lvlData.ObjData;
             objData.ObjCount = (ushort)gameData.Objects.Count;
-            objData.Objects = gameData.Objects.Cast<GameObject_R1>().Select(x => x.ObjData).ToArray();
+            objData.Objects = gameData.Objects.Cast<R1_GameObject>().Select(x => x.ObjData).ToArray();
 
             var objCmds = new List<PC_CommandCollection>();
 
@@ -114,7 +122,7 @@ namespace RayCarrot.Ray1Editor
                 obj.PC_ImageBufferIndex = (uint)data.PC_DES.FindItemIndex(x => x?.ImageData == obj.ImageBuffer);
                 obj.PC_SpritesIndex = (uint)data.PC_DES.FindItemIndex(x => x?.Sprites == obj.Sprites);
                 obj.SpritesCount = (byte)obj.Sprites.Length;
-                obj.PC_ETAIndex = (uint)data.ETA.IndexOf(obj.ETA);
+                obj.PC_ETAIndex = (uint)data.ETA.FindLastIndex(x => x.ETA == obj.ETA);
 
                 var cmds = obj.Commands ?? new CommandCollection()
                 {
@@ -137,7 +145,7 @@ namespace RayCarrot.Ray1Editor
 
             // Save the map
             var mapData = lvlData.MapData;
-            var mapLayer = data.Layers.OfType<TileMapLayer_R1>().First();
+            var mapLayer = data.Layers.OfType<R1_TileMapLayer>().First();
 
             mapData.Width = (ushort)mapLayer.MapSize.X;
             mapData.Height = (ushort)mapLayer.MapSize.Y;
@@ -156,10 +164,10 @@ namespace RayCarrot.Ray1Editor
         public override IEnumerable<EditorFieldViewModel> GetEditorObjFields(GameData gameData, Func<GameObject> getSelectedObj)
         {
             // Helper methods
-            GameObject_R1 getObj() => (GameObject_R1)getSelectedObj();
+            R1_GameObject getObj() => (R1_GameObject)getSelectedObj();
             ObjData getObjData() => getObj().ObjData;
 
-            var data = (GameData_R1)gameData;
+            var data = (R1_GameData)gameData;
             var settings = data.Context.GetSettings<Ray1Settings>();
 
             var dropDownItems_type = Enum.GetValues(typeof(ObjType)).
@@ -169,10 +177,10 @@ namespace RayCarrot.Ray1Editor
                 ToArray();
             var dropDownLookup_type = dropDownItems_type.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data, x => x.i);
             
-            var dropDownItems_des = data.DES.Select((x, i) => new EditorDropDownFieldViewModel.DropDownItem<GameData_R1.DESData>($"DES {i + 1}", x)).ToArray();
+            var dropDownItems_des = data.DES.Select((x, i) => new EditorDropDownFieldViewModel.DropDownItem<R1_GameData.DESData>($"DES {i + 1}", x)).ToArray();
             var dropDownLookup_des = dropDownItems_des.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data.SpritesData, x => x.i);
             
-            var dropDownItems_eta = data.ETA.Select((x, i) => new EditorDropDownFieldViewModel.DropDownItem<ETA>($"ETA {i}", x)).ToArray();
+            var dropDownItems_eta = data.ETA.Select((x, i) => new EditorDropDownFieldViewModel.DropDownItem<ETA>($"ETA {i}", x.ETA)).ToArray();
             var dropDownLookup_eta = dropDownItems_eta.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data, x => x.i);
             
             var dropDownItems_state = new Dictionary<ETA, EditorDropDownFieldViewModel.DropDownItem<DropDownFieldData_State>[]>();
@@ -277,7 +285,7 @@ namespace RayCarrot.Ray1Editor
 
         #region Helpers
 
-        public void LoadPalettes(GameData_R1 data, PC_LevFile lev)
+        public void LoadPalettes(R1_GameData data, PC_LevFile lev)
         {
             data.PC_Palettes = lev.MapData.ColorPalettes.Select((x, i) => new Palette(x, $"Palette {i + 1}")
             {
@@ -286,7 +294,7 @@ namespace RayCarrot.Ray1Editor
             }).ToArray();
         }
 
-        public void LoadDES(GameData_R1 data, PC_AllfixFile fix, PC_WorldFile wld, TextureManager textureManager)
+        public void LoadDES(R1_GameData data, PC_AllfixFile fix, PC_WorldFile wld, TextureManager textureManager, string[] names)
         {
             data.PC_DES = new PC_DES[]
             {
@@ -323,23 +331,31 @@ namespace RayCarrot.Ray1Editor
                     Frames = x.Frames
                 }).ToArray();
                 data.PC_LoadedAnimations[i] = loadedAnim;
-                data.AddDES(new GameData_R1.DESData(des.Sprites, spriteSheet, loadedAnim, loadedAnim.Select(x => ToCommonAnimation(x)).ToArray(), des.ImageData));
+                data.AddDES(new R1_GameData.DESData(des.Sprites, spriteSheet, loadedAnim, loadedAnim.Select(x => ToCommonAnimation(x)).ToArray(), des.ImageData)
+                {
+                    Name = names[i]
+                });
             }
         }
 
-        public void LoadETA(GameData_R1 data, PC_AllfixFile fix, PC_WorldFile wld)
+        public void LoadETA(R1_GameData data, PC_AllfixFile fix, PC_WorldFile wld, string[] names)
         {
-            data.ETA.AddRange(fix.Eta.Select(x => new ETA()
+            loadETA(fix.Eta);
+            loadETA(wld.Eta);
+
+            void loadETA(IEnumerable<PC_ETA> eta)
             {
-                States = x.States
-            }));
-            data.ETA.AddRange(wld.Eta.Select(x => new ETA()
-            {
-                States = x.States
-            }));
+                data.ETA.AddRange(eta.Select((x, i) => new R1_GameData.ETAData(new ETA()
+                {
+                    States = x.States
+                })
+                {
+                    Name = names[i]
+                }));
+            }
         }
 
-        public void LoadObjects(GameData_R1 data, PC_LevFile lev)
+        public void LoadObjects(R1_GameData data, PC_LevFile lev)
         {
             var objIndex = 0;
 
@@ -348,11 +364,11 @@ namespace RayCarrot.Ray1Editor
                 obj.Animations = data.PC_LoadedAnimations[(int)obj.PC_AnimationsIndex];
                 obj.ImageBuffer = data.PC_DES[obj.PC_SpritesIndex].ImageData;
                 obj.Sprites = data.PC_DES[obj.PC_SpritesIndex].Sprites;
-                obj.ETA = data.ETA[(int)obj.PC_ETAIndex];
+                obj.ETA = data.ETA[(int)obj.PC_ETAIndex].ETA;
                 obj.Commands = lev.ObjData.ObjCommands[objIndex].Commands;
                 obj.LabelOffsets = lev.ObjData.ObjCommands[objIndex].LabelOffsetTable;
 
-                data.Objects.Add(new GameObject_R1(obj));
+                data.Objects.Add(new R1_GameObject(obj));
 
                 objIndex++;
             }
@@ -360,7 +376,7 @@ namespace RayCarrot.Ray1Editor
             InitLinkGroups(data.Objects, lev.ObjData.ObjLinkingTable);
         }
 
-        public void LoadMap(GameData_R1 data, PC_LevFile lev, TextureManager textureManager)
+        public void LoadMap(R1_GameData data, PC_LevFile lev, TextureManager textureManager)
         {
             var map = lev.MapData;
 
@@ -379,11 +395,11 @@ namespace RayCarrot.Ray1Editor
                 tileSheet.InitEntry(i, data.PC_Palettes[0], tex.ImgData.Select(x => (byte)(255 - x)).ToArray());
             }
 
-            var mapLayer = new TileMapLayer_R1(map.Tiles, Point.Zero, new Point(map.Width, map.Height), tileSet)
+            var mapLayer = new R1_TileMapLayer(map.Tiles, Point.Zero, new Point(map.Width, map.Height), tileSet)
             {
                 Pointer = map.Offset
             };
-            var colLayer = new CollisionMapLayer_R1(map.Tiles, Point.Zero, new Point(map.Width, map.Height), textureManager)
+            var colLayer = new R1_CollisionMapLayer(map.Tiles, Point.Zero, new Point(map.Width, map.Height), textureManager)
             {
                 Pointer = map.Offset
             };
@@ -395,20 +411,20 @@ namespace RayCarrot.Ray1Editor
             data.Layers.Add(colLayer);
         }
 
-        public void LoadFond(GameData_R1 data, PC_WorldFile wld, PC_LevFile lev, TextureManager textureManager)
+        public void LoadFond(R1_GameData data, PC_WorldFile wld, PC_LevFile lev, TextureManager textureManager)
         {
             // Load every available background
             var fondOptions = wld.Plan0NumPcx.Select(x => LoadFond(data, textureManager, x)).ToArray();
 
             // Create a layer for the normal and parallax backgrounds
-            data.Layers.Add(new BackgroundLayer_R1_PC(fondOptions, Point.Zero, lev.FNDIndex, name: "Background"));
-            data.Layers.Add(new BackgroundLayer_R1_PC(fondOptions, Point.Zero, lev.ScrollDiffFNDIndex, name: "Parallax Background")
+            data.Layers.Add(new R1_PC_BackgroundLayer(fondOptions, Point.Zero, lev.FNDIndex, name: "Background"));
+            data.Layers.Add(new R1_PC_BackgroundLayer(fondOptions, Point.Zero, lev.ScrollDiffFNDIndex, name: "Parallax Background")
             {
                 IsVisible = false
             });
         }
 
-        public BackgroundLayer_R1_PC.BackgroundEntry_R1_PC LoadFond(GameData_R1 data, TextureManager textureManager, int index)
+        public R1_PC_BackgroundLayer.BackgroundEntry_R1_PC LoadFond(R1_GameData data, TextureManager textureManager, int index)
         {
             var pcx = LoadArchiveFile<PCX>(data.Context, Path_VigFile, index);
 
@@ -420,7 +436,17 @@ namespace RayCarrot.Ray1Editor
 
             textureManager.AddPalettedTexture(tex);
 
-            return new BackgroundLayer_R1_PC.BackgroundEntry_R1_PC(tex.Texture, pcx.Offset, $"{index}.pcx", pcx);
+            return new R1_PC_BackgroundLayer.BackgroundEntry_R1_PC(tex.Texture, pcx.Offset, $"{index}.pcx", pcx);
+        }
+
+        public string[][] LoadEditorNameTable(string fileName)
+        {
+            using var stream = Assets.GetAsset(AssetPath_EventsDir + fileName);
+            var serializer = new JsonSerializer();
+
+            using var sr = new StreamReader(stream);
+            using var jsonTextReader = new JsonTextReader(sr);
+            return serializer.Deserialize<string[][]>(jsonTextReader);
         }
 
         public T LoadArchiveFile<T>(Context context, string archivePath, int fileIndex)

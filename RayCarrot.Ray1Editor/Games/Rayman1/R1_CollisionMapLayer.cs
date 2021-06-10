@@ -5,9 +5,9 @@ using Microsoft.Xna.Framework;
 
 namespace RayCarrot.Ray1Editor
 {
-    public class CollisionMapLayer_R1 : CollisionMapLayer<MapTile>
+    public class R1_CollisionMapLayer : CollisionMapLayer<MapTile>
     {
-        public CollisionMapLayer_R1(MapTile[] tileMap, Point position, Point mapSize, TextureManager textureManager) : base(tileMap, position, mapSize, LoadTileSet(textureManager))
+        public R1_CollisionMapLayer(MapTile[] tileMap, Point position, Point mapSize, TextureManager textureManager) : base(tileMap, position, mapSize, LoadTileSet(textureManager))
         { }
 
         public override bool CanBeResized => false;
@@ -26,7 +26,7 @@ namespace RayCarrot.Ray1Editor
                 }
             }
 
-            var tex = new TextureSheet(textureManager, Assets.R1_TypeCollision, tiles);
+            var tex = new TextureSheet(textureManager, R1_GameManager.AssetPath_CollisionFile, tiles);
 
             return new TileSet(tex, tileSize);
         }

@@ -4,9 +4,9 @@ using Microsoft.Xna.Framework;
 
 namespace RayCarrot.Ray1Editor
 {
-    public class TileMapLayer_R1 : TileMapLayer<MapTile>
+    public class R1_TileMapLayer : TileMapLayer<MapTile>
     {
-        public TileMapLayer_R1(MapTile[] tileMap, Point position, Point mapSize, TileSet tileSet, int tileSetWidth = 1) : base(tileMap, position, mapSize, tileSet)
+        public R1_TileMapLayer(MapTile[] tileMap, Point position, Point mapSize, TileSet tileSet, int tileSetWidth = 1) : base(tileMap, position, mapSize, tileSet)
         {
             TileSetWidth = tileSetWidth;
         }

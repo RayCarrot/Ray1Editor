@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using BinarySerializer.Ray1;
 using Microsoft.Xna.Framework;
 
@@ -7,8 +8,12 @@ namespace RayCarrot.Ray1Editor
     /// <summary>
     /// Base game manager for Rayman 1
     /// </summary>
-    public abstract class GameManager_R1 : GameManager
+    public abstract class R1_GameManager : GameManager
     {
+        public const string AssetPath_CollisionFile = "Assets/Collision/R1_TypeCollision.png";
+        public const string AssetPath_EventsDir = "Assets/Rayman1/Events/";
+        public const string AssetPath_EventsFile = AssetPath_EventsDir + "Events.csv";
+
         protected abstract int MaxObjType { get; }
 
         public IEnumerable<LoadGameLevelViewModel> GetLevels(Ray1EngineVersion engineVersion, Ray1PCVersion pcVersion = Ray1PCVersion.None, string volume = null)
@@ -165,6 +170,30 @@ namespace RayCarrot.Ray1Editor
             }
 
             return animation;
+        }
+
+        public void LoadEditorEventDefinitions(R1_GameData data)
+        {
+            var engine = R1_EventDefinition.Engine.R1;
+            var settings = data.Context.GetSettings<Ray1Settings>();
+
+            if (settings.EngineVersion is Ray1EngineVersion.PC_Edu or Ray1EngineVersion.PS1_Edu)
+                engine = R1_EventDefinition.Engine.EDU;
+            else if (settings.EngineVersion is Ray1EngineVersion.PC_Kit or Ray1EngineVersion.PC_Fan)
+                engine = R1_EventDefinition.Engine.KIT;
+
+            using var stream = Assets.GetAsset(AssetPath_EventsFile);
+            data.EventDefinitions = R1_EventDefinition.ReadCSV(stream).
+                Where(x => x.Worlds.Contains(settings.World) && 
+                           x.Engines.Contains(engine) && 
+                           data.DES.Any(d => d.Name == x.DES) && 
+                           data.ETA.Any(e => e.Name == x.ETA)).
+                ToArray();
+        }
+
+        public override IEnumerable<string> GetAvailableObjects(GameData gameData)
+        {
+            return ((R1_GameData)gameData).EventDefinitions.Select(x => x.Name);
         }
     }
 }

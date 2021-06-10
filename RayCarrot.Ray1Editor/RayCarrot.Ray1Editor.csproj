@@ -118,9 +118,23 @@
   <!-- Resources -->
   <ItemGroup>
     <Content Remove="Assets/Collision/R1_TypeCollision.png" />
+    <Content Remove="Assets\Rayman1\Events\edu_des.json" />
+    <Content Remove="Assets\Rayman1\Events\edu_eta.json" />
+    <Content Remove="Assets\Rayman1\Events\Events.csv" />
+    <Content Remove="Assets\Rayman1\Events\r1_pc_des.json" />
+    <Content Remove="Assets\Rayman1\Events\r1_pc_eta.json" />
+    <Content Remove="Assets\Rayman1\Events\r1_ps1_des.json" />
+    <Content Remove="Assets\Rayman1\Events\r1_ps1_eta.json" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Assets/Collision/R1_TypeCollision.png" />
+    <EmbeddedResource Include="Assets\Rayman1\Events\edu_des.json" />
+    <EmbeddedResource Include="Assets\Rayman1\Events\edu_eta.json" />
+    <EmbeddedResource Include="Assets\Rayman1\Events\Events.csv" />
+    <EmbeddedResource Include="Assets\Rayman1\Events\r1_pc_des.json" />
+    <EmbeddedResource Include="Assets\Rayman1\Events\r1_pc_eta.json" />
+    <EmbeddedResource Include="Assets\Rayman1\Events\r1_ps1_des.json" />
+    <EmbeddedResource Include="Assets\Rayman1\Events\r1_ps1_eta.json" />
   </ItemGroup>
 
 </Project>
