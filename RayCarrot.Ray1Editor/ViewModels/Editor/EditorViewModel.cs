@@ -266,6 +266,24 @@ namespace RayCarrot.Ray1Editor
             EditorScene.Cam.ResetCamera();
         }
 
+        public void DoAndPause(Action action)
+        {
+            var wasPaused = IsPaused;
+
+            if (!wasPaused)
+                IsPaused = true;
+
+            try
+            {
+                action();
+            }
+            finally
+            {
+                if (!wasPaused)
+                    IsPaused = false;
+            }
+        }
+
         public void Save()
         {
             // TODO: Try/catch

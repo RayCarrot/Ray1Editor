@@ -24,7 +24,7 @@
         <MenuItem Header="Exit"
                   Icon="{iconPacks:Material CloseOutline}"
                   InputGestureText="Alt+F4"
-                  Click="MenuItem_OnClick" />
+                  Click="CloseMenuItem_OnClick" />
     </MenuItem>
 
     <!-- Edit -->
@@ -76,8 +76,8 @@
 
     <MenuItem Header="Help">
         <MenuItem Header="Show Controls"
-                  Icon="{iconPacks:Material KeyboardOutline}"
-                  IsEnabled="False" />
+                  Click="ShowControlsMenuItem_OnClick"
+                  Icon="{iconPacks:Material KeyboardOutline}" />
         <MenuItem Header="About Ray1Editor"
                   Icon="{iconPacks:Material InformationOutline}"
                   IsEnabled="False" />

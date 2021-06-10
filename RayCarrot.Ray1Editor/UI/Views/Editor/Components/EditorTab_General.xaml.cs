@@ -23,26 +23,21 @@ namespace RayCarrot.Ray1Editor
         {
             var pal = (PaletteEditorViewModel)((FrameworkElement)sender).DataContext;
 
-            var wasPaused = ViewModel.IsPaused;
+            ViewModel.DoAndPause(() =>
+            {
+                var editVM = new EditPaletteViewModel(pal.Palette);
 
-            if (!wasPaused)
-                ViewModel.IsPaused = true;
+                var win = new EditPaletteWindow(editVM);
+                win.ShowDialog();
 
-            var editVM = new EditPaletteViewModel(pal.Palette);
+                if (win.DialogResult != true)
+                    return;
 
-            var win = new EditPaletteWindow(editVM);
-            win.ShowDialog();
+                // Update the palette with the modifications
+                editVM.UpdatePalette();
 
-            if (!wasPaused)
-                ViewModel.IsPaused = false;
-
-            if (win.DialogResult != true)
-                return;
-
-            // Update the palette with the modifications
-            editVM.UpdatePalette();
-
-            ViewModel.EditorScene.GameData.TextureManager.RefreshPalette(editVM.Palette);
+                ViewModel.EditorScene.GameData.TextureManager.RefreshPalette(editVM.Palette);
+            });
         }
     }
 }

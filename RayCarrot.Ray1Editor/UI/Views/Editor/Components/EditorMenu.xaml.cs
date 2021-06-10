@@ -13,9 +13,24 @@ namespace RayCarrot.Ray1Editor
             InitializeComponent();
         }
 
-        private void MenuItem_OnClick(object sender, RoutedEventArgs e)
+        public EditorViewModel ViewModel
+        {
+            get => DataContext as EditorViewModel;
+            set => DataContext = value;
+        }
+
+        private void CloseMenuItem_OnClick(object sender, RoutedEventArgs e)
         {
             Window.GetWindow(this)?.Close();
+        }
+
+        private void ShowControlsMenuItem_OnClick(object sender, RoutedEventArgs e)
+        {
+            ViewModel.DoAndPause(() =>
+            {
+                var win = new EditorControlsWindow();
+                win.ShowDialog();
+            });
         }
     }
 }

@@ -11,6 +11,8 @@
                   ResizeMode="NoResize"
                   Width="450" Height="270"
                   CloseWithEscape="True" 
+                  Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}"
+                  Background="{DynamicResource MahApps.Brushes.ThemeBackground}"
                   d:DataContext="{d:DesignInstance local:EditGameViewModel}">
     <StackPanel Margin="10">
 
