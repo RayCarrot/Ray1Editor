@@ -45,8 +45,6 @@
                   ToolTip="Indicates if the binary serializer logging should be enabled, logging any read/write operations. Having this be enabled will slow down the loading and saving in the editor."
                   IsChecked="{Binding Path=EnableSerializerLog}" />
 
-        <!-- TODO: Dark/light mode toggle -->
-
     </StackPanel>
 
 </local:BaseWindow>

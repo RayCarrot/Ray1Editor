@@ -11,6 +11,10 @@
              Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}"
              d:DataContext="{x:Static local:DesignDataContexts.EditorViewModel}">
 
+    <UserControl.InputBindings>
+        <KeyBinding Modifiers="Control" Key="S" Command="{Binding Path=SaveCommand, Mode=OneTime}" />
+    </UserControl.InputBindings>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

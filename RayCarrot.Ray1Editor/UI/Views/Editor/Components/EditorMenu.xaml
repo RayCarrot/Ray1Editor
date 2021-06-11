@@ -19,7 +19,8 @@
                   Command="{Binding Path=LoadOtherMapCommand, Mode=OneTime}" />
         <MenuItem Header="Save"
                   Icon="{iconPacks:Material ContentSaveOutline}"
-                  IsEnabled="False" />
+                  InputGestureText="Ctrl+S"
+                  Command="{Binding Path=SaveCommand, Mode=OneTime}" />
         <Separator />
         <MenuItem Header="Exit"
                   Icon="{iconPacks:Material CloseOutline}"
@@ -29,8 +30,15 @@
 
     <!-- Edit -->
 
-    <MenuItem Header="Edit" IsEnabled="False">
-
+    <MenuItem Header="Edit">
+        <MenuItem Header="Undo"
+                  Icon="{iconPacks:Material Undo}"
+                  InputGestureText="Ctrl+Z"
+                  IsEnabled="False" />
+        <MenuItem Header="Redo"
+                  Icon="{iconPacks:Material Redo}"
+                  InputGestureText="Ctrl+Y"
+                  IsEnabled="False" />
     </MenuItem>
 
     <!-- View -->
@@ -45,7 +53,7 @@
         <Separator />
         <MenuItem Header="Animate Objects"
                   IsCheckable="True"
-                  IsEnabled="False" />
+                  IsChecked="{Binding Path=AnimateObjects}" />
         <Separator />
         <MenuItem Header="Show Object HitBoxes"
                   IsCheckable="True"
@@ -64,9 +72,6 @@
                       IsEnabled="False" />
         </MenuItem>
         <Separator />
-        <MenuItem Header="Edit Editor Colors"
-                  Icon="{iconPacks:Material Brush}"
-                  IsEnabled="False" />
         <MenuItem Header="Settings"
                   Icon="{iconPacks:Material CogOutline}"
                   Click="SettingsMenuItem_OnClick" />
@@ -80,10 +85,7 @@
                   Icon="{iconPacks:Material KeyboardOutline}" />
         <MenuItem Header="About Ray1Editor"
                   Icon="{iconPacks:Material InformationOutline}"
-                  IsEnabled="False" />
+                  Click="MenuItem_OnClick" />
     </MenuItem>
 
-    <!-- Debug -->
-
-    <MenuItem Header="Debug" IsEnabled="False" />
 </Menu>

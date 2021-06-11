@@ -79,6 +79,11 @@ namespace RayCarrot.Ray1Editor
             get => EditorScene?.ShowObjects ?? true;
             set => EditorScene.ShowObjects = value;
         }
+        public bool AnimateObjects
+        {
+            get => EditorScene?.State.AnimateObjects ?? true;
+            set => EditorScene.State.AnimateObjects = value;
+        }
         public string DebugText { get; set; }
 
         // General

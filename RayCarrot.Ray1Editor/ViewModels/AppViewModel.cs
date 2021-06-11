@@ -80,6 +80,22 @@ namespace RayCarrot.Ray1Editor
 
         #region Public Methods
 
+        public void OpenURL(string url)
+        {
+            try
+            {
+                url = url.Replace("&", "^&");
+                Process.Start(new ProcessStartInfo("cmd", $"/c start {url}")
+                {
+                    CreateNoWindow = true
+                });
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogLevel.Error, ex, "Opening URL {0}", url);
+            }
+        }
+
         public void SetTitle(string state)
         {
             Title = "Ray1Editor";
