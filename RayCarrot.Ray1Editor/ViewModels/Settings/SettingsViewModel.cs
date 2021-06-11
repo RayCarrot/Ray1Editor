@@ -31,6 +31,12 @@ namespace RayCarrot.Ray1Editor
             }
         }
 
+        public bool PauseWhenInactive
+        {
+            get => Data.Editor_PauseWhenInactive;
+            set => Data.Editor_PauseWhenInactive = value;
+        }
+
         public bool EnableSerializerLog
         {
             get => Data.Serializer_EnableLog;

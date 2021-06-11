@@ -56,8 +56,8 @@ namespace RayCarrot.Ray1Editor
 
         // General
         public EditorViewModel VM => (EditorViewModel)DataContext;
-        public bool PauseWhenInactive { get; set; } // TODO: Add setting
-        public bool IsPaused { get; set; } // TODO: Add setting
+        public bool PauseWhenInactive => AppViewModel.Instance.UserData.Editor_PauseWhenInactive;
+        public bool IsPaused { get; set; }
         public EditorState State { get; }
         public Context Context { get; }
 

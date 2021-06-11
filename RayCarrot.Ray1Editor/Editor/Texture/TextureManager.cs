@@ -14,13 +14,15 @@ namespace RayCarrot.Ray1Editor
             Textures = new HashSet<Texture2D>();
             PalettedTextureDatas = new HashSet<PalettedTextureData>();
             TextureSheets = new HashSet<TextureSheet>();
+            Palettes = new HashSet<Palette>();
         }
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        protected HashSet<Texture2D> Textures { get; }
-        protected HashSet<PalettedTextureData> PalettedTextureDatas { get; }
-        protected HashSet<TextureSheet> TextureSheets { get; }
+        public HashSet<Texture2D> Textures { get; }
+        public HashSet<PalettedTextureData> PalettedTextureDatas { get; }
+        public HashSet<TextureSheet> TextureSheets { get; }
+        public HashSet<Palette> Palettes { get; }
         public GraphicsDevice GraphicsDevice { get; }
 
         protected IEnumerable<PalettedTextureData> EnumeratePalettedData()
@@ -43,6 +45,7 @@ namespace RayCarrot.Ray1Editor
             Textures.Add(palData.Texture);
             PalettedTextureDatas.Add(palData);
         }
+        public void AddPalette(Palette pal) => Palettes.Add(pal);
 
         public void AddTextureSheet(TextureSheet sheet) => TextureSheets.Add(sheet);
 

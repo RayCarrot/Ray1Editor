@@ -135,7 +135,7 @@ namespace RayCarrot.Ray1Editor
             RecreateObjFields();
 
             // Set up palettes
-            Palettes.AddRange(EditorScene.GameData.Palettes.Select((x, i) => new PaletteEditorViewModel(x, i == 0, pal =>
+            Palettes.AddRange(EditorScene.GameData.TextureManager.Palettes.Select((x, i) => new PaletteEditorViewModel(x, i == 0, pal =>
             {
                 EditorScene.GameData.TextureManager.SwapPalettes(CurrentlySelectedPalette, pal);
                 CurrentlySelectedPalette = pal;

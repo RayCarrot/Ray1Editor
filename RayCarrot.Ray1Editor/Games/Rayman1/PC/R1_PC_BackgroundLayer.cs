@@ -38,7 +38,7 @@ namespace RayCarrot.Ray1Editor
 
             if (AutoUpdatePalette)
             {
-                foreach (var pal in Data.Palettes)
+                foreach (var pal in ((R1_PC_GameData)Data).PC_Palettes)
                 {
                     var pcx = ((BackgroundEntry_R1_PC)BackgroundEntries[SelectedBackgroundIndex]).PCX;
 

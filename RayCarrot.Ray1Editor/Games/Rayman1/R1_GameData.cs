@@ -17,8 +17,14 @@ namespace RayCarrot.Ray1Editor
             ETA = new List<ETAData>();
         }
 
+        /// <summary>
+        /// The available event definitions
+        /// </summary>
         public R1_EventDefinition[] EventDefinitions { get; set; }
 
+        /// <summary>
+        /// The loaded DES
+        /// </summary>
         public List<DESData> DES { get; }
 
         /// <summary>
@@ -35,13 +41,6 @@ namespace RayCarrot.Ray1Editor
         /// The loaded ETA
         /// </summary>
         public List<ETAData> ETA { get; }
-
-        // TODO: Create GameData_R1_PC and store these properties there
-        public PC_DES[] PC_DES { get; set; }
-        public Animation[][] PC_LoadedAnimations { get; set; }
-        public Palette[] PC_Palettes { get; set; }
-
-        public override IEnumerable<Palette> Palettes => PC_Palettes;
 
         public void AddDES(DESData des)
         {

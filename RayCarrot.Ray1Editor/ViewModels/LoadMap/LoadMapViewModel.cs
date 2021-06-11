@@ -78,6 +78,7 @@ namespace RayCarrot.Ray1Editor
             Logger.Log(LogLevel.Info, "Loading editor with mode {0}", SelectedGame.Game.Mode);
 
             // TODO: Verify the game path exists before loading the editor to avoid crash
+            // TODO: Try/catch
             App.ChangeView(AppViewModel.AppView.Editor, new EditorViewModel(SelectedGame.Game, SelectedGame.Manager, SelectedLevel.Settings));
 
             // Set the app title

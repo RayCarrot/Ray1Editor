@@ -25,7 +25,6 @@
 
     <!-- Mode -->
 
-    <!-- TODO: Move colors to resources and reuse for other controls with same usage -->
     <ToggleButton ToolTip="Layers" IsChecked="{Binding Path=Mode, Converter={local:EnumBooleanConverter}, ConverterParameter=Layers}">
         <iconPacks:PackIconMaterial Kind="{StaticResource LayersIcon}" VerticalAlignment="Center" Foreground="{StaticResource LayersBrush}" />
     </ToggleButton>

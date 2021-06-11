@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using NLog;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -16,15 +15,6 @@ namespace RayCarrot.Ray1Editor
     /// </summary>
     public class R1_PC_GameManager : R1_GameManager
     {
-        // TODO: Move some load code out from here and into R1 base class so it can be reused
-
-        #region Logger
-
-        // TODO: Add logging to loading and saving
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
-        #endregion
-
         #region Paths
 
         public string Path_VigFile => $"VIGNET.DAT";
@@ -66,7 +56,7 @@ namespace RayCarrot.Ray1Editor
             context.AddFile(new LinearSerializedFile(context, Path_LevelFile(world, level)));
 
             // Create the data
-            var data = new R1_GameData(context, textureManager);
+            var data = new R1_PC_GameData(context, textureManager);
 
             // Read the files
             var fix = FileFactory.Read<PC_AllfixFile>(Path_FixFile, context);
@@ -108,7 +98,7 @@ namespace RayCarrot.Ray1Editor
             var world = ray1Settings.World;
             var level = ray1Settings.Level;
 
-            var data = (R1_GameData)gameData;
+            var data = (R1_PC_GameData)gameData;
 
             // Get the level data
             var lvlData = context.GetMainFileObject<SerializableEditorFile<PC_LevFile>>(Path_LevelFile(world, level)).FileData;
@@ -168,7 +158,6 @@ namespace RayCarrot.Ray1Editor
             FileFactory.Write<SerializableEditorFile<PC_LevFile>>(Path_LevelFile(world, level), context);
         }
 
-        // TODO: Is it better to move this to the GameObject class? Each object type can then have its own fields, but that also means the fields get recreated each time the selection changes.
         public override IEnumerable<EditorFieldViewModel> GetEditorObjFields(GameData gameData, Func<GameObject> getSelectedObj)
         {
             // Helper methods
@@ -293,16 +282,19 @@ namespace RayCarrot.Ray1Editor
 
         #region Helpers
 
-        public void LoadPalettes(R1_GameData data, PC_LevFile lev)
+        public void LoadPalettes(R1_PC_GameData data, PC_LevFile lev)
         {
             data.PC_Palettes = lev.MapData.ColorPalettes.Select((x, i) => new Palette(x, $"Palette {i + 1}")
             {
                 CanEditAlpha = false,
                 IsFirstTransparent = true
             }).ToArray();
+
+            foreach (var pal in data.PC_Palettes)
+                data.TextureManager.AddPalette(pal);
         }
 
-        public void LoadDES(R1_GameData data, PC_AllfixFile fix, PC_WorldFile wld, TextureManager textureManager, string[] names)
+        public void LoadDES(R1_PC_GameData data, PC_AllfixFile fix, PC_WorldFile wld, TextureManager textureManager, string[] names)
         {
             data.PC_DES = new PC_DES[]
             {
@@ -365,7 +357,7 @@ namespace RayCarrot.Ray1Editor
             }
         }
 
-        public void LoadObjects(R1_GameData data, PC_LevFile lev)
+        public void LoadObjects(R1_PC_GameData data, PC_LevFile lev)
         {
             var objIndex = 0;
 
@@ -386,7 +378,7 @@ namespace RayCarrot.Ray1Editor
             InitLinkGroups(data.Objects, lev.ObjData.ObjLinkingTable);
         }
 
-        public void LoadMap(R1_GameData data, PC_LevFile lev, TextureManager textureManager)
+        public void LoadMap(R1_PC_GameData data, PC_LevFile lev, TextureManager textureManager)
         {
             var map = lev.MapData;
 
@@ -421,7 +413,7 @@ namespace RayCarrot.Ray1Editor
             data.Layers.Add(colLayer);
         }
 
-        public void LoadFond(R1_GameData data, PC_WorldFile wld, PC_LevFile lev, TextureManager textureManager)
+        public void LoadFond(R1_PC_GameData data, PC_WorldFile wld, PC_LevFile lev, TextureManager textureManager)
         {
             // Load every available background
             var fondOptions = wld.Plan0NumPcx.Select(x => LoadFond(data, textureManager, x)).ToArray();
@@ -434,7 +426,7 @@ namespace RayCarrot.Ray1Editor
             });
         }
 
-        public R1_PC_BackgroundLayer.BackgroundEntry_R1_PC LoadFond(R1_GameData data, TextureManager textureManager, int index)
+        public R1_PC_BackgroundLayer.BackgroundEntry_R1_PC LoadFond(R1_PC_GameData data, TextureManager textureManager, int index)
         {
             var pcx = LoadArchiveFile<PCX>(data.Context, Path_VigFile, index);
 

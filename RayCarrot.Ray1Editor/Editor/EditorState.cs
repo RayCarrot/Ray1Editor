@@ -11,7 +11,6 @@ namespace RayCarrot.Ray1Editor
         #region Colors
 
         // Colors
-        // TODO: Allow to be modified
         public Color Color_Background { get; set; } = new Color(0x28, 0x35, 0x93);
         public Color Color_MapBackground { get; set; } = new Color(0x79, 0x86, 0xCB);
         public Color Color_ObjBounds { get; set; } = new Color(0xf4, 0x43, 0x36);

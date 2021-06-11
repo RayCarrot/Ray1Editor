@@ -19,6 +19,7 @@ namespace RayCarrot.Ray1Editor
             App_Games = new List<UserData_Game>();
             UI_WindowState = null;
             UI_EditorTabsWidth = 340;
+            Editor_PauseWhenInactive = true;
             Serializer_EnableLog = false;
             Serializer_CreateBackupOnWrite = true;
             Theme_Dark = true;
@@ -48,6 +49,11 @@ namespace RayCarrot.Ray1Editor
         /// The window state
         /// </summary>
         public UserData_WindowSessionState UI_WindowState { get; set; }
+
+        /// <summary>
+        /// Indicates if the editor should automatically pause when not active
+        /// </summary>
+        public bool Editor_PauseWhenInactive { get; set; }
 
         public double UI_EditorTabsWidth { get; set; }
 

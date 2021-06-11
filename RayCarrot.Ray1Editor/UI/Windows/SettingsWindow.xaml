@@ -41,6 +41,11 @@
                    Text="Editor" />
 
         <CheckBox Margin="0 0 0 7"
+                  Content="Pause when inactive"
+                  ToolTip="Indicates if the editor should automatically pause when inactive."
+                  IsChecked="{Binding Path=PauseWhenInactive}" />
+
+        <CheckBox Margin="0 0 0 7"
                   Content="Serializer log"
                   ToolTip="Indicates if the binary serializer logging should be enabled, logging any read/write operations. Having this be enabled will slow down the loading and saving in the editor."
                   IsChecked="{Binding Path=EnableSerializerLog}" />

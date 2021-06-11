@@ -7,7 +7,7 @@
                   mc:Ignorable="d"
                   Title="Editor Controls"
                   ResizeMode="NoResize"
-                  Width="360" Height="240"
+                  Width="360" Height="280"
                   Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}"
                   Background="{DynamicResource MahApps.Brushes.ThemeBackground}"
                   CloseWithEscape="True">
