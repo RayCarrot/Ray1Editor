@@ -14,6 +14,8 @@ namespace RayCarrot.Ray1Editor
             WindowState = null;
             Games = new List<UserData_Game>();
             EnableSerializerLog = false;
+            DarkTheme = true;
+            SyncTheme = false;
         }
 
         /// <summary>
@@ -40,9 +42,14 @@ namespace RayCarrot.Ray1Editor
         /// </summary>
         public List<UserData_Game> Games { get; set; }
 
+        /// <summary>
+        /// Indicates if the serializer log is enabled
+        /// </summary>
         public bool EnableSerializerLog { get; set; }
 
+        public bool DarkTheme { get; set; }
+        public bool SyncTheme { get; set; }
+
         // TODO: Save obj field panel resized size
-        // TODO: Save theme (dark/light, color, sync)
     }
 }

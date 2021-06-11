@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using ControlzEx.Theming;
+using NLog;
+using System.IO;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -14,9 +16,16 @@ namespace RayCarrot.Ray1Editor
         public const string EditorDropDownFieldTemplateKey = "EditorDropDownFieldTemplate";
         public const string EditorPointFieldTemplateKey = "EditorPointFieldTemplate";
 
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        public new static App Current => (App)Application.Current;
+
         private void App_OnStartup(object sender, StartupEventArgs e)
         {
+            // Initialize the view model
             AppViewModel.Instance.Initialize(e.Args);
+
+            // Update the theme
+            UpdateTheme();
         }
 
         private void App_OnExit(object sender, ExitEventArgs e)
@@ -34,6 +43,25 @@ namespace RayCarrot.Ray1Editor
             {
                 // ignored
             }
+        }
+
+        public void UpdateTheme()
+        {
+            var data = AppViewModel.Instance.UserData;
+            const string color = "Purple";
+
+            if (data.SyncTheme)
+            {
+                ThemeManager.Current.ThemeSyncMode = ThemeSyncMode.SyncAll;
+                ThemeManager.Current.SyncTheme(ThemeSyncMode.SyncAll);
+            }
+            else
+            {
+                ThemeManager.Current.ThemeSyncMode = ThemeSyncMode.DoNotSync;
+                ThemeManager.Current.ChangeTheme(this, $"{(data.DarkTheme ? "Dark" : "Light")}.{color}");
+            }
+
+            Logger.Log(LogLevel.Trace, "Updated the theme");
         }
     }
 }

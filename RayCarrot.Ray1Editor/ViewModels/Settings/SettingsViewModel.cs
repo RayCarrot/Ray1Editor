@@ -11,6 +11,26 @@ namespace RayCarrot.Ray1Editor
 
         public AppUserData Data { get; }
 
+        public bool DarkTheme
+        {
+            get => Data.DarkTheme;
+            set
+            {
+                Data.DarkTheme = value;
+                App.Current.UpdateTheme();
+            }
+        }
+
+        public bool SyncTheme
+        {
+            get => Data.SyncTheme;
+            set
+            {
+                Data.SyncTheme = value;
+                App.Current.UpdateTheme();
+            }
+        }
+
         public bool EnableSerializerLog
         {
             get => Data.EnableSerializerLog;

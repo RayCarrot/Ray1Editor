@@ -4,6 +4,7 @@
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                   xmlns:local="clr-namespace:RayCarrot.Ray1Editor"
+                  xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
                   mc:Ignorable="d"
                   Title="Settings"
                   ResizeMode="NoResize"
@@ -15,22 +16,34 @@
                   d:DataContext="{d:DesignInstance local:SettingsViewModel}">
     <StackPanel Margin="10">
 
+        <!-- Design -->
+
+        <TextBlock Style="{StaticResource HeaderTextBlock}"
+                   Margin="0 0 0 7"
+                   Text="Design" />
+
+        <CheckBox Margin="0 0 0 7"
+                  Content="Sync theme"
+                  ToolTip="Syncs the app theme with the Windows 10 theme"
+                  IsChecked="{Binding Path=SyncTheme}" />
+
+        <metro:ToggleSwitch Margin="0 0 0 15"
+                            IsOn="{Binding Path=DarkTheme}"
+                            IsEnabled="{Binding Path=SyncTheme, Converter={local:InvertedBooleanConverter}}"
+                            HorizontalAlignment="Left"
+                            OnContent="Dark"
+                            OffContent="Light" />
+
         <!-- Editor -->
 
         <TextBlock Style="{StaticResource HeaderTextBlock}"
-                   Text="Editor"
-                   Margin="0 0 0 7" />
+                   Margin="0 0 0 7"
+                   Text="Editor" />
 
         <CheckBox Margin="0 0 0 15"
                   Content="Serializer log"
                   ToolTip="Indicates if the binary serializer logging should be enabled, logging any read/write operations. Having this be enabled will slow down the loading and saving in the editor."
                   IsChecked="{Binding Path=EnableSerializerLog}" />
-
-        <!-- Design -->
-
-        <!--<TextBlock Style="{StaticResource HeaderTextBlock}"
-                   Text="Design"
-                   Margin="0 0 0 7" />-->
 
         <!-- TODO: Dark/light mode toggle -->
 
