@@ -13,7 +13,7 @@ namespace RayCarrot.Ray1Editor
         public LoadMapViewModel()
         {
             // Set properties
-            Games = new ObservableCollection<LoadGameViewModel>(App.UserData.Games.Select(x => new LoadGameViewModel(this, x)));
+            Games = new ObservableCollection<LoadGameViewModel>(App.UserData.App_Games.Select(x => new LoadGameViewModel(this, x)));
 
             // Create commands
             AddGameCommand = new RelayCommand(AddGame);
@@ -67,7 +67,7 @@ namespace RayCarrot.Ray1Editor
                 Mode = editGameVM.GameMode
             };
 
-            App.UserData.Games.Add(game);
+            App.UserData.App_Games.Add(game);
             Games.Add(new LoadGameViewModel(this, game));
 
             Logger.Log(LogLevel.Info, "Added game with mode {0}", game.Mode);

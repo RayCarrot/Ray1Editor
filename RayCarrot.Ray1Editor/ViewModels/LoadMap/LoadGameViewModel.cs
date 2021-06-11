@@ -94,7 +94,7 @@ namespace RayCarrot.Ray1Editor
             LoadMapViewModel.SelectedGame = null;
 
             // Remove from user data
-            AppViewModel.Instance.UserData.Games.Remove(Game);
+            AppViewModel.Instance.UserData.App_Games.Remove(Game);
 
             Logger.Log(LogLevel.Trace, "Removed game with mode {0}", Game.Mode);
         }

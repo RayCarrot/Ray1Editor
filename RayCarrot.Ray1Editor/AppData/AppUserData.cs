@@ -6,16 +6,21 @@ namespace RayCarrot.Ray1Editor
     public class AppUserData
     {
         /// <summary>
+        /// Default constructor. This will always reset the app data to ensure any values missed when reading will still be set correctly.
+        /// </summary>
+        public AppUserData() => Reset();
+
+        /// <summary>
         /// Resets all properties to their default values
         /// </summary>
         public void Reset()
         {
-            AppVersion = AppViewModel.Instance.CurrentAppVersion;
-            WindowState = null;
-            Games = new List<UserData_Game>();
-            EnableSerializerLog = false;
-            DarkTheme = true;
-            SyncTheme = false;
+            App_Version = AppViewModel.Instance.CurrentAppVersion;
+            UI_WindowState = null;
+            App_Games = new List<UserData_Game>();
+            Serializer_EnableLog = false;
+            Theme_Dark = true;
+            Theme_Sync = false;
         }
 
         /// <summary>
@@ -23,32 +28,35 @@ namespace RayCarrot.Ray1Editor
         /// </summary>
         public void Verify()
         {
-            AppVersion ??= AppViewModel.Instance.CurrentAppVersion;
-            Games ??= new List<UserData_Game>();
+            App_Version ??= AppViewModel.Instance.CurrentAppVersion;
+            App_Games ??= new List<UserData_Game>();
         }
 
         /// <summary>
         /// The last recorded app version. Used to check if an update has occurred since the last run.
         /// </summary>
-        public Version AppVersion { get; set; }
-
-        /// <summary>
-        /// The window state
-        /// </summary>
-        public UserData_WindowSessionState WindowState { get; set; }
+        public Version App_Version { get; set; }
 
         /// <summary>
         /// The added games
         /// </summary>
-        public List<UserData_Game> Games { get; set; }
+        public List<UserData_Game> App_Games { get; set; }
+
+        /// <summary>
+        /// The window state
+        /// </summary>
+        public UserData_WindowSessionState UI_WindowState { get; set; }
 
         /// <summary>
         /// Indicates if the serializer log is enabled
         /// </summary>
-        public bool EnableSerializerLog { get; set; }
+        public bool Serializer_EnableLog { get; set; }
 
-        public bool DarkTheme { get; set; }
-        public bool SyncTheme { get; set; }
+        public bool Serializer_CreateBackupOnWrite { get; set; }
+
+        public bool Theme_Dark { get; set; }
+        public bool Theme_Sync { get; set; }
+
 
         // TODO: Save obj field panel resized size
     }

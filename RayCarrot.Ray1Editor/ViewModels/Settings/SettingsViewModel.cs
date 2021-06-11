@@ -13,28 +13,34 @@ namespace RayCarrot.Ray1Editor
 
         public bool DarkTheme
         {
-            get => Data.DarkTheme;
+            get => Data.Theme_Dark;
             set
             {
-                Data.DarkTheme = value;
+                Data.Theme_Dark = value;
                 App.Current.UpdateTheme();
             }
         }
 
         public bool SyncTheme
         {
-            get => Data.SyncTheme;
+            get => Data.Theme_Sync;
             set
             {
-                Data.SyncTheme = value;
+                Data.Theme_Sync = value;
                 App.Current.UpdateTheme();
             }
         }
 
         public bool EnableSerializerLog
         {
-            get => Data.EnableSerializerLog;
-            set => Data.EnableSerializerLog = value;
+            get => Data.Serializer_EnableLog;
+            set => Data.Serializer_EnableLog = value;
+        }
+
+        public bool CreateBackupOnWrite
+        {
+            get => Data.Serializer_CreateBackupOnWrite;
+            set => Data.Serializer_CreateBackupOnWrite = value;
         }
     }
 }

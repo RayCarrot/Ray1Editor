@@ -144,11 +144,11 @@ namespace RayCarrot.Ray1Editor
             // Load the app user data
             LoadAppUserData();
 
-            if (UserData.AppVersion < CurrentAppVersion)
+            if (UserData.App_Version < CurrentAppVersion)
                 PostUpdate();
 
             // Update the version
-            UserData.AppVersion = CurrentAppVersion;
+            UserData.App_Version = CurrentAppVersion;
 
             // Register encodings
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -239,7 +239,6 @@ namespace RayCarrot.Ray1Editor
         public void ResetAppUserData()
         {
             UserData = new AppUserData();
-            UserData.Reset();
 
             Logger.Log(LogLevel.Info, "Reset the app user data");
         }

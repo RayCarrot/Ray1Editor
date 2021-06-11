@@ -11,13 +11,13 @@ namespace RayCarrot.Ray1Editor
         {
             InitializeComponent();
 
-            AppViewModel.Instance.UserData.WindowState?.ApplyToWindow(this);
+            AppViewModel.Instance.UserData.UI_WindowState?.ApplyToWindow(this);
         }
 
         private void MainWindow_OnClosing(object sender, CancelEventArgs e)
         {
             // Update the saved window state
-            AppViewModel.Instance.UserData.WindowState = UserData_WindowSessionState.GetWindowState(this);
+            AppViewModel.Instance.UserData.UI_WindowState = UserData_WindowSessionState.GetWindowState(this);
         }
     }
 }

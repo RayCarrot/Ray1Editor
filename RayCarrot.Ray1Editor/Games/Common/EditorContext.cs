@@ -14,7 +14,7 @@ namespace RayCarrot.Ray1Editor
         public class EditorSettings : ISerializerSettings
         {
             public Encoding DefaultStringEncoding => Encoding.GetEncoding(437);
-            public bool CreateBackupOnWrite => false;
+            public bool CreateBackupOnWrite => AppViewModel.Instance.UserData.Serializer_CreateBackupOnWrite;
             public bool SavePointersForRelocation => false;
             public bool IgnoreCacheOnRead => false;
             public PointerSize? LoggingPointerSize => PointerSize.Pointer32;
@@ -31,7 +31,7 @@ namespace RayCarrot.Ray1Editor
 
         public class EditorSerializerLog : ISerializerLog
         {
-            public bool IsEnabled => AppViewModel.Instance.UserData.EnableSerializerLog;
+            public bool IsEnabled => AppViewModel.Instance.UserData.Serializer_EnableLog;
 
             private StreamWriter _logWriter;
 

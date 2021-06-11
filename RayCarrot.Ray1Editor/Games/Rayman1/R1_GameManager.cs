@@ -280,6 +280,7 @@ namespace RayCarrot.Ray1Editor
         public override GameObject CreateGameObject(GameData gameData, int index)
         {
             var data = (R1_GameData)gameData;
+            var settings = data.Context.GetSettings<Ray1Settings>();
             var def = data.EventDefinitions[index];
 
             // Get the commands and label offsets
@@ -292,7 +293,7 @@ namespace RayCarrot.Ray1Editor
                 cmds = ObjCommandCompiler.Decompile(new ObjCommandCompiler.CompiledObjCommandData(CommandCollection.FromBytes(def.Commands, () =>
                 {
                     var c = new EditorContext(data.Context.BasePath, noLog: true);
-                    c.AddSettings(data.Context.GetSettings<Ray1Settings>());
+                    c.AddSettings(settings);
                     return c;
                 }), def.LabelOffsets), def.Commands);
             }
@@ -301,7 +302,7 @@ namespace RayCarrot.Ray1Editor
                 cmds = CommandCollection.FromBytes(def.Commands, () =>
                 {
                     var c = new EditorContext(data.Context.BasePath, noLog: true);
-                    c.AddSettings(data.Context.GetSettings<Ray1Settings>());
+                    c.AddSettings(settings);
                     return c;
                 });
                 labelOffsets = def.LabelOffsets.Any() ? def.LabelOffsets : null;
@@ -310,29 +311,24 @@ namespace RayCarrot.Ray1Editor
             var des = data.DES.First(x => x.Name == def.DES);
             var eta = data.ETA.First(x => x.Name == def.ETA);
 
-            var obj = new R1_GameObject(new ObjData()
-            {
-                Type = (ObjType)def.Type,
-                Etat = def.Etat,
-                SubEtat = def.SubEtat,
-                OffsetBX = def.OffsetBX,
-                OffsetBY = def.OffsetBY,
-                OffsetHY = def.OffsetHY,
-                FollowSprite = def.FollowSprite,
-                DisplayPrio = 0,
-                HitSprite = def.HitSprite,
-                Commands = cmds,
-                LabelOffsets = labelOffsets,
-                Animations = des.AnimationsData,
-                ImageBuffer = des.ImageBuffer,
-                Sprites = des.SpritesData,
-                ETA = eta.ETA,
+            var obj = new R1_GameObject(ObjData.CreateObj(settings), def);
 
-            }, def);
-
+            obj.ObjData.Type = (ObjType)def.Type;
+            obj.ObjData.Etat = def.Etat;
+            obj.ObjData.SubEtat = def.SubEtat;
+            obj.ObjData.OffsetBX = def.OffsetBX;
+            obj.ObjData.OffsetBY = def.OffsetBY;
+            obj.ObjData.OffsetHY = def.OffsetHY;
+            obj.ObjData.FollowSprite = def.FollowSprite;
+            obj.ObjData.DisplayPrio = 0;
+            obj.ObjData.HitSprite = def.HitSprite;
+            obj.ObjData.Commands = cmds;
+            obj.ObjData.LabelOffsets = labelOffsets;
+            obj.ObjData.Animations = des.AnimationsData;
+            obj.ObjData.ImageBuffer = des.ImageBuffer;
+            obj.ObjData.Sprites = des.SpritesData;
+            obj.ObjData.ETA = eta.ETA;
             obj.ObjData.SetFollowEnabled(data.Context.GetSettings<Ray1Settings>(), def.FollowEnabled);
-
-            // We need to set the hit points after the type
             obj.ObjData.ActualHitPoints = def.HitPoints;
 
             Logger.Log(LogLevel.Trace, "Created object {0}", obj.DisplayName);

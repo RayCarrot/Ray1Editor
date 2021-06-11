@@ -40,10 +40,15 @@
                    Margin="0 0 0 7"
                    Text="Editor" />
 
-        <CheckBox Margin="0 0 0 15"
+        <CheckBox Margin="0 0 0 7"
                   Content="Serializer log"
                   ToolTip="Indicates if the binary serializer logging should be enabled, logging any read/write operations. Having this be enabled will slow down the loading and saving in the editor."
                   IsChecked="{Binding Path=EnableSerializerLog}" />
+
+        <CheckBox Margin="0 0 0 15"
+                  Content="Create backup when saving"
+                  ToolTip="Indicates if backups are created of the modified files before saving."
+                  IsChecked="{Binding Path=CreateBackupOnWrite}" />
 
     </StackPanel>
 

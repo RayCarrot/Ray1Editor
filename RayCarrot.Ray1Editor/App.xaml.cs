@@ -50,7 +50,7 @@ namespace RayCarrot.Ray1Editor
             var data = AppViewModel.Instance.UserData;
             const string color = "Purple";
 
-            if (data.SyncTheme)
+            if (data.Theme_Sync)
             {
                 ThemeManager.Current.ThemeSyncMode = ThemeSyncMode.SyncAll;
                 ThemeManager.Current.SyncTheme(ThemeSyncMode.SyncAll);
@@ -58,7 +58,7 @@ namespace RayCarrot.Ray1Editor
             else
             {
                 ThemeManager.Current.ThemeSyncMode = ThemeSyncMode.DoNotSync;
-                ThemeManager.Current.ChangeTheme(this, $"{(data.DarkTheme ? "Dark" : "Light")}.{color}");
+                ThemeManager.Current.ChangeTheme(this, $"{(data.Theme_Dark ? "Dark" : "Light")}.{color}");
             }
 
             Logger.Log(LogLevel.Trace, "Updated the theme");
