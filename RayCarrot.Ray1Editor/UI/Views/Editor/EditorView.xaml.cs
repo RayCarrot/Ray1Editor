@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -17,12 +18,18 @@ namespace RayCarrot.Ray1Editor
                     EditorTabControl.SelectedIndex = 3;
             };
 
+            EditorTabsColumnDef.Width = new GridLength(AppViewModel.Instance.UserData.UI_EditorTabsWidth);
         }
 
         public EditorViewModel ViewModel
         {
             get => DataContext as EditorViewModel;
             set => DataContext = value;
+        }
+
+        private void EditorView_OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            AppViewModel.Instance.UserData.UI_EditorTabsWidth = EditorTabsColumnDef.Width.Value;
         }
     }
 }

@@ -6,7 +6,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:local="clr-namespace:RayCarrot.Ray1Editor"
              mc:Ignorable="d"
-             d:Height="600" d:Width="1024" 
+             d:Height="600" d:Width="1024"
+             Unloaded="EditorView_OnUnloaded"
              Background="{DynamicResource MahApps.Brushes.ThemeBackground}"
              Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}"
              d:DataContext="{x:Static local:DesignDataContexts.EditorViewModel}">
@@ -37,7 +38,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" MinWidth="400" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="340" MinWidth="250" />
+                <ColumnDefinition x:Name="EditorTabsColumnDef" d:Width="340" MinWidth="250" />
             </Grid.ColumnDefinitions>
 
             <!-- Scene -->
@@ -53,7 +54,7 @@
 
             <!-- Editor Fields -->
 
-            <Grid Grid.Column="2" >
+            <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
