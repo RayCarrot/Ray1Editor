@@ -39,6 +39,9 @@
     <!-- For JSON serialization (used to store app user data) -->
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 
+    <!-- Logging -->
+    <PackageReference Include="NLog" Version="4.7.10" />
+
     <!-- For automatically invoking PropertyChanged for modified properties -->
     <PackageReference Include="PropertyChanged.Fody" Version="3.3.3" />
   </ItemGroup>

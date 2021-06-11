@@ -80,6 +80,7 @@ namespace RayCarrot.Ray1Editor
         // Info
         public abstract string PrimaryName { get; } // Official
         public abstract string SecondaryName { get; } // Unofficial
+        public string DisplayName => SecondaryName ?? PrimaryName;
         //public virtual string DebugText => null;
         public virtual string Scripts => null;
 
@@ -92,6 +93,7 @@ namespace RayCarrot.Ray1Editor
         public virtual void Draw(SpriteBatch s)
         {
             // TODO: Show some sort of dummy texture for objects without rendered sprites
+            // TODO: Add one-time logs which log a warning when an object fails to render
 
             var anim = CurrentAnimation;
 

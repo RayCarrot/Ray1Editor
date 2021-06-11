@@ -162,7 +162,7 @@ namespace RayCarrot.Ray1Editor
             _selectedGameObjectItem = obj == null ? null : GameObjects.First(x => x.Obj == obj);
             OnPropertyChanged(nameof(SelectedGameObjectItem));
 
-            SelectedObjectName = obj?.SecondaryName ?? obj?.PrimaryName;
+            SelectedObjectName = obj?.DisplayName;
             SelectedObjectOffset = obj?.SerializableData?.Offset?.ToString();
             SelectedObjectScript = obj?.Scripts;
         }

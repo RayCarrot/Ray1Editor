@@ -1,4 +1,5 @@
-﻿using RayCarrot.UI;
+﻿using NLog;
+using RayCarrot.UI;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
@@ -18,6 +19,12 @@ namespace RayCarrot.Ray1Editor
             AddGameCommand = new RelayCommand(AddGame);
             LoadMapCommand = new RelayCommand(LoadMap);
         }
+
+        #endregion
+
+        #region Logger
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         #endregion
 
@@ -62,10 +69,14 @@ namespace RayCarrot.Ray1Editor
 
             App.UserData.Games.Add(game);
             Games.Add(new LoadGameViewModel(this, game));
+
+            Logger.Log(LogLevel.Info, "Added game with mode {0}", game.Mode);
         }
 
         public void LoadMap()
         {
+            Logger.Log(LogLevel.Info, "Loading editor with mode {0}", SelectedGame.Game.Mode);
+
             // TODO: Verify the game path exists before loading the editor to avoid crash
             App.ChangeView(AppViewModel.AppView.Editor, new EditorViewModel(SelectedGame.Game, SelectedGame.Manager, SelectedLevel.Settings));
 

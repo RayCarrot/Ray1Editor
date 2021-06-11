@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using NLog;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace RayCarrot.Ray1Editor
@@ -15,6 +15,8 @@ namespace RayCarrot.Ray1Editor
             PalettedTextureDatas = new HashSet<PalettedTextureData>();
             TextureSheets = new HashSet<TextureSheet>();
         }
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         protected HashSet<Texture2D> Textures { get; }
         protected HashSet<PalettedTextureData> PalettedTextureDatas { get; }
@@ -46,13 +48,12 @@ namespace RayCarrot.Ray1Editor
 
         public void RefreshPalette(Palette pal)
         {
-            Debug.WriteLine($"Refreshed palette {pal.Name}");
-
             foreach (var tex in EnumeratePalettedData().Where(x => x.Palette == pal))
                 tex.Apply();
+
+            Logger.Log(LogLevel.Info, "Refreshed palette {0}", pal.Name);
         }
 
-        // TODO: Cache textures when swapping palettes?
         public void SwapPalettes(Palette oldPal, Palette newPal)
         {
             foreach (var tex in EnumeratePalettedData().Where(x => x.Palette == oldPal))
@@ -60,6 +61,8 @@ namespace RayCarrot.Ray1Editor
                 tex.Palette = newPal;
                 tex.Apply();
             }
+
+            Logger.Log(LogLevel.Info, "Swapped palette {0} with {0}", oldPal.Name, newPal.Name);
         }
 
         public void Dispose()

@@ -3,15 +3,26 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using NLog;
 
 namespace RayCarrot.Ray1Editor
 {
     public abstract class TileMapLayer<T> : TileMapBaseLayer<T>
     {
+        #region Constructor
+
         protected TileMapLayer(T[] tileMap, Point position, Point mapSize, TileSet tileSet) : base(tileMap, position, mapSize, tileSet)
         {
             LinkedLayers = new HashSet<TileMapLayer<T>>();
         }
+
+        #endregion
+
+        #region Logger
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        #endregion
 
         #region Private Fields
 
@@ -121,6 +132,8 @@ namespace RayCarrot.Ray1Editor
                 // Copy over the selected tiles from the tile set
                 SelectedTiles = TileSetLayer.SelectedTiles;
             }
+
+            Logger.Log(LogLevel.Info, "Toggled the tile map layer tile set");
         }
 
         #endregion
@@ -181,6 +194,8 @@ namespace RayCarrot.Ray1Editor
             }
 
             EditorState.UpdateMapSize(Data);
+
+            Logger.Log(LogLevel.Info, "Updated the tile map layer size to {0}", newSize);
         }
 
         public override void OnModeChanged(EditorMode oldMode, EditorMode newMode)

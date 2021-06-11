@@ -1,4 +1,5 @@
-﻿using RayCarrot.UI;
+﻿using NLog;
+using RayCarrot.UI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,6 +15,8 @@ namespace RayCarrot.Ray1Editor
             GetItemsAction = getItemsAction;
             Items = new ObservableCollection<DropDownItem>();
         }
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private int _selectedItem;
         private IReadOnlyList<DropDownItem> _prevItems;
@@ -48,6 +51,8 @@ namespace RayCarrot.Ray1Editor
 
                 Items.Clear();
                 Items.AddRange(GetItemsAction());
+
+                Logger.Log(LogLevel.Debug, "Recreated drop-down items for drop-down with header {0}", Header);
             }
 
             _selectedItem = GetValueAction();

@@ -16,7 +16,7 @@ namespace RayCarrot.Ray1Editor
 
         private void App_OnStartup(object sender, StartupEventArgs e)
         {
-            AppViewModel.Instance.Initialize();
+            AppViewModel.Instance.Initialize(e.Args);
         }
 
         private void App_OnExit(object sender, ExitEventArgs e)

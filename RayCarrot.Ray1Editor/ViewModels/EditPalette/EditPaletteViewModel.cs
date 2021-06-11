@@ -3,6 +3,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Media;
+using NLog;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -18,6 +19,12 @@ namespace RayCarrot.Ray1Editor
             Items = new ObservableCollection<PaletteEntryViewModel>(palette.Colors.Select((x, i) => 
                 new PaletteEntryViewModel(Color.FromArgb(x.A, x.R, x.G, x.B), palette.IsFirstTransparent && i == 0, palette.CanEditAlpha)));
         }
+
+        #endregion
+
+        #region Logger
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         #endregion
 
@@ -40,6 +47,8 @@ namespace RayCarrot.Ray1Editor
                 var c = Items[i].Color;
                 Palette.Colors[i] = new Microsoft.Xna.Framework.Color(c.R, c.G, c.B, c.A);
             }
+
+            Logger.Log(LogLevel.Trace, "Updated modified palette");
         }
 
         #endregion

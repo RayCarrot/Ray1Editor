@@ -9,7 +9,7 @@ namespace RayCarrot.Ray1Editor
             Obj = obj;
         }
 
-        public string Header => Obj.SecondaryName ?? Obj.PrimaryName;
+        public string Header => Obj.DisplayName;
         public GameObject Obj { get; }
     }
 }

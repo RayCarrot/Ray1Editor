@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Input;
+using NLog;
 using RayCarrot.UI;
 
 namespace RayCarrot.Ray1Editor
@@ -24,6 +25,8 @@ namespace RayCarrot.Ray1Editor
             // Load game mode
             LoadGameMode();
         }
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public ICommand EditCommand { get; }
         public ICommand OpenFolderCommand { get; }
@@ -78,6 +81,8 @@ namespace RayCarrot.Ray1Editor
                 Process.Start("explorer.exe", "/select, \"" + path + "\"")?.Dispose();
             else if (Directory.Exists(path))
                 Process.Start("explorer.exe", path)?.Dispose();
+
+            Logger.Log(LogLevel.Trace, "Opened game path");
         }
 
         public void Delete()
@@ -90,6 +95,8 @@ namespace RayCarrot.Ray1Editor
 
             // Remove from user data
             AppViewModel.Instance.UserData.Games.Remove(Game);
+
+            Logger.Log(LogLevel.Trace, "Removed game with mode {0}", Game.Mode);
         }
     }
 }

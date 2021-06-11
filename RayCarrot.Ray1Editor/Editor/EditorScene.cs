@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Framework.WpfInterop;
 using MonoGame.Framework.WpfInterop.Input;
+using NLog;
 using System;
 using System.Linq;
 
@@ -28,6 +29,12 @@ namespace RayCarrot.Ray1Editor
             Mouse = new WpfMouse(this);
             Keyboard = new WpfKeyboard(this);
         }
+
+        #endregion
+
+        #region Logger
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         #endregion
 
@@ -70,6 +77,7 @@ namespace RayCarrot.Ray1Editor
                     l.OnModeChanged(_mode, value);
 
                 VM.OnModeChanged(_mode, value);
+                Logger.Log(LogLevel.Info, "Changed editor mode from {0} to {1}", _mode, value);
 
                 _mode = value;
             }
@@ -93,8 +101,12 @@ namespace RayCarrot.Ray1Editor
             get => _selectedObject;
             set
             {
+                if (_selectedObject == value)
+                    return;
+
                 _selectedObject = value;
                 VM.OnSelectedObjectChanged(_selectedObject);
+                Logger.Log(LogLevel.Trace, "Selected object {0}", SelectedObject?.DisplayName ?? "null");
             }
         }
         public bool IsDraggingObject { get; protected set; }
@@ -121,6 +133,9 @@ namespace RayCarrot.Ray1Editor
 
         protected override void Initialize()
         {
+            Logger.Log(LogLevel.Info, "Initializing the editor scene");
+            Logger.Log(LogLevel.Trace, "Editor scene is initializing with manager {0} and a context with the base path {1}", GameManager, Context.BasePath);
+
             // Create the graphics service
             _ = new WpfGraphicsDeviceService(this);
 
@@ -133,27 +148,40 @@ namespace RayCarrot.Ray1Editor
             // Reset the camera
             Cam.ResetCamera();
 
-            // Initialize the base game
+            // Initialize the base game, thus loading the content
             base.Initialize();
 
+            // Notify the view model
             VM.OnEditorLoaded();
+
+            Logger.Log(LogLevel.Info, "Initialized the editor scene");
         }
 
         protected override void LoadContent()
         {
+            Logger.Log(LogLevel.Info, "Loading the editor content");
+
             // Load the game data
             using (Context)
                 GameData = GameManager.Load(Context, GameSettings, new TextureManager(GraphicsDevice));
 
+            Logger.Log(LogLevel.Trace, "Loading the editor elements");
+
             // Load elements
             GameData.LoadElements(this);
+
+            Logger.Log(LogLevel.Trace, "Loading the editor objects");
 
             // Load objects
             foreach (var obj in GameData.Objects)
                 obj.Load();
 
+            Logger.Log(LogLevel.Trace, "Initializing the object links");
+
             // Initialize object links
             InitializeObjLinks();
+
+            Logger.Log(LogLevel.Trace, "Calculating the map size");
 
             // Calculate the map size
             State.UpdateMapSize(GameData);
@@ -182,11 +210,15 @@ namespace RayCarrot.Ray1Editor
 
         protected override void UnloadContent()
         {
+            Logger.Log(LogLevel.Info, "Unloading the editor scene");
+
             base.UnloadContent();
 
             SpriteBatch?.Dispose();
             GameData?.Dispose();
             Primitives2D.Dipose();
+
+            Logger.Log(LogLevel.Info, "Unloaded the editor scene");
         }
 
         protected bool GetIsEditorPaused() => PauseWhenInactive && !IsActive || IsPaused;
@@ -466,6 +498,7 @@ namespace RayCarrot.Ray1Editor
         {
             Cam.TargetPosition = obj.Position.ToVector2();
             Cam.TargetZoom = 2;
+            Logger.Log(LogLevel.Trace, "Targeting object {0} at {1}", obj.DisplayName, obj.Position);
         }
 
         public void RemoveObject(GameObject obj)
@@ -476,16 +509,22 @@ namespace RayCarrot.Ray1Editor
                 SelectedObject = null;
 
             VM.OnObjectRemoved(obj);
+
+            Logger.Log(LogLevel.Trace, "Removed object {0}", obj.DisplayName);
         }
 
         public void Save()
         {
+            Logger.Log(LogLevel.Info, "Saving the editor changes");
+
             // Save objects
             foreach (var obj in GameData.Objects)
                 obj.Save();
 
             using (Context)
                 GameManager.Save(Context, GameData);
+
+            Logger.Log(LogLevel.Info, "Saved the editor changes");
         }
 
         protected override void Dispose(bool disposing)

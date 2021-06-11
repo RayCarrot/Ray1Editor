@@ -1,4 +1,5 @@
 ﻿using MahApps.Metro.Controls;
+using NLog;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,7 +18,7 @@ namespace RayCarrot.Ray1Editor
         /// </summary>
         public BaseWindow()
         {
-            //RL.Logger?.LogInformationSource($"A window is being created...");
+            Logger.Log(LogLevel.Info, "A window is being created");
 
             // Default to true
             CloseWithEscape = true;
@@ -36,14 +37,14 @@ namespace RayCarrot.Ray1Editor
             // Set owner window
             Owner = Application.Current?.Windows.Cast<Window>().FirstOrDefault(x => x.IsActive);
 
-            //RL.Logger?.LogInformationSource($"The owner window has been set to {Owner?.ToString() ?? "null"}");
+            Logger.Log(LogLevel.Trace, "The owner window has been set to {0}", Owner?.ToString() ?? "null");
 
             // Do not show in the task bar if the window has a owner, is not the main window and a main window has been created
             if (Owner != null && Application.Current?.MainWindow != null && this != Application.Current.MainWindow)
                 ShowInTaskbar = false;
 
             // Due to a WPF glitch the main window needs to be focused upon closing
-            Closed += (s, e) =>
+            Closed += (_, _) =>
             {
                 if (this != Application.Current.MainWindow)
                     Application.Current.MainWindow?.Focus();
@@ -52,14 +53,16 @@ namespace RayCarrot.Ray1Editor
             // Set transition
             //WindowTransitionsEnabled = RCPServices.Data?.EnableAnimations ?? true;
 
-            //RL.Logger?.LogInformationSource($"The window {this} has been created");
+            Logger.Log(LogLevel.Info, "The window {0} has been created", this);
 
-            PreviewKeyDown += (s, e) =>
+            PreviewKeyDown += (_, e) =>
             {
                 if (CloseWithEscape && e.Key == Key.Escape)
                     Close();
             };
         }
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// Shows the <see cref="Window"/> as a dialog

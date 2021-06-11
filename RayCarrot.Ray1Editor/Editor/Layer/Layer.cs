@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BinarySerializer;
 using MahApps.Metro.IconPacks;
+using NLog;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -12,6 +13,8 @@ namespace RayCarrot.Ray1Editor
     /// </summary>
     public abstract class Layer : EditorElement
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// The layer name to display
         /// </summary>
@@ -77,6 +80,8 @@ namespace RayCarrot.Ray1Editor
 
         public virtual void Select()
         {
+            Logger.Log(LogLevel.Trace, "Selected layer {0}", Name);
+
             IsSelected = true;
             IsVisible = true;
 

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using NLog;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -16,6 +17,13 @@ namespace RayCarrot.Ray1Editor
     public class R1_PC_GameManager : R1_GameManager
     {
         // TODO: Move some load code out from here and into R1 base class so it can be reused
+
+        #region Logger
+
+        // TODO: Add logging to loading and saving
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        #endregion
 
         #region Paths
 

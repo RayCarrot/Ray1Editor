@@ -270,16 +270,13 @@ namespace RayCarrot.Ray1Editor
             {
                 for (int x = 0; x < MapSize.X; x++)
                 {
-                    var sourceTileX = x;
-                    var sourceTileY = y;
-
                     T tile;
 
                     // Check if a preview tile should be drawn instead
                     if (previewBox?.Contains(x, y) == true)
-                        tile = SelectedTiles[(sourceTileX - previewBox.Value.X) % SelectedTilesWidth, (sourceTileY - previewBox.Value.Y) % SelectedTilesHeight];
+                        tile = SelectedTiles[(x - previewBox.Value.X) % SelectedTilesWidth, (y - previewBox.Value.Y) % SelectedTilesHeight];
                     else
-                        tile = GetTileAt(sourceTileX, sourceTileY);
+                        tile = GetTileAt(x, y);
 
                     var dest = GetTileRect(x, y);
                     var src = GetTileSourceRect(tile);

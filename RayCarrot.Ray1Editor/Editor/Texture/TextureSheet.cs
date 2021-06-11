@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NLog;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -51,6 +52,8 @@ namespace RayCarrot.Ray1Editor
             var height = y + maxHeight;
 
             Sheet = new Texture2D(manager.GraphicsDevice, sheetWidth, height);
+
+            Logger.Log(LogLevel.Trace, "Created texture sheet with {0} entries and a size of {1}", Entries.Length, Sheet.Bounds.Size);
         }
 
         public TextureSheet(TextureManager manager, string path, IEnumerable<Rectangle> textures)
@@ -61,6 +64,8 @@ namespace RayCarrot.Ray1Editor
             Sheet = Texture2D.FromStream(manager.GraphicsDevice, stream);
             Entries = textures.Select(x => new Entry(x)).ToArray();
         }
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public Texture2D Sheet { get; }
         public Entry[] Entries { get; }

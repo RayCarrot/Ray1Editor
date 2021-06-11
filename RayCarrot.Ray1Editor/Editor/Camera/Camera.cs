@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using NLog;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -19,6 +20,8 @@ namespace RayCarrot.Ray1Editor
         private Vector2 _position;
         private Vector2 _viewArea;
         private Matrix _transformMatrix;
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         // Data
         protected Viewport Viewport { get; }
@@ -103,6 +106,7 @@ namespace RayCarrot.Ray1Editor
         {
             Zoom = 1;
             Position = new Vector2(Viewport.Width / 2f, Viewport.Height / 2f);
+            Logger.Log(LogLevel.Trace, "Reset the camera");
         }
 
         public void Update(EditorUpdateData updateData)

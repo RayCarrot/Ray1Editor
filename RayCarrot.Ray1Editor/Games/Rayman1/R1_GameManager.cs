@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BinarySerializer;
+using NLog;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -12,12 +13,28 @@ namespace RayCarrot.Ray1Editor
     /// </summary>
     public abstract class R1_GameManager : GameManager
     {
+        #region Logger
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        #endregion
+
+        #region Asset Paths
+
         public const string AssetPath_CollisionFile = "Assets/Collision/R1_TypeCollision.png";
         public const string AssetPath_EventsDir = "Assets/Rayman1/Events/";
         public const string AssetPath_EventsFile = AssetPath_EventsDir + "Events.csv";
 
+        #endregion
+
+        #region Protected Properties
+
         protected abstract int MaxObjType { get; }
         protected virtual bool UsesLocalCommands => false;
+
+        #endregion
+
+        #region Public Methods
 
         public IEnumerable<LoadGameLevelViewModel> GetLevels(Ray1EngineVersion engineVersion, Ray1PCVersion pcVersion = Ray1PCVersion.None, string volume = null)
         {
@@ -249,33 +266,10 @@ namespace RayCarrot.Ray1Editor
 
             // Log if not found
             if (match == null && data.EventDefinitions.Any())
-            {
-                // TODO: Logging
-                //Debug.LogWarning($"Matching event not found for event with type {e.Type}, etat {e.Etat} & subetat {e.SubEtat} in level {Settings.World}-{Settings.Level}");
-            }
+                Logger.Log(LogLevel.Warn, "Matching event not found for event with type {0}, etat {1} & subetat {2}", e.Type, e.Etat, e.SubEtat);
 
             // Return the item
             return match;
-        }
-
-        [Flags]
-        protected enum EventMatchFlags : ushort
-        {
-            None = 0,
-
-            Type = 1 << 0,
-            Etat = 1 << 1,
-            SubEtat = 1 << 2,
-            OffsetBX = 1 << 3,
-            OffsetBY = 1 << 4,
-            OffsetHY = 1 << 5,
-            FollowSprite = 1 << 6,
-            HitPoints = 1 << 7,
-            HitSprite = 1 << 8,
-            FollowEnabled = 1 << 9,
-            Commands = 1 << 10,
-
-            All = UInt16.MaxValue,
         }
 
         public override IEnumerable<string> GetAvailableObjects(GameData gameData)
@@ -341,7 +335,35 @@ namespace RayCarrot.Ray1Editor
             // We need to set the hit points after the type
             obj.ObjData.ActualHitPoints = def.HitPoints;
 
+            Logger.Log(LogLevel.Trace, "Created object {0}", obj.DisplayName);
+
             return obj;
         }
+
+        #endregion
+
+        #region Data Types
+
+        [Flags]
+        protected enum EventMatchFlags : ushort
+        {
+            None = 0,
+
+            Type = 1 << 0,
+            Etat = 1 << 1,
+            SubEtat = 1 << 2,
+            OffsetBX = 1 << 3,
+            OffsetBY = 1 << 4,
+            OffsetHY = 1 << 5,
+            FollowSprite = 1 << 6,
+            HitPoints = 1 << 7,
+            HitSprite = 1 << 8,
+            FollowEnabled = 1 << 9,
+            Commands = 1 << 10,
+
+            All = UInt16.MaxValue,
+        }
+
+        #endregion
     }
 }

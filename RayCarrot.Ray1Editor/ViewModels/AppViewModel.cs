@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using NLog;
+using NLog.Config;
+using NLog.Targets;
 using RayCarrot.UI;
 
 namespace RayCarrot.Ray1Editor
@@ -22,8 +27,7 @@ namespace RayCarrot.Ray1Editor
         {
             Path_AppDataDir = $"AppUserData";
             Path_AppUserDataFile = Path.Combine(Path_AppDataDir, $"Settings.json");
-
-            SetTitle(null);
+            Path_LogFile = Path.Combine(Path_AppDataDir, $"Log.txt");
         }
 
         #endregion
@@ -32,6 +36,13 @@ namespace RayCarrot.Ray1Editor
 
         public string Path_AppDataDir { get; }
         public string Path_AppUserDataFile { get; }
+        public string Path_LogFile { get; }
+
+        #endregion
+
+        #region Logger
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         #endregion
 
@@ -72,6 +83,8 @@ namespace RayCarrot.Ray1Editor
 
             if (state != null)
                 Title += $" - {state}";
+            
+            Logger.Log(LogLevel.Trace, "Title set to {0}", Title);
         }
 
         /// <summary>
@@ -81,6 +94,8 @@ namespace RayCarrot.Ray1Editor
         /// <param name="vm">The view model for the new view</param>
         public void ChangeView(AppView view, AppViewBaseViewModel vm)
         {
+            Logger.Log(LogLevel.Info, "Changing view from {0} to {1}", CurrentAppView, view);
+
             // Dispose the current view model
             CurrentAppViewViewModel?.Dispose();
 
@@ -95,8 +110,15 @@ namespace RayCarrot.Ray1Editor
             CurrentAppViewViewModel.Initialize();
         }
 
-        public void Initialize()
+        public void Initialize(string[] args)
         {
+            InitializeLogging(args.Any() && args[0] == "logtrace");
+
+            Logger.Log(LogLevel.Info, "Initializing application with app version {0}", CurrentAppVersion);
+
+            // Default the title
+            SetTitle(null);
+
             // Create the data directory
             Directory.CreateDirectory(Path_AppDataDir);
 
@@ -111,21 +133,59 @@ namespace RayCarrot.Ray1Editor
 
             // Change the view to the load map view
             ChangeView(AppView.LoadMap, new LoadMapViewModel());
+
+            Logger.Log(LogLevel.Info, "Initialized application");
+        }
+
+        // ReSharper disable once RedundantAssignment
+        public void InitializeLogging(bool logTrace)
+        {
+            var logConfig = new LoggingConfiguration();
+
+#if DEBUG
+            // On debug we force it to always log trace
+            logTrace = true;
+#endif
+
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            logConfig.AddRule(logTrace ? LogLevel.Trace : LogLevel.Info, LogLevel.Fatal, new FileTarget("logfile")
+            {
+                DeleteOldFileOnStartup = true,
+                FileName = Path_LogFile
+            });
+
+            //MethodCallTarget target = new MethodCallTarget("logwindow", (logEvent, parms) =>
+            //{
+
+            //});
+            //logConfig.AddRule(LogLevel.Trace, LogLevel.Fatal, target);
+
+            // Apply config
+            LogManager.Configuration = logConfig;
         }
 
         public void PostUpdate() { }
 
         public void Unload()
         {
+            Logger.Log(LogLevel.Info, "Unloading the application");
+
             // Dispose the current view model
             CurrentAppViewViewModel?.Dispose();
 
             // Save the app user data
             SaveAppUserData();
+
+            Logger.Log(LogLevel.Info, "Unloaded the application");
+
+            // Shut down the logger
+            LogManager.Shutdown();
         }
 
         public void LoadAppUserData()
         {
+            Logger.Log(LogLevel.Info, "Loading app user data from {0}", Path_AppUserDataFile);
+
             if (File.Exists(Path_AppUserDataFile))
             {
                 try
@@ -140,7 +200,7 @@ namespace RayCarrot.Ray1Editor
                 }
                 catch (Exception ex)
                 {
-                    // TODO: Log exception
+                    Logger.Log(LogLevel.Error, ex, "Error loading app user data");
 
                     MessageBox.Show($"An error occurred when loading the app user data. Error message: {ex.Message}");
 
@@ -149,6 +209,7 @@ namespace RayCarrot.Ray1Editor
             }
             else
             {
+                Logger.Log(LogLevel.Info, "No app user data found");
                 ResetAppUserData();
             }
         }
@@ -157,13 +218,27 @@ namespace RayCarrot.Ray1Editor
         {
             UserData = new AppUserData();
             UserData.Reset();
+
+            Logger.Log(LogLevel.Info, "Reset the app user data");
         }
 
         public void SaveAppUserData()
         {
+            Logger.Log(LogLevel.Trace, "Saving the app user data");
+
             // Serialize to JSON and save to file
-            var json = JsonConvert.SerializeObject(UserData, Formatting.Indented, new StringEnumConverter());
-            File.WriteAllText(Path_AppUserDataFile, json);
+            try
+            {
+                var json = JsonConvert.SerializeObject(UserData, Formatting.Indented, new StringEnumConverter());
+                File.WriteAllText(Path_AppUserDataFile, json);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogLevel.Fatal, ex, "Error saving the app user data");
+                throw;
+            }
+
+            Logger.Log(LogLevel.Info, "Saved the app user data");
         }
 
         #endregion
@@ -172,6 +247,7 @@ namespace RayCarrot.Ray1Editor
 
         public enum AppView
         {
+            None,
             Editor,
             LoadMap
         }
