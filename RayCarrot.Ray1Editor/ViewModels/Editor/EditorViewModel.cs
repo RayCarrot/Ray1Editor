@@ -209,7 +209,7 @@ namespace RayCarrot.Ray1Editor
             // Create a new editor scene instance for the current game
             EditorScene = new EditorScene(
                 manager: CurrentGameManager,
-                context: new Context(CurrentGame.Path),
+                context: new EditorContext(CurrentGame.Path),
                 gameSettings: CurrentGameSettings);
         }
 

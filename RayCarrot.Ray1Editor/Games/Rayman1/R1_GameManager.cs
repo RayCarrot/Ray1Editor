@@ -221,7 +221,7 @@ namespace RayCarrot.Ray1Editor
                 var compiledData = e.Commands == null ? null : ObjCommandCompiler.Compile(e.Commands);
                 compiledCmds = compiledData?.Commands?.ToBytes(() =>
                 {
-                    var c = new Context(data.Context.BasePath);
+                    var c = new EditorContext(data.Context.BasePath, noLog: true);
                     c.AddSettings(data.Context.GetSettings<Ray1Settings>());
                     return c;
                 }) ?? new byte[0];
@@ -231,7 +231,7 @@ namespace RayCarrot.Ray1Editor
             {
                 compiledCmds = e.Commands?.ToBytes(() =>
                 {
-                    var c = new Context(data.Context.BasePath);
+                    var c = new EditorContext(data.Context.BasePath, noLog: true);
                     c.AddSettings(data.Context.GetSettings<Ray1Settings>());
                     return c;
                 }) ?? new byte[0];
@@ -291,7 +291,7 @@ namespace RayCarrot.Ray1Editor
             {
                 cmds = ObjCommandCompiler.Decompile(new ObjCommandCompiler.CompiledObjCommandData(CommandCollection.FromBytes(def.Commands, () =>
                 {
-                    var c = new Context(data.Context.BasePath);
+                    var c = new EditorContext(data.Context.BasePath, noLog: true);
                     c.AddSettings(data.Context.GetSettings<Ray1Settings>());
                     return c;
                 }), def.LabelOffsets), def.Commands);
@@ -300,7 +300,7 @@ namespace RayCarrot.Ray1Editor
             {
                 cmds = CommandCollection.FromBytes(def.Commands, () =>
                 {
-                    var c = new Context(data.Context.BasePath);
+                    var c = new EditorContext(data.Context.BasePath, noLog: true);
                     c.AddSettings(data.Context.GetSettings<Ray1Settings>());
                     return c;
                 });
