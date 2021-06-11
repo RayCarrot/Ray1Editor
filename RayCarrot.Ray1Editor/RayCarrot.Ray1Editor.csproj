@@ -44,6 +44,9 @@
 
     <!-- For automatically invoking PropertyChanged for modified properties -->
     <PackageReference Include="PropertyChanged.Fody" Version="3.3.3" />
+
+    <!-- For more string encodings (.NET Core doesn't support the same encodings as .NET Framework by default) -->
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0" />
   </ItemGroup>
 
   <!-- Project references -->
@@ -101,6 +104,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UI\Views\LoadMap\LoadMapView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Windows\SettingsWindow.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>

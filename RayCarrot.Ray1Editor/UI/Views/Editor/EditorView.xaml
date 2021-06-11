@@ -7,6 +7,7 @@
              xmlns:local="clr-namespace:RayCarrot.Ray1Editor"
              mc:Ignorable="d"
              d:Height="600" d:Width="1024" 
+             Background="{DynamicResource MahApps.Brushes.ThemeBackground}"
              Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}"
              d:DataContext="{x:Static local:DesignDataContexts.EditorViewModel}">
 

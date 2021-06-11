@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -14,6 +13,7 @@ namespace RayCarrot.Ray1Editor
             AppVersion = AppViewModel.Instance.CurrentAppVersion;
             WindowState = null;
             Games = new List<UserData_Game>();
+            EnableSerializerLog = false;
         }
 
         /// <summary>
@@ -23,9 +23,6 @@ namespace RayCarrot.Ray1Editor
         {
             AppVersion ??= AppViewModel.Instance.CurrentAppVersion;
             Games ??= new List<UserData_Game>();
-
-            if (!File.Exists(SerializerLogFilePath))
-                EnableSerializerLog = false;
         }
 
         /// <summary>
@@ -44,7 +41,6 @@ namespace RayCarrot.Ray1Editor
         public List<UserData_Game> Games { get; set; }
 
         public bool EnableSerializerLog { get; set; }
-        public string SerializerLogFilePath { get; set; }
 
         // TODO: Save obj field panel resized size
         // TODO: Save theme (dark/light, color, sync)

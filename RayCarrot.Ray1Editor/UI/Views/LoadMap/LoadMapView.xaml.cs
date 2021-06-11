@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace RayCarrot.Ray1Editor
@@ -18,6 +19,12 @@ namespace RayCarrot.Ray1Editor
         private void LevelItem_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             VM.LoadMap();
+        }
+
+        private void SettingsButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var win = new SettingsWindow();
+            win.ShowDialog();
         }
     }
 }

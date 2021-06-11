@@ -7,6 +7,8 @@
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d"
              d:Height="600" d:Width="1024" 
+             Background="{DynamicResource MahApps.Brushes.ThemeBackground}"
+             Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}"
              d:DataContext="{d:DesignInstance local:LoadMapViewModel}">
 
     <Grid Margin="20">
@@ -196,6 +198,12 @@
         <!-- Actions -->
 
         <Grid Grid.Row="2">
+
+            <!-- Settings -->
+
+            <Button Content="Settings"
+                    Click="SettingsButton_OnClick"
+                    HorizontalAlignment="Left"/>
 
             <!-- Load Level -->
 

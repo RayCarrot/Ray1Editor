@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -28,6 +29,7 @@ namespace RayCarrot.Ray1Editor
             Path_AppDataDir = $"AppUserData";
             Path_AppUserDataFile = Path.Combine(Path_AppDataDir, $"Settings.json");
             Path_LogFile = Path.Combine(Path_AppDataDir, $"Log.txt");
+            Path_SerializerLogFile = Path.Combine(Path_AppDataDir, $"SerializerLog.txt");
         }
 
         #endregion
@@ -37,6 +39,7 @@ namespace RayCarrot.Ray1Editor
         public string Path_AppDataDir { get; }
         public string Path_AppUserDataFile { get; }
         public string Path_LogFile { get; }
+        public string Path_SerializerLogFile { get; }
 
         #endregion
 
@@ -130,6 +133,9 @@ namespace RayCarrot.Ray1Editor
 
             // Update the version
             UserData.AppVersion = CurrentAppVersion;
+
+            // Register encodings
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
             // Change the view to the load map view
             ChangeView(AppView.LoadMap, new LoadMapViewModel());

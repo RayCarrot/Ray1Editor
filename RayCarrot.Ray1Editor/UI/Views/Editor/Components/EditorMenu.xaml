@@ -67,9 +67,9 @@
         <MenuItem Header="Edit Editor Colors"
                   Icon="{iconPacks:Material Brush}"
                   IsEnabled="False" />
-        <MenuItem Header="Options"
+        <MenuItem Header="Settings"
                   Icon="{iconPacks:Material CogOutline}"
-                  IsEnabled="False" />
+                  Click="SettingsMenuItem_OnClick" />
     </MenuItem>
 
     <!-- Help -->

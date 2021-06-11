@@ -38,7 +38,7 @@ namespace RayCarrot.Ray1Editor
             protected StreamWriter LogWriter => _logWriter ??= GetFile();
 
             public string OverrideLogPath { get; set; }
-            public string LogFile => OverrideLogPath ?? AppViewModel.Instance.UserData.SerializerLogFilePath;
+            public string LogFile => OverrideLogPath ?? AppViewModel.Instance.Path_SerializerLogFile;
 
             public StreamWriter GetFile()
             {

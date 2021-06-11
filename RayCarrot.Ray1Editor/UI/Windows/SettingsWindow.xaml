@@ -1,0 +1,39 @@
+﻿<local:BaseWindow x:Class="RayCarrot.Ray1Editor.SettingsWindow"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                  xmlns:local="clr-namespace:RayCarrot.Ray1Editor"
+                  mc:Ignorable="d"
+                  Title="Settings"
+                  ResizeMode="NoResize"
+                  Width="360"
+                  SizeToContent="Height"
+                  Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}"
+                  Background="{DynamicResource MahApps.Brushes.ThemeBackground}"
+                  CloseWithEscape="True" 
+                  d:DataContext="{d:DesignInstance local:SettingsViewModel}">
+    <StackPanel Margin="10">
+
+        <!-- Editor -->
+
+        <TextBlock Style="{StaticResource HeaderTextBlock}"
+                   Text="Editor"
+                   Margin="0 0 0 7" />
+
+        <CheckBox Margin="0 0 0 15"
+                  Content="Serializer log"
+                  ToolTip="Indicates if the binary serializer logging should be enabled, logging any read/write operations. Having this be enabled will slow down the loading and saving in the editor."
+                  IsChecked="{Binding Path=EnableSerializerLog}" />
+
+        <!-- Design -->
+
+        <!--<TextBlock Style="{StaticResource HeaderTextBlock}"
+                   Text="Design"
+                   Margin="0 0 0 7" />-->
+
+        <!-- TODO: Dark/light mode toggle -->
+
+    </StackPanel>
+
+</local:BaseWindow>

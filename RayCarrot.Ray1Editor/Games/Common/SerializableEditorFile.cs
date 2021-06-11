@@ -1,4 +1,5 @@
-﻿using BinarySerializer;
+﻿using System.Text;
+using BinarySerializer;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -36,7 +37,7 @@ namespace RayCarrot.Ray1Editor
                 return;
             }
 
-            Message = s.SerializeString(Message, name: nameof(Message));
+            Message = s.SerializeString(Message, encoding: Encoding.UTF8, name: nameof(Message));
             RelocatedStructsCount = s.Serialize<int>(RelocatedStructsCount, name: nameof(RelocatedStructsCount));
             RelocatedStructs = s.SerializeObjectArray<RelocatedStruct>(RelocatedStructs, RelocatedStructsCount, name: nameof(RelocatedStructs));
 
