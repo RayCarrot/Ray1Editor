@@ -91,6 +91,10 @@ namespace RayCarrot.Ray1Editor
             // Load objects
             LoadObjects(data, lev);
 
+            // Load Rayman
+            LoadRayman(data);
+            LoadObject(data, lev, data.Rayman, -1);
+
             return data;
         }
 
@@ -366,12 +370,7 @@ namespace RayCarrot.Ray1Editor
 
             foreach (var obj in lev.ObjData.Objects)
             {
-                obj.Animations = data.PC_LoadedAnimations[(int)obj.PC_AnimationsIndex];
-                obj.ImageBuffer = data.PC_DES[obj.PC_SpritesIndex].ImageData;
-                obj.Sprites = data.PC_DES[obj.PC_SpritesIndex].Sprites;
-                obj.ETA = data.ETA[(int)obj.PC_ETAIndex].ETA;
-                obj.Commands = lev.ObjData.ObjCommands[objIndex].Commands;
-                obj.LabelOffsets = lev.ObjData.ObjCommands[objIndex].LabelOffsetTable;
+                LoadObject(data, lev, obj, objIndex);
 
                 data.Objects.Add(new R1_GameObject(obj, FindMatchingEventDefinition(data, obj)));
 
@@ -380,6 +379,20 @@ namespace RayCarrot.Ray1Editor
 
             data.LinkTable = lev.ObjData.ObjLinkingTable;
             InitLinkGroups(data.Objects, lev.ObjData.ObjLinkingTable);
+        }
+
+        public void LoadObject(R1_PC_GameData data, PC_LevFile lev, ObjData obj, int index)
+        {
+            obj.Animations = data.PC_LoadedAnimations[(int)obj.PC_AnimationsIndex];
+            obj.ImageBuffer = data.PC_DES[obj.PC_SpritesIndex].ImageData;
+            obj.Sprites = data.PC_DES[obj.PC_SpritesIndex].Sprites;
+            obj.ETA = data.ETA[(int)obj.PC_ETAIndex].ETA;
+
+            if (index != -1)
+            {
+                obj.Commands = lev.ObjData.ObjCommands[index].Commands;
+                obj.LabelOffsets = lev.ObjData.ObjCommands[index].LabelOffsetTable;
+            }
         }
 
         public void LoadMap(R1_PC_GameData data, PC_LevFile lev, TextureManager textureManager)

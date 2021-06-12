@@ -25,6 +25,8 @@ namespace RayCarrot.Ray1Editor
         /// </summary>
         public ushort[] LinkTable { get; set; }
 
+        public ObjData Rayman { get; set; }
+
         /// <summary>
         /// The available event definitions
         /// </summary>

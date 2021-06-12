@@ -195,9 +195,56 @@ namespace RayCarrot.Ray1Editor
             data.RandomArray = data.Context.Deserializer.SerializeFromBytes<Array<ushort>>(RandomArrayData, "RandomArrayData", onPreSerialize: x => x.Length = 256, name: nameof(data.RandomArray)).Value;
         }
 
+        public void LoadRayman(R1_GameData data)
+        {
+            data.Rayman = ObjData.GetRayman(data.Context, data.Objects.OfType<R1_GameObject>().FirstOrDefault(x => x.ObjData.Type == ObjType.TYPE_RAY_POS)?.ObjData);
+        }
+
         public override void PostLoad(GameData gameData)
         {
             var data = (R1_GameData)gameData;
+
+            // Hard-code event animations for the different Rayman types
+            Animation[] rayAnim = null;
+
+            var ray = data.Rayman ?? data.Objects.OfType<R1_GameObject>().FirstOrDefault(x => x.ObjData.Type == ObjType.TYPE_RAY_POS)?.ObjData;
+
+            if (ray != null)
+                rayAnim = ray.Animations;
+
+            if (rayAnim != null)
+            {
+                var miniRay = data.Objects.OfType<R1_GameObject>().FirstOrDefault(x => x.ObjData.Type == ObjType.TYPE_DEMI_RAYMAN);
+
+                // TODO: If not found in map use template
+                if (miniRay != null)
+                {
+                    data.Animations.Remove(miniRay.ObjData.Animations);
+                    miniRay.ObjData.Animations = rayAnim.Select(x => new Animation
+                    {
+                        LayersPerFrameSerialized = x.LayersPerFrameSerialized,
+                        FrameCountSerialized = x.FrameCountSerialized,
+                        Layers = x.Layers.Select(l => new AnimationLayer
+                        {
+                            IsFlippedHorizontally = l.IsFlippedHorizontally,
+                            IsFlippedVertically = l.IsFlippedVertically,
+                            XPosition = (byte)(l.XPosition / 2),
+                            YPosition = (byte)(l.YPosition / 2),
+                            SpriteIndex = l.SpriteIndex
+                        }).ToArray(),
+                    }).ToArray();
+                    data.Animations[miniRay.ObjData.Animations] = miniRay.ObjData.Animations.Select(x => ToCommonAnimation(x)).ToArray();
+                }
+
+                var badRay = data.Objects.OfType<R1_GameObject>().FirstOrDefault(x => x.ObjData.Type == ObjType.TYPE_BLACK_RAY);
+
+                // TODO: If not found in map use template
+                if (badRay != null)
+                {
+                    data.Animations.Remove(badRay.ObjData.Animations);
+                    badRay.ObjData.Animations = rayAnim;
+                }
+            }
 
             // Set frames for linked events
             for (int i = 0; i < data.Objects.Count; i++)
