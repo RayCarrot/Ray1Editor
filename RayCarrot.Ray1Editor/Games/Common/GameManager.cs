@@ -40,6 +40,12 @@ namespace RayCarrot.Ray1Editor
         public abstract IEnumerable<EditorFieldViewModel> GetEditorObjFields(GameData gameData, Func<GameObject> getSelectedObj);
 
         /// <summary>
+        /// Optional post load method. Gets called after the loaded data has been initialized.
+        /// </summary>
+        /// <param name="gameData">The game data</param>
+        public virtual void PostLoad(GameData gameData) { }
+
+        /// <summary>
         /// Gets the available objects which can be added to the level
         /// </summary>
         /// <param name="gameData">The game data</param>
@@ -59,5 +65,10 @@ namespace RayCarrot.Ray1Editor
         /// </summary>
         /// <returns>The maximum number of objects which can be added to a level</returns>
         public abstract int GetMaxObjCount(GameData gameData);
+
+        /// <summary>
+        /// The maximum display prio layer an object can use
+        /// </summary>
+        public virtual int MaxDisplayPrio => 0;
     }
 }

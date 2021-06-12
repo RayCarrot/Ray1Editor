@@ -27,19 +27,19 @@ namespace RayCarrot.Ray1Editor
         public new R1_GameData Data => (R1_GameData)base.Data;
         public override void Load()
         {
+            var settings = Data.Context.GetSettings<Ray1Settings>();
+
             ObjData.InitialEtat = ObjData.Etat;
             ObjData.InitialSubEtat = ObjData.SubEtat;
-            //EventData.InitialDisplayPrio = EventData.DisplayPrio;
-            // TODO: Set display prio
-            //ObjData.InitialDisplayPrio = objManager.GetDisplayPrio(ObjData.Type, ObjData.HitPoints, ObjData.DisplayPrio);
+            ObjData.DisplayPrio = R1_ObjHelpers.GetDisplayPrio(ObjData.Type, ObjData.HitPoints, settings.World, settings.Level);
             ObjData.InitialXPosition = (short)ObjData.XPosition;
             ObjData.InitialYPosition = (short)ObjData.YPosition;
             ObjData.CurrentAnimationIndex = 0;
             ObjData.InitialHitPoints = ObjData.HitPoints;
 
-            // TODO: ZDC
-            // TODO: Random frame
-            // TODO: Multi-colored
+            // Set random frame
+            if (ObjData.Type.UsesRandomFrame())
+                ForceFrame = (byte)Data.GetNextRandom(CurrentAnimation?.Frames.Length ?? 1);
         }
         public override void Save()
         {
@@ -100,6 +100,7 @@ namespace RayCarrot.Ray1Editor
                 return false;
             }
         }
+        public override int DisplayPrio => ObjData.DisplayPrio;
 
         // Links
         public override bool CanBeLinkedToGroup => true;
@@ -117,36 +118,34 @@ namespace RayCarrot.Ray1Editor
             get => ObjData.CurrentAnimationFrame;
             set => ObjData.CurrentAnimationFrame = (byte)value;
         }
-        public override int AnimSpeed => CurrentState?.AnimationSpeed ?? 0;
+        public byte ForceFrame { get; set; }
+        public override int AnimSpeed => (ObjData.Type.IsHPFrame() ? 0 : CurrentState?.AnimationSpeed ?? 0);
         public override TextureSheet SpriteSheet => Data.Sprites.TryGetValue(ObjData.Sprites);
         public override Point Pivot => new Point(ObjData.OffsetBX, ObjData.OffsetBY);
         protected override bool ShouldUpdateFrame()
         {
-            return true;
-
-            // TODO: Implement
             // Set frame based on hit points for special events
-            //if (ObjData.Type.IsHPFrame())
-            //{
-            //    ObjData.CurrentAnimationFrame = ObjData.HitPoints;
-            //    AnimationFrameFloat = ObjData.HitPoints;
-            //    return false;
-            //}
-            //else if (ObjData.Type.UsesEditorFrame())
-            //{
-            //    AnimationFrameFloat = ObjData.CurrentAnimationFrame;
-            //    return false;
-            //}
-            //else if (ObjData.Type.UsesRandomFrame() || ObjData.Type.UsesFrameFromLinkChain())
-            //{
-            //    ObjData.CurrentAnimationFrame = ForceFrame;
-            //    AnimationFrameFloat = ForceFrame;
-            //    return false;
-            //}
-            //else
-            //{
-            //    return true;
-            //}
+            if (ObjData.Type.IsHPFrame())
+            {
+                ObjData.CurrentAnimationFrame = ObjData.HitPoints;
+                AnimationFrameFloat = ObjData.HitPoints;
+                return false;
+            }
+            else if (ObjData.Type.UsesEditorFrame())
+            {
+                AnimationFrameFloat = ObjData.CurrentAnimationFrame;
+                return false;
+            }
+            else if (ObjData.Type.UsesRandomFrame() || ObjData.Type.UsesFrameFromLinkChain())
+            {
+                ObjData.CurrentAnimationFrame = ForceFrame;
+                AnimationFrameFloat = ForceFrame;
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
         protected override void OnFinishedAnimation()
         {
@@ -194,15 +193,14 @@ namespace RayCarrot.Ray1Editor
             //    EventData.SubEtat = EventData.InitialSubEtat;
             //}
         }
-        // TODO: Implement
-        //public override void ResetFrame()
-        //{
-        //    if (EditorState.LoadFromMemory || EventData.Type.UsesEditorFrame())
-        //        return;
+        public override void ResetFrame()
+        {
+            if (EditorState.LoadFromMemory || ObjData.Type.UsesEditorFrame())
+                return;
 
-        //    AnimationFrame = 0;
-        //    AnimationFrameFloat = 0;
-        //}
+            AnimationFrame = 0;
+            AnimationFrameFloat = 0;
+        }
 
         // State
         public ObjState CurrentState => GetState(ObjData.Etat, ObjData.SubEtat);

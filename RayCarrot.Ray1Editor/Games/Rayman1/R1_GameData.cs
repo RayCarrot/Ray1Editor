@@ -17,6 +17,14 @@ namespace RayCarrot.Ray1Editor
             ETA = new List<ETAData>();
         }
 
+        public ushort[] RandomArray { get; set; }
+        public byte RandomIndex { get; set; }
+
+        /// <summary>
+        /// The loaded link table
+        /// </summary>
+        public ushort[] LinkTable { get; set; }
+
         /// <summary>
         /// The available event definitions
         /// </summary>
@@ -41,6 +49,12 @@ namespace RayCarrot.Ray1Editor
         /// The loaded ETA
         /// </summary>
         public List<ETAData> ETA { get; }
+
+        public ushort GetNextRandom(int max)
+        {
+            RandomIndex++;
+            return (ushort)(RandomArray[RandomIndex % RandomArray.Length] % max);
+        }
 
         public void AddDES(DESData des)
         {

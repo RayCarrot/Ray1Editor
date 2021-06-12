@@ -170,6 +170,9 @@ namespace RayCarrot.Ray1Editor
             // Load elements
             GameData.LoadElements(this);
 
+            // Post-load
+            GameManager.PostLoad(GameData);
+
             Logger.Log(LogLevel.Trace, "Loading the editor objects");
 
             // Load objects
@@ -458,9 +461,12 @@ namespace RayCarrot.Ray1Editor
 
             if (ShowObjects)
             {
+                var max = GameManager.MaxDisplayPrio;
+
                 // Draw objects
-                foreach (var obj in GameData.Objects)
-                    obj.Draw(s);
+                for (int i = 0; i <= max; i++)
+                    foreach (var obj in GameData.Objects.Where(x => x.DisplayPrio == i))
+                        obj.Draw(s);
 
                 // Draw links if in links mode
                 if (Mode == EditorMode.Links)

@@ -1,8 +1,8 @@
-﻿using System;
-using System.Linq;
-using BinarySerializer;
+﻿using BinarySerializer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Linq;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -20,6 +20,7 @@ namespace RayCarrot.Ray1Editor
         public virtual bool FlipVertically => false;
         public virtual float? Rotation => null;
         public virtual int OffsetSize => 8;
+        public virtual int DisplayPrio => 0;
 
         // Animations
         public Rectangle Bounds { get; set; }
@@ -106,6 +107,9 @@ namespace RayCarrot.Ray1Editor
             if (frame == null)
                 throw new Exception("Out of range frame!");
 
+            var flipX = FlipHorizontally;
+            var flipY = FlipVertically;
+
             int leftX = 0, bottomY = 0, rightX = 0, topY = 0;
             bool first = true;
 
@@ -116,14 +120,22 @@ namespace RayCarrot.Ray1Editor
                 if (spriteEntry == null)
                     continue;
 
-                var dest = new Rectangle(Position + layer.Position, new Point(spriteEntry.Source.Width, spriteEntry.Source.Height));
+                var x = layer.Position.X;
+                var y = layer.Position.Y;
+
+                var pos = new Point(
+                    (int)((x - Pivot.X) * (flipX ? -1f : 1f) * Scale + Pivot.X - (flipX ? spriteEntry.Source.Width : 0)),
+                    (int)((y - Pivot.Y) * (flipY ? -1f : 1f) * Scale + Pivot.Y - (flipY ? spriteEntry.Source.Height : 0)));
 
                 var effects = SpriteEffects.None;
 
-                if (layer.IsFlippedHorizontally)
+                if (layer.IsFlippedHorizontally ^ flipX)
                     effects |= SpriteEffects.FlipHorizontally;
-                if (layer.IsFlippedVertically)
+
+                if (layer.IsFlippedVertically ^ flipY)
                     effects |= SpriteEffects.FlipVertically;
+
+                var dest = new Rectangle(Position + pos, new Point(spriteEntry.Source.Width, spriteEntry.Source.Height));
 
                 s.Draw(
                     texture: sheet.Sheet, 
@@ -135,11 +147,11 @@ namespace RayCarrot.Ray1Editor
                     effects: effects, 
                     layerDepth: 0);
 
-                var layerMaxX = layer.Position.X + spriteEntry.Source.Width;
-                var layerMaxY = layer.Position.Y + spriteEntry.Source.Height;
+                var layerMaxX = pos.X + spriteEntry.Source.Width;
+                var layerMaxY = pos.Y + spriteEntry.Source.Height;
 
-                if (layer.Position.X < leftX || first) leftX = layer.Position.X;
-                if (layer.Position.Y < topY || first) topY = layer.Position.Y;
+                if (pos.X < leftX || first) leftX = pos.X;
+                if (pos.Y < topY || first) topY = pos.Y;
                 if (layerMaxX > rightX || first) rightX = layerMaxX;
                 if (layerMaxY > bottomY || first) bottomY = layerMaxY;
 

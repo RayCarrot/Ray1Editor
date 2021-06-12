@@ -63,6 +63,9 @@ namespace RayCarrot.Ray1Editor
             var wld = FileFactory.Read<PC_WorldFile>(Path_WorldFile(world), context);
             var lev = FileFactory.Read<SerializableEditorFile<PC_LevFile>>(Path_LevelFile(world, level), context).FileData;
 
+            // Initialize the random generation
+            InitRandom(data);
+
             // Load the editor name tables
             var desNames = LoadEditorNameTable($"r1_pc_des.json")[(int)ray1Settings.World - 1];
             var etaNames = LoadEditorNameTable($"r1_pc_eta.json")[(int)ray1Settings.World - 1];
@@ -375,6 +378,7 @@ namespace RayCarrot.Ray1Editor
                 objIndex++;
             }
 
+            data.LinkTable = lev.ObjData.ObjLinkingTable;
             InitLinkGroups(data.Objects, lev.ObjData.ObjLinkingTable);
         }
 

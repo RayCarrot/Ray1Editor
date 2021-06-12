@@ -18,6 +18,7 @@ namespace RayCarrot.Ray1Editor
         {
             Context = context;
             TextureManager = textureManager;
+            Random = new Random();
             Objects = new List<GameObject>();
             Layers = new List<Layer>();
         }
@@ -31,6 +32,11 @@ namespace RayCarrot.Ray1Editor
         /// The texture manager
         /// </summary>
         public TextureManager TextureManager { get; }
+
+        /// <summary>
+        /// The current random number generator
+        /// </summary>
+        public Random Random { get; }
 
         /// <summary>
         /// The objects
