@@ -18,7 +18,7 @@ namespace RayCarrot.Ray1Editor
             App_Version = AppViewModel.Instance.CurrentAppVersion;
             App_Games = new List<UserData_Game>();
             UI_WindowState = null;
-            UI_EditorTabsWidth = 340;
+            UI_EditorTabsWidth = 350;
             Editor_PauseWhenInactive = true;
             Serializer_EnableLog = false;
             Serializer_CreateBackupOnWrite = true;
