@@ -313,6 +313,13 @@ namespace RayCarrot.Ray1Editor
             {
                 _isAddObjButtonDown = true;
 
+                if (GameData.Objects.Count >= GameManager.GetMaxObjCount(GameData))
+                {
+                    // TODO: Custom message box in UI manager
+                    System.Windows.MessageBox.Show("Max obj count reached!");
+                    return;
+                }
+
                 var obj = GameManager.CreateGameObject(GameData, SelectedNewObjIndex);
                 obj.Position = updateData.MousePosition.ToPoint();
                 obj.LoadElement(this);

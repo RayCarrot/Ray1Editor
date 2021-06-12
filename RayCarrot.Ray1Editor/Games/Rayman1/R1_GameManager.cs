@@ -332,6 +332,38 @@ namespace RayCarrot.Ray1Editor
             return obj;
         }
 
+        public override int GetMaxObjCount(GameData gameData)
+        {
+            switch (gameData.Context.GetSettings<Ray1Settings>().EngineVersion)
+            {
+                case Ray1EngineVersion.PS1_JPDemoVol3:
+                case Ray1EngineVersion.PS1_JPDemoVol6:
+                case Ray1EngineVersion.PS1:
+                case Ray1EngineVersion.PS1_EUDemo:
+                case Ray1EngineVersion.PS1_JP:
+                case Ray1EngineVersion.Saturn:
+                    return 254; // Event index is a byte, 0xFF is Rayman
+
+                case Ray1EngineVersion.R2_PS1:
+                    return 254; // Event index is a short, so might be higher
+
+                case Ray1EngineVersion.PC:
+                case Ray1EngineVersion.PocketPC:
+                case Ray1EngineVersion.GBA:
+                case Ray1EngineVersion.DSi:
+                    return 254; // Event index is a short, so might be higher
+
+                case Ray1EngineVersion.PC_Kit:
+                case Ray1EngineVersion.PC_Fan:
+                case Ray1EngineVersion.PC_Edu:
+                case Ray1EngineVersion.PS1_Edu:
+                    return 700; // This is the max in KIT/FAN - same in EDU?
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
         #endregion
 
         #region Data Types

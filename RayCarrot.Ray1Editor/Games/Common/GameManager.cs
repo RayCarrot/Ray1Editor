@@ -53,5 +53,11 @@ namespace RayCarrot.Ray1Editor
         /// <param name="index">The index from the available objects</param>
         /// <returns>The new object</returns>
         public abstract GameObject CreateGameObject(GameData gameData, int index);
+
+        /// <summary>
+        /// Gets the maximum number of objects which can be added to a level
+        /// </summary>
+        /// <returns>The maximum number of objects which can be added to a level</returns>
+        public abstract int GetMaxObjCount(GameData gameData);
     }
 }
