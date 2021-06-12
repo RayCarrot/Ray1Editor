@@ -170,6 +170,10 @@ namespace RayCarrot.Ray1Editor
             // Load elements
             GameData.LoadElements(this);
 
+            // Load editor textures
+            State.EditorTextures = new EditorTextures(GameData.TextureManager);
+            State.EditorTextures.Init();
+
             // Post-load
             GameManager.PostLoad(GameData);
 

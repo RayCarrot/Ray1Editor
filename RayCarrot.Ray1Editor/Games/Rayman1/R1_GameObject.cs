@@ -51,6 +51,7 @@ namespace RayCarrot.Ray1Editor
         }
 
         // Layout
+        public override GameObjType Type => GameObjType.Object;
         public override Point Position
         {
             get => new Point(ObjData.XPosition, ObjData.YPosition);

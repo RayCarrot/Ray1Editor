@@ -23,6 +23,12 @@ namespace RayCarrot.Ray1Editor
 
         #endregion
 
+        #region Textures
+
+        public EditorTextures EditorTextures { get; set; }
+
+        #endregion
+
         #region State
 
         public Point MapSize { get; set; }

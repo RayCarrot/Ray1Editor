@@ -14,6 +14,8 @@ namespace RayCarrot.Ray1Editor
         public abstract void Save();
 
         // Layout
+        public abstract GameObjType Type { get; }
+        public virtual int DefaultIconSize => 32;
         public abstract Point Position { get; set; }
         public virtual float Scale => 1f;
         public virtual bool FlipHorizontally => false;
@@ -93,13 +95,13 @@ namespace RayCarrot.Ray1Editor
         }
         public virtual void Draw(SpriteBatch s)
         {
-            // TODO: Show some sort of dummy texture for objects without rendered sprites
-            // TODO: Add one-time logs which log a warning when an object fails to render
-
             var anim = CurrentAnimation;
 
             if (anim == null)
+            {
+                DrawDefault(s);
                 return;
+            }
 
             var frame = anim.Frames.ElementAtOrDefault(AnimationFrame);
             var sheet = SpriteSheet;
@@ -159,8 +161,32 @@ namespace RayCarrot.Ray1Editor
                     first = false;
             }
 
+            // Make sure at least one sprite was rendered, otherwise fall back to the default rendering
+            if (first)
+            {
+                DrawDefault(s);
+                return;
+            }
+
             Bounds = new Rectangle(new Point(leftX, topY), new Point(rightX - leftX, bottomY - topY));
             Center = new Point(leftX + (rightX - leftX) / 2, topY + (bottomY - topY) / 2);
+        }
+        public virtual void DrawDefault(SpriteBatch s)
+        {
+            Texture2D tex = Type switch
+            {
+                GameObjType.Object => EditorState.EditorTextures.Icon_Object,
+                GameObjType.Trigger => EditorState.EditorTextures.Icon_Trigger,
+                GameObjType.WayPoint => EditorState.EditorTextures.Icon_WayPoint,
+                _ => throw new ArgumentOutOfRangeException(nameof(Type), Type, null)
+            };
+
+            var dest = new Rectangle(Position - new Point(DefaultIconSize / 2), new Point(DefaultIconSize));
+
+            s.Draw(tex, dest, Color.White);
+            
+            Bounds = new Rectangle(dest.Location - Position, dest.Size);
+            Center = Point.Zero;
         }
         public virtual void DrawLinks(SpriteBatch s)
         {
@@ -184,6 +210,14 @@ namespace RayCarrot.Ray1Editor
             var halfSize = OffsetSize / 2;
             s.DrawLine(new Vector2(pos.X - halfSize, pos.Y), new Vector2(pos.X + halfSize, pos.Y), c, 1);
             s.DrawLine(new Vector2(pos.X, pos.Y - halfSize), new Vector2(pos.X, pos.Y + halfSize), c, 1);
+        }
+
+        // Data types
+        public enum GameObjType
+        {
+            Object,
+            Trigger,
+            WayPoint
         }
     }
 }
