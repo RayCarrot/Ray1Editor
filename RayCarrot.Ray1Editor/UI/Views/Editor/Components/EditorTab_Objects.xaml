@@ -41,16 +41,23 @@
 
         <Grid Grid.Row="1" Margin="0 0 0 7">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0"
                        VerticalAlignment="Center"
                        Style="{StaticResource HeaderTextBlock}"
-                       Text="Objects" />
+                       Text="Objects " />
 
-            <ToggleButton Grid.Column="1"
+            <TextBlock Grid.Column="1"
+                       VerticalAlignment="Center"
+                       Style="{StaticResource HeaderTextBlock}"
+                       Text="{Binding Path=ObjCountInfo}" />
+
+            <ToggleButton Grid.Column="2"
+                          HorizontalAlignment="Right"
                           Style="{StaticResource MahApps.Styles.ToggleButton.Circle}"
                           IsChecked="{Binding Path=ShowObjects}"
                           ToolTip="Show objects (O)"

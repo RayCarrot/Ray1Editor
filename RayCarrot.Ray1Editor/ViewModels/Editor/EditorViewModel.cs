@@ -117,6 +117,7 @@ namespace RayCarrot.Ray1Editor
 
         // Objects
         public ObservableCollection<string> AvailableObjects { get; }
+        public string ObjCountInfo { get; set; }
         public int SelectedNewObjIndex { get; set; }
         public bool IsSelectingObjFromList { get; set; }
         public ObservableCollection<GameObjectListItemViewModel> GameObjects { get; }
@@ -148,6 +149,8 @@ namespace RayCarrot.Ray1Editor
 
         public void OnEditorLoaded()
         {
+            UpdateObjCountInfo();
+
             AvailableObjects.AddRange(CurrentGameManager.GetAvailableObjects(EditorScene.GameData));
 
             // Recreate the object fields
@@ -196,11 +199,13 @@ namespace RayCarrot.Ray1Editor
         public void OnObjectAdded(GameObject obj)
         {
             GameObjects.Add(new GameObjectListItemViewModel(obj));
+            UpdateObjCountInfo();
         }
 
         public void OnObjectRemoved(GameObject obj)
         {
             GameObjects.Remove(GameObjects.First(x => x.Obj == obj));
+            UpdateObjCountInfo();
         }
 
         public void OnUpdate()
@@ -291,6 +296,11 @@ namespace RayCarrot.Ray1Editor
         public void AddObject()
         {
             EditorScene.AddObject(SelectedNewObjIndex);
+        }
+
+        public void UpdateObjCountInfo()
+        {
+            ObjCountInfo = $"({EditorScene.GameData.Objects.Count}/{CurrentGameManager.GetMaxObjCount(EditorScene.GameData)})";
         }
 
         public void ToggleLayerVisibilities(Layer.LayerType type)
