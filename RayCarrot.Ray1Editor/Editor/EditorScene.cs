@@ -458,25 +458,27 @@ namespace RayCarrot.Ray1Editor
             {
                 // Stop dragging
                 if (SelectedLinkObject != null)
-                {
-                    var linkGroup = SelectedLinkObject.LinkGroup;
-
-                    // Unlink
-                    if (linkGroup != 0)
-                    {
-                        LinkGroups[linkGroup].Remove(SelectedLinkObject);
-                        SelectedLinkObject.LinkGroup = 0;
-
-                        if (LinkGroups[linkGroup].Count == 1)
-                        {
-                            LinkGroups[linkGroup].First().LinkGroup = 0;
-                            LinkGroups[linkGroup].Clear();
-                        }
-                    }
-                }
+                    UnlinkObject(SelectedLinkObject);
 
                 IsDraggingLink = false;
                 SelectedLinkObject = null;
+            }
+        }
+
+        public void UnlinkObject(GameObject obj)
+        {
+            var linkGroup = obj.LinkGroup;
+
+            if (linkGroup != 0)
+            {
+                LinkGroups[linkGroup].Remove(obj);
+                obj.LinkGroup = 0;
+
+                if (LinkGroups[linkGroup].Count == 1)
+                {
+                    LinkGroups[linkGroup].First().LinkGroup = 0;
+                    LinkGroups[linkGroup].Clear();
+                }
             }
         }
 
@@ -611,6 +613,9 @@ namespace RayCarrot.Ray1Editor
 
             if (SelectedObject == obj)
                 SelectedObject = null;
+
+            if (obj.LinkGroup != 0)
+                UnlinkObject(obj);
 
             VM.OnObjectRemoved(obj);
 
