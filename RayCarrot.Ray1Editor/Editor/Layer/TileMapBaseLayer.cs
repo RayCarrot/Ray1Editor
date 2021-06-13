@@ -114,11 +114,6 @@ namespace RayCarrot.Ray1Editor
                 height: TileSet.TileSize.Y);
         }
 
-        protected Rectangle GetTileSourceRect(T tile)
-        {
-            return TileSet.TileSheet.Entries[GetTileSetIndex(tile)].Source;
-        }
-
         public override void UpdateLayerEditing(EditorUpdateData updateData)
         {
             // Get the tile the mouse is over
@@ -267,7 +262,13 @@ namespace RayCarrot.Ray1Editor
                         tile = GetTileAt(x, y);
 
                     var dest = GetTileRect(x, y);
-                    var src = GetTileSourceRect(tile);
+                    var tileIndex = GetTileSetIndex(tile);
+
+                    // Skip fully transparent tiles to improve performance
+                    if (TileSet.IsFullyTransparent(tileIndex))
+                        continue;
+
+                    var src = TileSet.TileSheet.Entries[tileIndex].Source;
 
                     s.Draw(TileSet.TileSheet.Sheet, dest, src, Color.White);
                 }

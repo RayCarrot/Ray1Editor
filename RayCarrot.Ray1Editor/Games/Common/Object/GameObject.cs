@@ -74,6 +74,7 @@ namespace RayCarrot.Ray1Editor
         public Rectangle LinkGripBounds { get; set; }
         protected virtual int LinkGripSize => 16;
         protected virtual int LinkLineThickness => 2;
+        private Point? _prevLinkGripPosition;
         public Point LinkGripPosition { get; set; }
         public int LinkGroup { get; set; }
         public virtual bool CanBeLinkedToGroup => false;
@@ -93,10 +94,15 @@ namespace RayCarrot.Ray1Editor
             // Update the frame
             UpdateFrame(updateData.DeltaTime);
 
-            // Update the link grip bounds
-            var linkGrip = LinkGripPosition - new Point(LinkGripPosition.X % LinkGripSize - LinkGripSize / 2, LinkGripPosition.Y % LinkGripSize - LinkGripSize / 2);
+            if (_prevLinkGripPosition != LinkGripPosition)
+            {
+                // Update the link grip bounds
+                var linkGrip = LinkGripPosition - new Point(LinkGripPosition.X % LinkGripSize - LinkGripSize / 2, LinkGripPosition.Y % LinkGripSize - LinkGripSize / 2);
 
-            LinkGripBounds = new Rectangle(linkGrip - new Point(LinkGripSize / 2), new Point(LinkGripSize));
+                LinkGripBounds = new Rectangle(linkGrip - new Point(LinkGripSize / 2), new Point(LinkGripSize));
+            }
+
+            _prevLinkGripPosition = LinkGripPosition;
         }
         public virtual void Draw(SpriteBatch s)
         {
