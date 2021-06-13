@@ -245,6 +245,8 @@ namespace RayCarrot.Ray1Editor
             EditorUpdateData.DebugText.AppendLine($"Mouse (world): {EditorUpdateData.MousePosition}");
             EditorUpdateData.DebugText.AppendLine($"Mouse (local): {EditorUpdateData.Mouse.Position}");
 
+            EditorUpdateData.Update();
+
             var fullScreenLayer = State.GetActiveFullScreenLayer();
 
             if (fullScreenLayer == null)
@@ -342,6 +344,27 @@ namespace RayCarrot.Ray1Editor
             else
             {
                 IsDraggingObject = false;
+            }
+
+            if (SelectedObject?.CurrentAnimation != null)
+            {
+                var change = 0;
+
+                if (updateData.IsKeyDown(Keys.OemPlus))
+                    change++;
+                if (updateData.IsKeyDown(Keys.OemMinus))
+                    change--;
+
+                if (change != 0)
+                {
+                    var newFrame = (SelectedObject.AnimationFrame + change) % SelectedObject.CurrentAnimation.Frames.Length;
+
+                    if (newFrame < 0)
+                        newFrame += SelectedObject.CurrentAnimation.Frames.Length;
+
+                    SelectedObject.AnimationFrame = newFrame;
+                    SelectedObject.AnimationFrameFloat = newFrame;
+                }
             }
         }
 

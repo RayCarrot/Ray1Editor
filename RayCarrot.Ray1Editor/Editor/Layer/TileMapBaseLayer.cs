@@ -24,12 +24,6 @@ namespace RayCarrot.Ray1Editor
 
         #endregion
 
-        #region Private Fields
-
-        private bool _isPasteKeyDown;
-
-        #endregion
-
         #region Protected Properties
 
         protected TileEditorState State { get; set; }
@@ -127,9 +121,6 @@ namespace RayCarrot.Ray1Editor
 
         public override void UpdateLayerEditing(EditorUpdateData updateData)
         {
-            if (!updateData.Keyboard.IsKeyDown(Keys.V))
-                _isPasteKeyDown = false;
-
             // Get the tile the mouse is over
             var hoverTile = GetHoverTile(updateData.MousePosition);
 
@@ -214,12 +205,9 @@ namespace RayCarrot.Ray1Editor
                 if (CanEdit && 
                     State == TileEditorState.Idle &&
                     MapPreviewOrigin != null &&
-                    !_isPasteKeyDown &&
-                    updateData.Keyboard.IsKeyDown(Keys.LeftControl) && 
-                    updateData.Keyboard.IsKeyDown(Keys.V))
+                    updateData.IsKeyDown(Keys.LeftControl, false) && 
+                    updateData.IsKeyDown(Keys.V))
                 {
-                    _isPasteKeyDown = true;
-
                     var previewOrigin = MapPreviewOrigin.Value;
 
                     var width = SelectedTilesWidth;

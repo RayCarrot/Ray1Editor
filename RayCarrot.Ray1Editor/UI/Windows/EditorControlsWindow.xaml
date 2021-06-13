@@ -42,7 +42,6 @@
             <TextBlock Text="Left mouse button: Select" />
             <TextBlock Text="Hold left mouse button: Drag" />
             <TextBlock Text="+/-: Change animation frame" />
-            <!-- TODO: Implement -->
             <TextBlock Text="DEL: Delete object" />
 
             <TextBlock Style="{StaticResource Header}"
