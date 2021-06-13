@@ -6,6 +6,7 @@ using MonoGame.Framework.WpfInterop;
 using MonoGame.Framework.WpfInterop.Input;
 using NLog;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace RayCarrot.Ray1Editor
@@ -28,6 +29,9 @@ namespace RayCarrot.Ray1Editor
 
             Mouse = new WpfMouse(this);
             Keyboard = new WpfKeyboard(this);
+
+            LinkGroups = new Dictionary<int, List<GameObject>>();
+            NextLinkGroup = 1;
         }
 
         #endregion
@@ -114,9 +118,12 @@ namespace RayCarrot.Ray1Editor
         public Point DraggingObjectInitialPosition { get; protected set; }
 
         // Links
+        public GameObject HoverLinkGripObj { get; protected set; }
         public bool ShowLinks { get; set; }
         public bool IsDraggingLink { get; protected set; }
         public GameObject SelectedLinkObject { get; protected set; }
+        public Dictionary<int, List<GameObject>> LinkGroups { get; }
+        public int NextLinkGroup { get; set; }
 
         #endregion
 
@@ -212,6 +219,11 @@ namespace RayCarrot.Ray1Editor
                     e.LinkGripPosition = prev.LinkGripPosition;
                     prev = e;
                 }
+
+                LinkGroups[linkedObj.Key] = linkedObj.ToList();
+
+                if (linkedObj.Key >= NextLinkGroup)
+                    NextLinkGroup = linkedObj.Key + 1;
             }
         }
 
@@ -372,8 +384,53 @@ namespace RayCarrot.Ray1Editor
 
         protected void UpdateModeLinks(EditorUpdateData updateData)
         {
+            // Handle toggling link groups
             if (updateData.Mouse.LeftButton == ButtonState.Pressed)
             {
+                // If we were hovering over a link grip before pressing the mouse button we toggle its state
+                if (HoverLinkGripObj != null)
+                {
+                    var linkGroup = HoverLinkGripObj.LinkGroup;
+
+                    // Disabled -> enabled
+                    if (linkGroup == 0)
+                    {
+                        // Find every grip at the position
+                        var objects = GameData.Objects.Where(x => x.CanBeLinkedToGroup && x.LinkGripBounds.Location == HoverLinkGripObj.LinkGripBounds.Location).ToArray();
+
+                        // If more than 1 we link them together in a new group
+                        if (objects.Length > 1)
+                        {
+                            foreach (var obj in objects)
+                                obj.LinkGroup = NextLinkGroup;
+
+                            LinkGroups[NextLinkGroup] = objects.ToList();
+
+                            NextLinkGroup++;
+                        }
+                    }
+                    // Enabled -> disabled
+                    else
+                    {
+                        foreach (var obj in LinkGroups[linkGroup])
+                            obj.LinkGroup = 0;
+
+                        LinkGroups.Remove(linkGroup);
+                    }
+                }
+
+                HoverLinkGripObj = null;
+
+            }
+            else
+            {
+                HoverLinkGripObj = GameData.Objects.LastOrDefault(x => x.CanBeLinkedToGroup && x.LinkGripBounds.Contains(EditorUpdateData.MousePosition));
+            }
+
+            // Handle dragging links
+            if (updateData.Mouse.LeftButton == ButtonState.Pressed)
+            {
+                // Start dragging
                 if (!IsDraggingLink)
                 {
                     if (HoverObject == null)
@@ -399,6 +456,25 @@ namespace RayCarrot.Ray1Editor
             }
             else
             {
+                // Stop dragging
+                if (SelectedLinkObject != null)
+                {
+                    var linkGroup = SelectedLinkObject.LinkGroup;
+
+                    // Unlink
+                    if (linkGroup != 0)
+                    {
+                        LinkGroups[linkGroup].Remove(SelectedLinkObject);
+                        SelectedLinkObject.LinkGroup = 0;
+
+                        if (LinkGroups[linkGroup].Count == 1)
+                        {
+                            LinkGroups[linkGroup].First().LinkGroup = 0;
+                            LinkGroups[linkGroup].Clear();
+                        }
+                    }
+                }
+
                 IsDraggingLink = false;
                 SelectedLinkObject = null;
             }
@@ -475,6 +551,10 @@ namespace RayCarrot.Ray1Editor
                 if (Mode == EditorMode.Links || ShowLinks)
                     foreach (var obj in GameData.Objects)
                         obj.DrawLinks(s);
+
+                // Draw link grip border if hovering over it in links mode
+                if (Mode == EditorMode.Links && HoverLinkGripObj != null)
+                    s.DrawRectangle(HoverLinkGripObj.LinkGripBounds, State.Color_ObjBounds);
 
                 if (CanHoverOverObject)
                 {

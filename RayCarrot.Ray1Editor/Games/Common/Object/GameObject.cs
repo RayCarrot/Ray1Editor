@@ -71,10 +71,10 @@ namespace RayCarrot.Ray1Editor
         }
 
         // Links
+        public Rectangle LinkGripBounds { get; set; }
         protected virtual int LinkGripSize => 16;
         protected virtual int LinkLineThickness => 2;
         public Point LinkGripPosition { get; set; }
-        public Point GetLinkGripSnappedPosition => LinkGripPosition - new Point(LinkGripPosition.X % LinkGripSize - LinkGripSize / 2, LinkGripPosition.Y % LinkGripSize - LinkGripSize / 2);
         public int LinkGroup { get; set; }
         public virtual bool CanBeLinkedToGroup => false;
         //public virtual IEnumerable<int> Links => new int[0];
@@ -92,6 +92,11 @@ namespace RayCarrot.Ray1Editor
         {
             // Update the frame
             UpdateFrame(updateData.DeltaTime);
+
+            // Update the link grip bounds
+            var linkGrip = LinkGripPosition - new Point(LinkGripPosition.X % LinkGripSize - LinkGripSize / 2, LinkGripPosition.Y % LinkGripSize - LinkGripSize / 2);
+
+            LinkGripBounds = new Rectangle(linkGrip - new Point(LinkGripSize / 2), new Point(LinkGripSize));
         }
         public virtual void Draw(SpriteBatch s)
         {
@@ -192,10 +197,10 @@ namespace RayCarrot.Ray1Editor
         {
             if (CanBeLinkedToGroup)
             {
-                var linkGrip = GetLinkGripSnappedPosition.ToVector2();
+                var color = LinkGroup == 0 ? EditorState.Color_ObjLinksDisabled : EditorState.Color_ObjLinksEnabled;
 
-                s.DrawLine(new Vector2(Position.X + Center.X, Position.Y + Center.Y), linkGrip, EditorState.Color_ObjLinks, LinkLineThickness);
-                s.DrawFilledRectangle(linkGrip - new Vector2(LinkGripSize / 2f), new Vector2(LinkGripSize), EditorState.Color_ObjLinks);
+                s.DrawLine(new Vector2(Position.X + Center.X, Position.Y + Center.Y), LinkGripBounds.Center.ToVector2(), color, LinkLineThickness);
+                s.DrawFilledRectangle(LinkGripBounds, color);
             }
         }
         public virtual void DrawOffsets(SpriteBatch s)
