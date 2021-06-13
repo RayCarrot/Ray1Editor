@@ -88,6 +88,7 @@ namespace RayCarrot.Ray1Editor
 
         public virtual bool CanBeResized => true;
         public override bool CanEdit => true;
+        public override LayerType Type => LayerType.Map;
         public override string Name => $"Map";
 
         #endregion

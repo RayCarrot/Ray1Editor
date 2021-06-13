@@ -36,6 +36,11 @@ namespace RayCarrot.Ray1Editor
         public abstract bool CanEdit { get; }
 
         /// <summary>
+        /// The type of layer
+        /// </summary>
+        public abstract LayerType Type { get; }
+
+        /// <summary>
         /// Indicates if the layer is currently selected for editing
         /// </summary>
         public virtual bool IsSelected { get; protected set; }
@@ -106,5 +111,13 @@ namespace RayCarrot.Ray1Editor
         public virtual void Update(EditorUpdateData updateData) { }
         public virtual void UpdateLayerEditing(EditorUpdateData updateData) { }
         public abstract void Draw(SpriteBatch s);
+
+        public enum LayerType
+        {
+            Other,
+            Background,
+            Map,
+            Collision,
+        }
     }
 }

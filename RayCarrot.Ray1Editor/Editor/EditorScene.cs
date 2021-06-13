@@ -93,6 +93,7 @@ namespace RayCarrot.Ray1Editor
 
         // Objects
         public bool ShowObjects { get; set; } = true;
+        public bool ShowObjectOffsets { get; set; }
         public GameObject HoverObject { get; protected set; }
         public GameObject SelectedObject
         {
@@ -113,6 +114,7 @@ namespace RayCarrot.Ray1Editor
         public Point DraggingObjectInitialPosition { get; protected set; }
 
         // Links
+        public bool ShowLinks { get; set; }
         public bool IsDraggingLink { get; protected set; }
         public GameObject SelectedLinkObject { get; protected set; }
 
@@ -469,8 +471,8 @@ namespace RayCarrot.Ray1Editor
                     foreach (var obj in GameData.Objects.Where(x => x.DisplayPrio == i))
                         obj.Draw(s);
 
-                // Draw links if in links mode
-                if (Mode == EditorMode.Links)
+                // Draw links if in links mode or links are toggled to be visible
+                if (Mode == EditorMode.Links || ShowLinks)
                     foreach (var obj in GameData.Objects)
                         obj.DrawLinks(s);
 
@@ -489,8 +491,16 @@ namespace RayCarrot.Ray1Editor
                         s.DrawRectangle(SelectedLinkObject.WorldBounds, State.Color_ObjBounds);
                 }
 
-                // Draw offsets for the currently selected object
-                SelectedObject?.DrawOffsets(s);
+                if (ShowObjectOffsets)
+                {
+                    foreach (var obj in GameData.Objects)
+                        obj.DrawOffsets(s);
+                }
+                else
+                {
+                    // Draw offsets for the currently selected object
+                    SelectedObject?.DrawOffsets(s);
+                }
             }
         }
 

@@ -1,5 +1,4 @@
-﻿using BinarySerializer;
-using RayCarrot.UI;
+﻿using RayCarrot.UI;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -26,8 +25,14 @@ namespace RayCarrot.Ray1Editor
 
             // Create commands
             LoadOtherMapCommand = new RelayCommand(LoadOtherMap);
-            ResetPositionCommand = new RelayCommand(ResetPosition);
             SaveCommand = new RelayCommand(Save);
+            ResetPositionCommand = new RelayCommand(ResetPosition);
+            ToggleAnimateObjectsCommand = new RelayCommand(() => AnimateObjects = !AnimateObjects);
+            ToggleShowObjectsCommand = new RelayCommand(() => ShowObjects = !ShowObjects);
+            ToggleShowObjectOffsetsCommand = new RelayCommand(() => ShowObjectOffsets = !ShowObjectOffsets);
+            ToggleShowLayerTypesCommand = new RelayCommand(x => ToggleLayerVisibilities((Layer.LayerType)x));
+            ToggleShowLinksCommand = new RelayCommand(() => ShowLinks = !ShowLinks);
+            ToggleModeCommand = new RelayCommand(() => Mode = (EditorMode)(((int)Mode % 3) + 1));
             DeleteSelectedObjectCommand = new RelayCommand(DeleteSelectedObject);
             AddObjCommand = new RelayCommand(AddObject);
         }
@@ -37,8 +42,14 @@ namespace RayCarrot.Ray1Editor
         #region Commands
 
         public ICommand LoadOtherMapCommand { get; }
-        public ICommand ResetPositionCommand { get; }
         public ICommand SaveCommand { get; }
+        public ICommand ResetPositionCommand { get; }
+        public ICommand ToggleAnimateObjectsCommand { get; }
+        public ICommand ToggleShowObjectsCommand { get; }
+        public ICommand ToggleShowObjectOffsetsCommand { get; }
+        public ICommand ToggleShowLayerTypesCommand { get; }
+        public ICommand ToggleShowLinksCommand { get; }
+        public ICommand ToggleModeCommand { get; }
         public ICommand DeleteSelectedObjectCommand { get; }
         public ICommand AddObjCommand { get; }
 
@@ -81,10 +92,20 @@ namespace RayCarrot.Ray1Editor
             get => EditorScene?.ShowObjects ?? true;
             set => EditorScene.ShowObjects = value;
         }
+        public bool ShowObjectOffsets
+        {
+            get => EditorScene?.ShowObjectOffsets ?? false;
+            set => EditorScene.ShowObjectOffsets = value;
+        }
         public bool AnimateObjects
         {
             get => EditorScene?.State.AnimateObjects ?? true;
             set => EditorScene.State.AnimateObjects = value;
+        }
+        public bool ShowLinks
+        {
+            get => EditorScene?.ShowLinks ?? false;
+            set => EditorScene.ShowLinks = value;
         }
         public string DebugText { get; set; }
 
@@ -267,6 +288,17 @@ namespace RayCarrot.Ray1Editor
         public void AddObject()
         {
             EditorScene.AddObject(SelectedNewObjIndex);
+        }
+
+        public void ToggleLayerVisibilities(Layer.LayerType type)
+        {
+            var isVisible = Layers.Select(x => x.Layer).FirstOrDefault(x => x.Type == type)?.IsVisible;
+
+            if (isVisible == null)
+                return;
+
+            foreach (var l in Layers.Select(x => x.Layer).Where(x => x.Type == type))
+                l.IsVisible = !isVisible.Value;
         }
 
         public void ResetPosition()

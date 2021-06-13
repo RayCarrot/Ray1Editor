@@ -9,6 +9,7 @@ namespace RayCarrot.Ray1Editor
             IsVisible = false;
         }
 
+        public override LayerType Type => LayerType.Collision;
         public override string Name => "Collision";
     }
 }

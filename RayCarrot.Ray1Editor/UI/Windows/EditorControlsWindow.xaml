@@ -23,6 +23,11 @@
             </StackPanel.Resources>
 
             <TextBlock Style="{StaticResource Header}"
+                       Text="General"/>
+
+            <TextBlock Text="M: Toggle mode" />
+
+            <TextBlock Style="{StaticResource Header}"
                        Text="Camera"/>
 
             <TextBlock Text="Right mouse button: Pan" />
@@ -35,6 +40,9 @@
             <TextBlock Text="Hold left mouse button: Select" />
             <TextBlock Text="CTRL+V: Paste selection" />
             <TextBlock Text="Hold right mouse button: Tile selection" />
+            <TextBlock Text="T: Toggle tile visibility" />
+            <TextBlock Text="C: Toggle collision visibility" />
+            <TextBlock Text="B: Toggle background visibility" />
 
             <TextBlock Style="{StaticResource Header}"
                        Text="Objects"/>
@@ -42,12 +50,16 @@
             <TextBlock Text="Left mouse button: Select" />
             <TextBlock Text="Hold left mouse button: Drag" />
             <TextBlock Text="+/-: Change animation frame" />
+            <TextBlock Text="P: Toggle animations" />
+            <TextBlock Text="O: Toggle visibility" />
+            <TextBlock Text="X: Toggle offset visibility" />
             <TextBlock Text="DEL: Delete object" />
 
             <TextBlock Style="{StaticResource Header}"
                        Text="Links"/>
 
             <TextBlock Text="Left mouse button: Drag" />
+            <TextBlock Text="L: Toggle visibility" />
 
         </StackPanel>
     </ScrollViewer>

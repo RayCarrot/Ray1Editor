@@ -30,7 +30,7 @@ namespace RayCarrot.Ray1Editor
         #region Public Properties
 
         public override bool CanEdit => false;
-
+        public override LayerType Type => LayerType.Other;
         public override string Name => $"TileSet Map (read-only)";
 
         #endregion

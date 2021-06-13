@@ -53,7 +53,7 @@
             <ToggleButton Grid.Column="1"
                           Style="{StaticResource MahApps.Styles.ToggleButton.Circle}"
                           IsChecked="{Binding Path=ShowObjects}"
-                          ToolTip="Show objects"
+                          ToolTip="Show objects (O)"
                           Width="28" Height="28">
                 <iconPacks:PackIconMaterial Kind="EyeOutline" Width="14" Height="14" />
             </ToggleButton>

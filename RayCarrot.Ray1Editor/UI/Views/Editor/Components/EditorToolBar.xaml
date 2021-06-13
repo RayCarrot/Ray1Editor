@@ -14,7 +14,7 @@
 
     <!-- Undo/Redo -->
 
-    <Button ToolTip="Undo">
+    <Button ToolTip="Undo" IsEnabled="False">
         <iconPacks:PackIconMaterial Kind="Undo" VerticalAlignment="Center" />
     </Button>
     <Button ToolTip="Redo" IsEnabled="False">

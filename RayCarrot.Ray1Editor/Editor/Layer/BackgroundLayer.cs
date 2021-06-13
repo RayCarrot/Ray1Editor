@@ -29,6 +29,7 @@ namespace RayCarrot.Ray1Editor
         public override string Name { get; }
         public override Rectangle Rectangle => _rectangle;
         public override bool CanEdit => false;
+        public override LayerType Type => LayerType.Background;
         public override Pointer Pointer => BackgroundEntries[SelectedBackgroundIndex].Offset;
         public BackgroundEntry[] BackgroundEntries { get; }
         public Point Position { get; }

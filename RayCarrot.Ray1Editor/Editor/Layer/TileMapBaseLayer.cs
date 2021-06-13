@@ -241,7 +241,7 @@ namespace RayCarrot.Ray1Editor
         {
             base.OnModeChanged(oldMode, newMode);
 
-            State = TileEditorState.Idle;
+            State = newMode == EditorMode.Layers ? TileEditorState.Idle : TileEditorState.Disabled;
         }
 
         public override void Draw(SpriteBatch s)
@@ -261,7 +261,7 @@ namespace RayCarrot.Ray1Editor
                     T tile;
 
                     // Check if a preview tile should be drawn instead
-                    if (previewBox?.Contains(x, y) == true)
+                    if (IsSelected && previewBox?.Contains(x, y) == true)
                         tile = SelectedTiles[(x - previewBox.Value.X) % SelectedTilesWidth, (y - previewBox.Value.Y) % SelectedTilesHeight];
                     else
                         tile = GetTileAt(x, y);
@@ -274,7 +274,7 @@ namespace RayCarrot.Ray1Editor
             }
 
             // Draw selection border
-            if (State is TileEditorState.Selecting or TileEditorState.Tiling)
+            if (IsSelected && State is TileEditorState.Selecting or TileEditorState.Tiling)
             {
                 var selection = GetMapSelection();
 
@@ -294,6 +294,8 @@ namespace RayCarrot.Ray1Editor
 
         protected enum TileEditorState
         {
+            Disabled,
+
             /// <summary>
             /// The idle state. Should show the preview map as the cursor moves on the screen.
             /// </summary>

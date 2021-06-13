@@ -53,11 +53,21 @@
         <Separator />
         <MenuItem Header="Animate Objects"
                   IsCheckable="True"
-                  IsChecked="{Binding Path=AnimateObjects}" />
+                  IsChecked="{Binding Path=AnimateObjects}"
+                  InputGestureText="P" />
         <Separator />
+        <MenuItem Header="Show Object Offsets"
+                  IsCheckable="True"
+                  IsChecked="{Binding Path=ShowObjectOffsets}" 
+                  InputGestureText="X" />
         <MenuItem Header="Show Object HitBoxes"
                   IsCheckable="True"
                   IsEnabled="False" />
+        <MenuItem Header="Show Links"
+                  IsCheckable="True"
+                  IsChecked="{Binding Path=ShowLinks}"
+                  IsEnabled="{Binding Path=Mode, Converter={local:InvertedEnumBooleanConverter}, ConverterParameter=Links}"
+                  InputGestureText="L" />
     </MenuItem>
 
     <!-- Tools -->
