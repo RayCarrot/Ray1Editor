@@ -16,8 +16,8 @@
         public string Name { get; set; }
 
         /// <summary>
-        /// The game mode
+        /// The game
         /// </summary>
-        public GameMode Mode { get; set; }
+        public string GameID { get; set; }
     }
 }

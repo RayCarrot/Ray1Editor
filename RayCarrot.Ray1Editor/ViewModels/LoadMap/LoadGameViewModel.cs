@@ -42,9 +42,10 @@ namespace RayCarrot.Ray1Editor
 
         public void LoadGameMode()
         {
-            Manager = Game.Mode.GetManager();
+            var game = Games.FromID(Game.GameID);
+            Manager = game.GetManager();
             Levels.Clear();
-            Levels.AddRange(Manager.GetLevels());
+            Levels.AddRange(Manager.GetLevels(game));
         }
 
         public void Edit()
@@ -52,7 +53,7 @@ namespace RayCarrot.Ray1Editor
             var editGameVM = new EditGameViewModel()
             {
                 GameName = Game.Name,
-                GameMode = Game.Mode,
+                SelectedGameIndex = Games.LoadedGames.FindItemIndex(x => x.ID == Game.GameID),
                 GamePath = Game.Path
             };
 
@@ -65,7 +66,7 @@ namespace RayCarrot.Ray1Editor
 
             Game.Name = editGameVM.GameName;
             Game.Path = editGameVM.GamePath;
-            Game.Mode = editGameVM.GameMode;
+            Game.GameID = editGameVM.SelectedGame.ID;
 
             Header = Game.Name;
 
@@ -96,7 +97,7 @@ namespace RayCarrot.Ray1Editor
             // Remove from user data
             AppViewModel.Instance.UserData.App_Games.Remove(Game);
 
-            Logger.Log(LogLevel.Trace, "Removed game with mode {0}", Game.Mode);
+            Logger.Log(LogLevel.Trace, "Removed game with mode {0}", Game.GameID);
         }
     }
 }

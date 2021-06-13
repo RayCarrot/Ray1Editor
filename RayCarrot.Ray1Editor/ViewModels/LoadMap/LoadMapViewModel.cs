@@ -64,18 +64,18 @@ namespace RayCarrot.Ray1Editor
             {
                 Name = editGameVM.GameName,
                 Path = editGameVM.GamePath,
-                Mode = editGameVM.GameMode
+                GameID = editGameVM.SelectedGame.ID
             };
 
             App.UserData.App_Games.Add(game);
             Games.Add(new LoadGameViewModel(this, game));
 
-            Logger.Log(LogLevel.Info, "Added game with mode {0}", game.Mode);
+            Logger.Log(LogLevel.Info, "Added game with mode {0}", game.GameID);
         }
 
         public void LoadMap()
         {
-            Logger.Log(LogLevel.Info, "Loading editor with mode {0}", SelectedGame.Game.Mode);
+            Logger.Log(LogLevel.Info, "Loading editor with mode {0}", SelectedGame.Game.GameID);
 
             // TODO: Verify the game path exists before loading the editor to avoid crash
             // TODO: Try/catch

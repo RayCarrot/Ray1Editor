@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using RayCarrot.UI;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using RayCarrot.UI;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -16,7 +15,7 @@ namespace RayCarrot.Ray1Editor
         public EditGameViewModel()
         {
             // Set properties
-            AvailableGameModes = new ObservableCollection<GameMode>(Enum.GetValues(typeof(GameMode)).Cast<GameMode>());
+            AvailableGames = new ObservableCollection<string>(Games.LoadedGames.Select(x => x.DisplayName));
 
             // Create commands
             BrowseCommand = new RelayCommand(Browse);
@@ -34,8 +33,9 @@ namespace RayCarrot.Ray1Editor
 
         public string GameName { get; set; }
         public string GamePath { get; set; }
-        public ObservableCollection<GameMode> AvailableGameModes { get; }
-        public GameMode GameMode { get; set; }
+        public ObservableCollection<string> AvailableGames { get; }
+        public int SelectedGameIndex { get; set; }
+        public Games.Game SelectedGame => Games.LoadedGames[SelectedGameIndex];
 
         #endregion
 
@@ -43,7 +43,7 @@ namespace RayCarrot.Ray1Editor
 
         public void Browse()
         {
-            var pathType = GameMode.GetAttribute<GameModeInfoAttribute>().PathType;
+            var pathType = SelectedGame.PathType;
 
             if (pathType == GameModePathType.File)
             {

@@ -33,10 +33,9 @@ namespace RayCarrot.Ray1Editor
 
         #region Manager
 
-        public override IEnumerable<LoadGameLevelViewModel> GetLevels()
+        public override IEnumerable<LoadGameLevelViewModel> GetLevels(Games.Game game)
         {
-            // TODO: Don't hard-code the PC version - set based on game mode
-            return GetLevels(Ray1EngineVersion.PC, Ray1PCVersion.PC_1_21);
+            return GetLevels(((Games.R1_Game)game).EngineVersion, ((Games.R1_Game)game).PCVersion);
         }
 
         public override GameData Load(Context context, object settings, TextureManager textureManager)
