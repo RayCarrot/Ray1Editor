@@ -209,7 +209,7 @@
 
             <Button Content="Load Level"
                     Command="{Binding Path=LoadMapCommand, Mode=OneTime}"
-                    Visibility="{Binding Path=SelectedGame, Converter={local:InvertedObjectNullToVisibilityConverter}}"
+                    Visibility="{Binding Path=SelectedLevel, Converter={local:InvertedObjectNullToVisibilityConverter}}"
                     HorizontalAlignment="Right"/>
 
         </Grid>
