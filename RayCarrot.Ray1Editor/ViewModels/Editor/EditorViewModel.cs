@@ -230,10 +230,13 @@ namespace RayCarrot.Ray1Editor
             // Make sure any old editor instance gets unloaded
             UnloadEditor();
 
+            var c = new EditorContext(CurrentGame.Path);
+            c.AddSettings(Games.FromID(CurrentGame.GameID));
+
             // Create a new editor scene instance for the current game
             EditorScene = new EditorScene(
                 manager: CurrentGameManager,
-                context: new EditorContext(CurrentGame.Path),
+                context: c,
                 gameSettings: CurrentGameSettings);
         }
 

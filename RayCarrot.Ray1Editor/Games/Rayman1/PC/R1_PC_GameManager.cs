@@ -3,6 +3,7 @@ using BinarySerializer.Image;
 using BinarySerializer.Ray1;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,23 +18,17 @@ namespace RayCarrot.Ray1Editor
     {
         #region Paths
 
-        public string Path_VigFile => $"VIGNET.DAT";
         public string Path_DataDir => $"PCMAP/";
-        public string Path_FixFile => Path_DataDir + $"ALLFIX.DAT";
-        public string Path_WorldFile(World world) => Path_DataDir + $"RAY{(int)world}.WLD";
-        public string Path_LevelFile(World world, int level) => Path_DataDir + $"{world}/" + $"RAY{level}.LEV";
+        public virtual string Path_VigFile(Ray1Settings settings) => $"VIGNET.DAT";
+        public virtual string Path_FixFile => Path_DataDir + $"ALLFIX.DAT";
+        public virtual string Path_WorldFile(Ray1Settings settings) => Path_DataDir + $"RAY{(int)settings.World}.WLD";
+        public virtual string Path_LevelFile(Ray1Settings settings) => Path_DataDir + $"{GetWorldName(settings.World)}/" + $"RAY{settings.Level}.LEV";
 
         #endregion
-
-        #region R1 Manager
-
-        protected override int MaxObjType => (int)ObjType.TYPE_EDU_DIRECTION;
-
-        #endregion
-
+        
         #region Manager
 
-        public override IEnumerable<LoadGameLevelViewModel> GetLevels(Games.Game game)
+        public override IEnumerable<LoadGameLevelViewModel> GetLevels(Games.Game game, string path)
         {
             return GetLevels(((Games.R1_Game)game).EngineVersion, ((Games.R1_Game)game).PCVersion);
         }
@@ -42,32 +37,31 @@ namespace RayCarrot.Ray1Editor
         {
             // Get settings
             var ray1Settings = (Ray1Settings)settings;
-            var world = ray1Settings.World;
-            var level = ray1Settings.Level;
+            var games = (Games.R1_Game)context.GetSettings<Games.Game>();
 
             // Add the settings
             context.AddSettings(ray1Settings);
 
             // Add files
-            context.AddFile(new LinearSerializedFile(context, Path_VigFile));
+            context.AddFile(new LinearSerializedFile(context, Path_VigFile(ray1Settings)));
             context.AddFile(new LinearSerializedFile(context, Path_FixFile));
-            context.AddFile(new LinearSerializedFile(context, Path_WorldFile(world)));
-            context.AddFile(new LinearSerializedFile(context, Path_LevelFile(world, level)));
+            context.AddFile(new LinearSerializedFile(context, Path_WorldFile(ray1Settings)));
+            context.AddFile(new LinearSerializedFile(context, Path_LevelFile(ray1Settings)));
 
             // Create the data
             var data = new R1_PC_GameData(context, textureManager);
 
             // Read the files
             var fix = FileFactory.Read<PC_AllfixFile>(Path_FixFile, context);
-            var wld = FileFactory.Read<PC_WorldFile>(Path_WorldFile(world), context);
-            var lev = FileFactory.Read<SerializableEditorFile<PC_LevFile>>(Path_LevelFile(world, level), context).FileData;
+            var wld = FileFactory.Read<PC_WorldFile>(Path_WorldFile(ray1Settings), context);
+            var lev = FileFactory.Read<SerializableEditorFile<PC_LevFile>>(Path_LevelFile(ray1Settings), context).FileData;
 
             // Initialize the random generation
             InitRandom(data);
 
             // Load the editor name tables
-            var desNames = LoadEditorNameTable($"r1_pc_des.json")[(int)ray1Settings.World - 1];
-            var etaNames = LoadEditorNameTable($"r1_pc_eta.json")[(int)ray1Settings.World - 1];
+            var desNames = LoadEditorNameTable($"{games.NameTablesName}_des.json")[(int)ray1Settings.World - 1];
+            var etaNames = LoadEditorNameTable($"{games.NameTablesName}_eta.json")[(int)ray1Settings.World - 1];
 
             // Load palettes
             LoadPalettes(data, lev);
@@ -101,13 +95,11 @@ namespace RayCarrot.Ray1Editor
         {
             // Get settings
             var ray1Settings = context.GetSettings<Ray1Settings>();
-            var world = ray1Settings.World;
-            var level = ray1Settings.Level;
 
             var data = (R1_PC_GameData)gameData;
 
             // Get the level data
-            var lvlData = context.GetMainFileObject<SerializableEditorFile<PC_LevFile>>(Path_LevelFile(world, level)).FileData;
+            var lvlData = context.GetMainFileObject<SerializableEditorFile<PC_LevFile>>(Path_LevelFile(ray1Settings)).FileData;
 
             // Save the palettes
             lvlData.MapData.ColorPalettes = data.PC_Palettes.Select(x => x.ToBaseColorArray<RGB666Color>()).ToArray();
@@ -161,7 +153,7 @@ namespace RayCarrot.Ray1Editor
             lvlData.ScrollDiffFNDIndex = (byte)data.Layers.OfType<BackgroundLayer>().ElementAt(1).SelectedBackgroundIndex;
 
             // Save the file
-            FileFactory.Write<SerializableEditorFile<PC_LevFile>>(Path_LevelFile(world, level), context);
+            FileFactory.Write<SerializableEditorFile<PC_LevFile>>(Path_LevelFile(ray1Settings), context);
         }
 
         public override IEnumerable<EditorFieldViewModel> GetEditorObjFields(GameData gameData, Func<GameObject> getSelectedObj)
@@ -286,7 +278,31 @@ namespace RayCarrot.Ray1Editor
 
         #endregion
 
-        #region Helpers
+        #region R1 Manager
+
+        protected override int MaxObjType => (int)ObjType.TYPE_EDU_DIRECTION;
+
+        public string GetWorldName(World world) => world switch
+        {
+            World.Jungle => "JUNGLE",
+            World.Music => "MUSIC",
+            World.Mountain => "MOUNTAIN",
+            World.Image => "IMAGE",
+            World.Cave => "CAVE",
+            World.Cake => "CAKE",
+            _ => throw new ArgumentOutOfRangeException(nameof(world), world, null)
+        };
+
+        public virtual string GetShortWorldName(World world) => world switch
+        {
+            World.Jungle => "JUN",
+            World.Music => "MUS",
+            World.Mountain => "MON",
+            World.Image => "IMA",
+            World.Cave => "CAV",
+            World.Cake => "CAK",
+            _ => throw new ArgumentOutOfRangeException(nameof(world), world, null)
+        };
 
         public void LoadPalettes(R1_PC_GameData data, PC_LevFile lev)
         {
@@ -429,7 +445,7 @@ namespace RayCarrot.Ray1Editor
             data.Layers.Add(colLayer);
         }
 
-        public void LoadFond(R1_PC_GameData data, PC_WorldFile wld, PC_LevFile lev, TextureManager textureManager)
+        public virtual void LoadFond(R1_PC_GameData data, PC_WorldFile wld, PC_LevFile lev, TextureManager textureManager)
         {
             // Load every available background
             var fondOptions = wld.Plan0NumPcx.Select(x => LoadFond(data, textureManager, x)).ToArray();
@@ -444,7 +460,7 @@ namespace RayCarrot.Ray1Editor
 
         public R1_PC_BackgroundLayer.BackgroundEntry_R1_PC LoadFond(R1_PC_GameData data, TextureManager textureManager, int index)
         {
-            var pcx = LoadArchiveFile<PCX>(data.Context, Path_VigFile, index);
+            var pcx = LoadArchiveFile<PCX>(data.Context, Path_VigFile(data.Context.GetSettings<Ray1Settings>()), index);
 
             var imgData = pcx.ScanLines.SelectMany(x => x).ToArray();
 

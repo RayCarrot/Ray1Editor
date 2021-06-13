@@ -13,8 +13,9 @@ namespace RayCarrot.Ray1Editor
         /// Gets all available levels to load for the game
         /// </summary>
         /// <param name="game">The game to get the levels for</param>
+        /// <param name="path">The game path</param>
         /// <returns>The levels</returns>
-        public abstract IEnumerable<LoadGameLevelViewModel> GetLevels(Games.Game game);
+        public abstract IEnumerable<LoadGameLevelViewModel> GetLevels(Games.Game game, string path);
 
         /// <summary>
         /// Loads the game to the editor

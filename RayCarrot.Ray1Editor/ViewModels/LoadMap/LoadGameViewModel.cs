@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Input;
@@ -45,7 +46,15 @@ namespace RayCarrot.Ray1Editor
             var game = Games.FromID(Game.GameID);
             Manager = game.GetManager();
             Levels.Clear();
-            Levels.AddRange(Manager.GetLevels(game));
+
+            try
+            {
+                Levels.AddRange(Manager.GetLevels(game, Game.Path));
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogLevel.Warn, ex, "Getting levels");
+            }
         }
 
         public void Edit()
