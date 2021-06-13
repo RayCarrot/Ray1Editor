@@ -29,6 +29,7 @@ namespace RayCarrot.Ray1Editor
             ResetPositionCommand = new RelayCommand(ResetPosition);
             SaveCommand = new RelayCommand(Save);
             DeleteSelectedObjectCommand = new RelayCommand(DeleteSelectedObject);
+            AddObjCommand = new RelayCommand(AddObject);
         }
 
         #endregion
@@ -39,6 +40,7 @@ namespace RayCarrot.Ray1Editor
         public ICommand ResetPositionCommand { get; }
         public ICommand SaveCommand { get; }
         public ICommand DeleteSelectedObjectCommand { get; }
+        public ICommand AddObjCommand { get; }
 
         #endregion
 
@@ -94,11 +96,7 @@ namespace RayCarrot.Ray1Editor
 
         // Objects
         public ObservableCollection<string> AvailableObjects { get; }
-        public int SelectedNewObjIndex
-        {
-            get => EditorScene?.SelectedNewObjIndex ?? 0;
-            set => EditorScene.SelectedNewObjIndex = value;
-        }
+        public int SelectedNewObjIndex { get; set; }
         public bool IsSelectingObjFromList { get; set; }
         public ObservableCollection<GameObjectListItemViewModel> GameObjects { get; }
         public GameObjectListItemViewModel SelectedGameObjectItem
@@ -264,6 +262,11 @@ namespace RayCarrot.Ray1Editor
         {
             if (SelectedObject != null)
                 EditorScene.RemoveObject(SelectedObject);
+        }
+
+        public void AddObject()
+        {
+            EditorScene.AddObject(SelectedNewObjIndex);
         }
 
         public void ResetPosition()

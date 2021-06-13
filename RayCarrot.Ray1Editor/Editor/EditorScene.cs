@@ -42,7 +42,6 @@ namespace RayCarrot.Ray1Editor
 
         private GameObject _selectedObject;
         private EditorMode _mode;
-        private bool _isAddObjButtonDown;
 
         #endregion
 
@@ -93,7 +92,6 @@ namespace RayCarrot.Ray1Editor
         public GameData GameData { get; protected set; }
 
         // Objects
-        public int SelectedNewObjIndex { get; set; }
         public bool ShowObjects { get; set; } = true;
         public GameObject HoverObject { get; protected set; }
         public GameObject SelectedObject
@@ -312,30 +310,6 @@ namespace RayCarrot.Ray1Editor
                 return;
             }
 
-            if (updateData.Mouse.MiddleButton != ButtonState.Pressed)
-                _isAddObjButtonDown = false;
-
-            // Add object
-            if (updateData.Mouse.MiddleButton == ButtonState.Pressed && !_isAddObjButtonDown)
-            {
-                _isAddObjButtonDown = true;
-
-                if (GameData.Objects.Count >= GameManager.GetMaxObjCount(GameData))
-                {
-                    // TODO: Custom message box in UI manager
-                    System.Windows.MessageBox.Show("Max obj count reached!");
-                    return;
-                }
-
-                var obj = GameManager.CreateGameObject(GameData, SelectedNewObjIndex);
-                obj.Position = updateData.MousePosition.ToPoint();
-                obj.LoadElement(this);
-                obj.Load();
-                GameData.Objects.Add(obj);
-                VM.OnObjectAdded(obj);
-                return;
-            }
-
             // Move object
             if (updateData.Mouse.LeftButton == ButtonState.Pressed)
             {
@@ -528,6 +502,23 @@ namespace RayCarrot.Ray1Editor
             VM.OnObjectRemoved(obj);
 
             Logger.Log(LogLevel.Trace, "Removed object {0}", obj.DisplayName);
+        }
+
+        public void AddObject(int index)
+        {
+            if (GameData.Objects.Count >= GameManager.GetMaxObjCount(GameData))
+            {
+                // TODO: Custom message box in UI manager
+                System.Windows.MessageBox.Show("Max obj count reached!");
+                return;
+            }
+
+            var obj = GameManager.CreateGameObject(GameData, index);
+            obj.Position = Cam.Position.ToPoint();
+            obj.LoadElement(this);
+            obj.Load();
+            GameData.Objects.Add(obj);
+            VM.OnObjectAdded(obj);
         }
 
         public void Save()

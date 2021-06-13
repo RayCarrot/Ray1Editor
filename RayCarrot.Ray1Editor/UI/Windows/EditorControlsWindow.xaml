@@ -7,7 +7,7 @@
                   mc:Ignorable="d"
                   Title="Editor Controls"
                   ResizeMode="NoResize"
-                  Width="360" Height="280"
+                  Width="360" Height="280" d:DesignHeight="600"
                   Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}"
                   Background="{DynamicResource MahApps.Brushes.ThemeBackground}"
                   CloseWithEscape="True">
@@ -43,7 +43,6 @@
             <TextBlock Text="Hold left mouse button: Drag" />
             <TextBlock Text="+/-: Change animation frame" />
             <!-- TODO: Implement -->
-            <TextBlock Text="Middle mouse button: Add object" />
             <TextBlock Text="DEL: Delete object" />
 
             <TextBlock Style="{StaticResource Header}"

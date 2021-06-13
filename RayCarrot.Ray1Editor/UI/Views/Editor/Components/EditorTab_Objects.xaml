@@ -19,10 +19,25 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <ComboBox Grid.Row="0"
-                  Margin="0 0 0 7"
-                  SelectedIndex="{Binding Path=SelectedNewObjIndex}"
-                  ItemsSource="{Binding Path=AvailableObjects, Mode=OneTime}"/>
+        <Grid Grid.Row="0" Margin="0 0 0 7">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="15" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <ComboBox SelectedIndex="{Binding Path=SelectedNewObjIndex}"
+                      ItemsSource="{Binding Path=AvailableObjects, Mode=OneTime}"/>
+
+            <Button Grid.Column="2" 
+                    Style="{StaticResource FlatButton}" 
+                    Command="{Binding Path=AddObjCommand, Mode=OneTime}"
+                    Width="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight}">
+                <iconPacks:PackIconMaterial Kind="Plus" Background="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            </Button>
+
+        </Grid>
 
         <Grid Grid.Row="1" Margin="0 0 0 7">
             <Grid.ColumnDefinitions>
