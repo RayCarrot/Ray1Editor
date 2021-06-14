@@ -131,6 +131,7 @@ namespace RayCarrot.Ray1Editor
 
         // MonoGame
         protected SpriteBatch SpriteBatch { get; set; }
+        protected Renderer Renderer { get; set; }
         protected WpfMouse Mouse { get; }
         protected WpfKeyboard Keyboard { get; }
 
@@ -154,6 +155,9 @@ namespace RayCarrot.Ray1Editor
 
             // Reset the camera
             Cam.ResetCamera();
+
+            // Create a renderer
+            Renderer = new Renderer(Cam, SpriteBatch);
 
             // Initialize the base game, thus loading the content
             base.Initialize();
@@ -519,26 +523,25 @@ namespace RayCarrot.Ray1Editor
             SpriteBatch.DrawFilledRectangle(new Rectangle(Point.Zero, State.MapSize), State.Color_MapBackground);
 
             // Draw the content
-            Draw(SpriteBatch);
+            Draw(Renderer);
 
             // End the drawing
             SpriteBatch.End();
         }
 
-        // TODO: Only render what is in view
-        protected void Draw(SpriteBatch s)
+        protected void Draw(Renderer r)
         {
             var fullScreenLayer = State.GetActiveFullScreenLayer();
 
             if (fullScreenLayer != null)
             {
-                fullScreenLayer.Draw(s);
+                fullScreenLayer.Draw(r);
                 return;
             }
 
             // Draw each layer
             foreach (var layer in GameData.Layers.Where(x => x.IsVisible))
-                layer.Draw(s);
+                layer.Draw(r);
 
             if (ShowObjects)
             {
@@ -547,16 +550,16 @@ namespace RayCarrot.Ray1Editor
                 // Draw objects
                 for (int i = 0; i <= max; i++)
                     foreach (var obj in GameData.Objects.Where(x => x.DisplayPrio == i))
-                        obj.Draw(s);
+                        obj.Draw(r);
 
                 // Draw links if in links mode or links are toggled to be visible
                 if (Mode == EditorMode.Links || ShowLinks)
                     foreach (var obj in GameData.Objects)
-                        obj.DrawLinks(s);
+                        obj.DrawLinks(r);
 
                 // Draw link grip border if hovering over it in links mode
                 if (Mode == EditorMode.Links && HoverLinkGripObj != null)
-                    s.DrawRectangle(HoverLinkGripObj.LinkGripBounds, State.Color_ObjBounds);
+                    r.SpriteBatch.DrawRectangle(HoverLinkGripObj.LinkGripBounds, State.Color_ObjBounds);
 
                 if (CanHoverOverObject)
                 {
@@ -566,22 +569,22 @@ namespace RayCarrot.Ray1Editor
                     // When in links mode we show the bounds for the object the link is being
                     // moved for.
                     if (SelectedObject != null)
-                        s.DrawRectangle(SelectedObject.WorldBounds, State.Color_ObjBounds);
+                        r.SpriteBatch.DrawRectangle(SelectedObject.WorldBounds, State.Color_ObjBounds);
                     if (HoverObject != null && !IsDraggingObject && !IsDraggingLink)
-                        s.DrawRectangle(HoverObject.WorldBounds, State.Color_ObjBounds);
+                        r.SpriteBatch.DrawRectangle(HoverObject.WorldBounds, State.Color_ObjBounds);
                     else if (SelectedLinkObject != null)
-                        s.DrawRectangle(SelectedLinkObject.WorldBounds, State.Color_ObjBounds);
+                        r.SpriteBatch.DrawRectangle(SelectedLinkObject.WorldBounds, State.Color_ObjBounds);
                 }
 
                 if (ShowObjectOffsets)
                 {
                     foreach (var obj in GameData.Objects)
-                        obj.DrawOffsets(s);
+                        obj.DrawOffsets(r);
                 }
                 else
                 {
                     // Draw offsets for the currently selected object
-                    SelectedObject?.DrawOffsets(s);
+                    SelectedObject?.DrawOffsets(r);
                 }
             }
         }

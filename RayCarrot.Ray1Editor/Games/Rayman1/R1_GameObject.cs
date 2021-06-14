@@ -210,9 +210,9 @@ namespace RayCarrot.Ray1Editor
         protected ObjState GetState(int etat, int subEtat) => ObjData.ETA.States.ElementAtOrDefault(etat)?.ElementAtOrDefault(subEtat);
 
         // Update
-        public override void DrawOffsets(SpriteBatch s)
+        public override void DrawOffsets(Renderer r)
         {
-            base.DrawOffsets(s);
+            base.DrawOffsets(r);
 
             int hy = ObjData.OffsetHY;
 
@@ -220,7 +220,7 @@ namespace RayCarrot.Ray1Editor
                 hy += CurrentAnimation?.Frames.ElementAtOrDefault(AnimationFrame)?.SpriteLayers.ElementAtOrDefault(ObjData.FollowSprite)?.Position.Y ?? 0;
 
             if (hy != 0)
-                DrawOffset(s, Position + new Point(0, hy), EditorState.Color_ObjOffsetGeneric);
+                DrawOffset(r, Position + new Point(0, hy), EditorState.Color_ObjOffsetGeneric);
         }
     }
 }

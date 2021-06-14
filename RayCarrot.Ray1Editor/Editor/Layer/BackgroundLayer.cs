@@ -74,7 +74,7 @@ namespace RayCarrot.Ray1Editor
             _rectangle = new Rectangle(Position, Texture.Bounds.Size);
         }
 
-        public override void Draw(SpriteBatch s)
+        public override void Draw(Renderer r)
         {
             var height = RepeatY ? (EditorState.MapSize.Y - Rectangle.Y) : Rectangle.Height;
             var width = RepeatX ? (EditorState.MapSize.X - Rectangle.X) : Rectangle.Width;
@@ -98,7 +98,7 @@ namespace RayCarrot.Ray1Editor
                     var src = new Rectangle(Point.Zero, size);
                     var dest = new Rectangle(new Point(Rectangle.X + x, Rectangle.Y + y), size);
 
-                    s.Draw(Texture, dest, src, Color.White);
+                    r.Draw(Texture, dest, src);
                 }
             }
         }

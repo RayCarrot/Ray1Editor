@@ -98,10 +98,14 @@ namespace RayCarrot.Ray1Editor
                 return _transformMatrix;
             }
         }
+        public Rectangle VisibleArea { get; set; }
 
         public Vector2 ToWorld(Vector2 pos) => Vector2.Transform(pos, Matrix.Invert(TransformMatrix));
         public Vector2 ToScreen(Vector2 pos) => Vector2.Transform(pos, TransformMatrix);
-
+        public bool IsInVisibleArea(Rectangle rect)
+        {
+            return VisibleArea.Intersects(rect);
+        }
         public void ResetCamera()
         {
             Zoom = 1;
@@ -156,6 +160,21 @@ namespace RayCarrot.Ray1Editor
                 IsDraggingCamera = false;
             }
 
+            // Set the visible area
+            var inverseViewMatrix = Matrix.Invert(TransformMatrix);
+            var tl = Vector2.Transform(Vector2.Zero, inverseViewMatrix);
+            var tr = Vector2.Transform(new Vector2(ViewArea.X, 0), inverseViewMatrix);
+            var bl = Vector2.Transform(new Vector2(0, ViewArea.Y), inverseViewMatrix);
+            var br = Vector2.Transform(ViewArea, inverseViewMatrix);
+            var min = new Vector2(
+                MathHelper.Min(tl.X, MathHelper.Min(tr.X, MathHelper.Min(bl.X, br.X))),
+                MathHelper.Min(tl.Y, MathHelper.Min(tr.Y, MathHelper.Min(bl.Y, br.Y))));
+            var max = new Vector2(
+                MathHelper.Max(tl.X, MathHelper.Max(tr.X, MathHelper.Max(bl.X, br.X))),
+                MathHelper.Max(tl.Y, MathHelper.Max(tr.Y, MathHelper.Max(bl.Y, br.Y))));
+            VisibleArea = new Rectangle((int)min.X, (int)min.Y, (int)(max.X - min.X), (int)(max.Y - min.Y));
+
+            // Add debug text
             updateData.DebugText.AppendLine($"Zoom: {Zoom * 100} %");
             updateData.DebugText.AppendLine($"Position: {Position}");
         }

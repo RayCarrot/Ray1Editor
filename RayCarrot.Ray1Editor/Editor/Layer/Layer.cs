@@ -1,10 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using BinarySerializer;
+using MahApps.Metro.IconPacks;
+using Microsoft.Xna.Framework;
+using NLog;
 using System.Collections.Generic;
 using System.Linq;
-using BinarySerializer;
-using MahApps.Metro.IconPacks;
-using NLog;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -61,7 +60,7 @@ namespace RayCarrot.Ray1Editor
                 iconKind: PackIconMaterialKind.PencilOutline, 
                 info: "Edit Layer", 
                 getValueAction: () => IsSelected, 
-                setValueAction: x =>
+                setValueAction: _ =>
                 {
                     Select();
 
@@ -110,7 +109,7 @@ namespace RayCarrot.Ray1Editor
 
         public virtual void Update(EditorUpdateData updateData) { }
         public virtual void UpdateLayerEditing(EditorUpdateData updateData) { }
-        public abstract void Draw(SpriteBatch s);
+        public abstract void Draw(Renderer r);
 
         public enum LayerType
         {

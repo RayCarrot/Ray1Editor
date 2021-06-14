@@ -104,13 +104,13 @@ namespace RayCarrot.Ray1Editor
 
             _prevLinkGripPosition = LinkGripPosition;
         }
-        public virtual void Draw(SpriteBatch s)
+        public virtual void Draw(Renderer r)
         {
             var anim = CurrentAnimation;
 
             if (anim == null)
             {
-                DrawDefault(s);
+                DrawDefault(r);
                 return;
             }
 
@@ -150,11 +150,10 @@ namespace RayCarrot.Ray1Editor
 
                 var dest = new Rectangle(Position + pos, new Point(spriteEntry.Source.Width, spriteEntry.Source.Height));
 
-                s.Draw(
+                r.Draw(
                     texture: sheet.Sheet, 
                     destinationRectangle: dest, 
                     sourceRectangle: spriteEntry.Source, 
-                    color: Color.White, 
                     rotation: 0, 
                     origin: Vector2.Zero, 
                     effects: effects, 
@@ -175,14 +174,14 @@ namespace RayCarrot.Ray1Editor
             // Make sure at least one sprite was rendered, otherwise fall back to the default rendering
             if (first)
             {
-                DrawDefault(s);
+                DrawDefault(r);
                 return;
             }
 
             Bounds = new Rectangle(new Point(leftX, topY), new Point(rightX - leftX, bottomY - topY));
             Center = new Point(leftX + (rightX - leftX) / 2, topY + (bottomY - topY) / 2);
         }
-        public virtual void DrawDefault(SpriteBatch s)
+        public virtual void DrawDefault(Renderer r)
         {
             Texture2D tex = Type switch
             {
@@ -194,33 +193,33 @@ namespace RayCarrot.Ray1Editor
 
             var dest = new Rectangle(Position - new Point(DefaultIconSize / 2), new Point(DefaultIconSize));
 
-            s.Draw(tex, dest, Color.White);
+            r.Draw(tex, dest);
             
             Bounds = new Rectangle(dest.Location - Position, dest.Size);
             Center = Point.Zero;
         }
-        public virtual void DrawLinks(SpriteBatch s)
+        public virtual void DrawLinks(Renderer r)
         {
             if (CanBeLinkedToGroup)
             {
                 var color = LinkGroup == 0 ? EditorState.Color_ObjLinksDisabled : EditorState.Color_ObjLinksEnabled;
 
-                s.DrawLine(new Vector2(Position.X + Center.X, Position.Y + Center.Y), LinkGripBounds.Center.ToVector2(), color, LinkLineThickness);
-                s.DrawFilledRectangle(LinkGripBounds, color);
+                r.SpriteBatch.DrawLine(new Vector2(Position.X + Center.X, Position.Y + Center.Y), LinkGripBounds.Center.ToVector2(), color, LinkLineThickness);
+                r.SpriteBatch.DrawFilledRectangle(LinkGripBounds, color);
             }
         }
-        public virtual void DrawOffsets(SpriteBatch s)
+        public virtual void DrawOffsets(Renderer r)
         {
-            DrawOffset(s, Position, EditorState.Color_ObjOffsetPos);
+            DrawOffset(r, Position, EditorState.Color_ObjOffsetPos);
 
             if (Pivot != Point.Zero)
-                DrawOffset(s, Position + Pivot, EditorState.Color_ObjOffsetPivot);
+                DrawOffset(r, Position + Pivot, EditorState.Color_ObjOffsetPivot);
         }
-        public virtual void DrawOffset(SpriteBatch s, Point pos, Color c)
+        public virtual void DrawOffset(Renderer r, Point pos, Color c)
         {
             var halfSize = OffsetSize / 2;
-            s.DrawLine(new Vector2(pos.X - halfSize, pos.Y), new Vector2(pos.X + halfSize, pos.Y), c, 1);
-            s.DrawLine(new Vector2(pos.X, pos.Y - halfSize), new Vector2(pos.X, pos.Y + halfSize), c, 1);
+            r.SpriteBatch.DrawLine(new Vector2(pos.X - halfSize, pos.Y), new Vector2(pos.X + halfSize, pos.Y), c, 1);
+            r.SpriteBatch.DrawLine(new Vector2(pos.X, pos.Y - halfSize), new Vector2(pos.X, pos.Y + halfSize), c, 1);
         }
 
         // Data types

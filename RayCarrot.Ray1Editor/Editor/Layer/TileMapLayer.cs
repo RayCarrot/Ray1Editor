@@ -1,9 +1,8 @@
 ﻿using MahApps.Metro.IconPacks;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using NLog;
 using System;
 using System.Collections.Generic;
-using NLog;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -216,12 +215,12 @@ namespace RayCarrot.Ray1Editor
                 base.UpdateLayerEditing(updateData);
         }
 
-        public override void Draw(SpriteBatch s)
+        public override void Draw(Renderer r)
         {
             if (IsShowingTileSet)
-                TileSetLayer.Draw(s);
+                TileSetLayer.Draw(r);
             else
-                base.Draw(s);
+                base.Draw(r);
         }
 
         #endregion

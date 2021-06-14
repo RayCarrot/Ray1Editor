@@ -239,7 +239,7 @@ namespace RayCarrot.Ray1Editor
             State = newMode == EditorMode.Layers ? TileEditorState.Idle : TileEditorState.Disabled;
         }
 
-        public override void Draw(SpriteBatch s)
+        public override void Draw(Renderer r)
         {
             Rectangle? previewBox = null;
 
@@ -270,7 +270,7 @@ namespace RayCarrot.Ray1Editor
 
                     var src = TileSet.TileSheet.Entries[tileIndex].Source;
 
-                    s.Draw(TileSet.TileSheet.Sheet, dest, src, Color.White);
+                    r.Draw(TileSet.TileSheet.Sheet, dest, src);
                 }
             }
 
@@ -285,7 +285,7 @@ namespace RayCarrot.Ray1Editor
                     width: selection.Width * TileSet.TileSize.X,
                     height: selection.Height * TileSet.TileSize.Y);
 
-                s.DrawRectangle(rect, State == TileEditorState.Selecting ? EditorState.Color_TileSelection : EditorState.Color_TileTiling, 1);
+                r.SpriteBatch.DrawRectangle(rect, State == TileEditorState.Selecting ? EditorState.Color_TileSelection : EditorState.Color_TileTiling, 1);
             }
         }
 

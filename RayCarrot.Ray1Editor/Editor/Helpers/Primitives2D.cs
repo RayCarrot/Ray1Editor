@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace RayCarrot.Ray1Editor
 {
+    // TODO: Move to Renderer class
     public static class Primitives2D
     {
         #region Private Members
