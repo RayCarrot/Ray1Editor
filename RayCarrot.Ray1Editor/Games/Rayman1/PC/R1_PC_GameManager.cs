@@ -37,7 +37,7 @@ namespace RayCarrot.Ray1Editor
         {
             // Get settings
             var ray1Settings = (Ray1Settings)settings;
-            var games = (Games.R1_Game)context.GetSettings<Games.Game>();
+            var game = (Games.R1_Game)context.GetSettings<Games.Game>();
 
             // Add the settings
             context.AddSettings(ray1Settings);
@@ -60,8 +60,8 @@ namespace RayCarrot.Ray1Editor
             InitRandom(data);
 
             // Load the editor name tables
-            var desNames = LoadEditorNameTable($"{games.NameTablesName}_des.json")[(int)ray1Settings.World - 1];
-            var etaNames = LoadEditorNameTable($"{games.NameTablesName}_eta.json")[(int)ray1Settings.World - 1];
+            var desNames = LoadNameTable_DES(data, game, ray1Settings);
+            var etaNames = LoadNameTable_ETA(data, game, ray1Settings);
 
             // Load palettes
             LoadPalettes(data, lev);
@@ -281,6 +281,16 @@ namespace RayCarrot.Ray1Editor
         #region R1 Manager
 
         protected override int MaxObjType => (int)ObjType.TYPE_EDU_DIRECTION;
+
+        protected virtual string[] LoadNameTable_DES(R1_GameData data, Games.R1_Game game, Ray1Settings settings)
+        {
+            return LoadEditorNameTable($"{game.NameTablesName}_des.json")[(int)settings.World - 1];
+        }
+
+        protected virtual string[] LoadNameTable_ETA(R1_GameData data, Games.R1_Game game, Ray1Settings settings)
+        {
+            return LoadEditorNameTable($"{game.NameTablesName}_eta.json")[(int)settings.World - 1];
+        }
 
         public string GetWorldName(World world) => world switch
         {

@@ -22,10 +22,10 @@ namespace RayCarrot.Ray1Editor
             // Rayman EDU/KIT/FAN (PC)
             new R1_Game("R1_EDU_PC", "Rayman Educational (PC)", () => new R1_EDU_PC_GameManager(), GameModePathType.Directory, Ray1EngineVersion.PC_Edu, "edu"),
             new R1_Game("R1_QUI_PC", "Rayman Quiz (PC)", () => new R1_EDU_PC_GameManager(), GameModePathType.Directory, Ray1EngineVersion.PC_Edu, "edu"),
-            //new R1_Game("R1_KIT_PC", "Rayman Designer (PC)", () => new R1_PC_GameManager(), GameModePathType.Directory, Ray1EngineVersion.PC_Kit),
-            //new R1_Game("R1_KIT_PC_Demo", "Rayman Gold (PC - Demo)", () => new R1_PC_GameManager(), GameModePathType.Directory, Ray1EngineVersion.PC_Kit),
-            //new R1_Game("R1_FAN_PC", "Rayman by his Fans (PC)", () => new R1_PC_GameManager(), GameModePathType.Directory, Ray1EngineVersion.PC_Fan),
-            //new R1_Game("R1_60N_PC", "Rayman 60 Levels (PC)", () => new R1_PC_GameManager(), GameModePathType.Directory, Ray1EngineVersion.PC_Fan),
+            new R1_Game("R1_KIT_PC", "Rayman Designer (PC)", () => new R1_KIT_PC_GameManager(), GameModePathType.Directory, Ray1EngineVersion.PC_Kit, null),
+            new R1_Game("R1_KIT_PC_Demo", "Rayman Gold (PC - Demo)", () => new R1_KIT_PC_GameManager(), GameModePathType.Directory, Ray1EngineVersion.PC_Kit, null),
+            new R1_Game("R1_FAN_PC", "Rayman by his Fans (PC)", () => new R1_FAN_PC_GameManager(), GameModePathType.Directory, Ray1EngineVersion.PC_Fan, null),
+            new R1_Game("R1_60N_PC", "Rayman 60 Levels (PC)", () => new R1_60N_PC_GameManager(), GameModePathType.Directory, Ray1EngineVersion.PC_Fan, null),
         };
 
         public static Game FromID(string id) => LoadedGames.FirstOrDefault(x => x.ID == id) ?? throw new Exception($"Game with ID {id} not found");
