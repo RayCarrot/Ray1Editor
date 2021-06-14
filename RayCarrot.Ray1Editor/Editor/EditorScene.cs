@@ -554,8 +554,10 @@ namespace RayCarrot.Ray1Editor
 
                 // Draw links if in links mode or links are toggled to be visible
                 if (Mode == EditorMode.Links || ShowLinks)
-                    foreach (var obj in GameData.Objects)
+                {
+                    foreach (GameObject obj in GameData.Objects.Where(obj => Mode == EditorMode.Links || ShowLinks && obj.LinkGroup != 0))
                         obj.DrawLinks(r);
+                }
 
                 // Draw link grip border if hovering over it in links mode
                 if (Mode == EditorMode.Links && HoverLinkGripObj != null)
