@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework.Graphics;
 using Point = Microsoft.Xna.Framework.Point;
 
 namespace RayCarrot.Ray1Editor
@@ -10,9 +11,7 @@ namespace RayCarrot.Ray1Editor
     /// </summary>
     public class TileSet
     {
-        public TileSet(TextureSheet tileSheet, Point tileSize, bool isFirstTransparent = true,
-            // TODO: Enable this? It takes around 250ms for a tile-set, but improves performance in the editor and is more reliable than the isFirstTransparent param
-            bool findTransparentTiles = false)
+        public TileSet(TextureSheet tileSheet, Point tileSize, bool isFirstTransparent = true)
         {
             TileSheet = tileSheet;
             TileSize = tileSize;
@@ -20,25 +19,26 @@ namespace RayCarrot.Ray1Editor
 
             if (isFirstTransparent)
                 FullyTransparentTiles.Add(0);
-
-            if (findTransparentTiles)
-            {
-                for (var i = 0; i < TileSheet.Entries.Length; i++)
-                {
-                    var entry = TileSheet.Entries[i];
-                    var c = new Color[entry.Source.Width * entry.Source.Height];
-
-                    TileSheet.Sheet.GetData(0, entry.Source, c, 0, c.Length);
-
-                    if (c.All(x => x == Color.Transparent))
-                        FullyTransparentTiles.Add(i);
-                }
-            }
         }
 
         public TextureSheet TileSheet { get; }
         public Point TileSize { get; }
         protected HashSet<int> FullyTransparentTiles { get; }
-        public bool IsFullyTransparent(int index) => false;
+        public bool IsFullyTransparent(int index) => FullyTransparentTiles.Contains(index);
+
+        // TODO: Use this? It takes around 250ms for a tile-set, but improves performance in the editor and is more reliable than the isFirstTransparent param
+        public void FindTransparentTiles()
+        {
+            for (var i = 0; i < TileSheet.Entries.Length; i++)
+            {
+                var entry = TileSheet.Entries[i];
+                var c = new Color[entry.Source.Width * entry.Source.Height];
+
+                TileSheet.Sheet.GetData(0, entry.Source, c, 0, c.Length);
+
+                if (c.All(x => x == Color.Transparent))
+                    FullyTransparentTiles.Add(i);
+            }
+        }
     }
 }

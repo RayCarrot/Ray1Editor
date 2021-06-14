@@ -1,6 +1,6 @@
-﻿using System.Linq;
-using BinarySerializer.Ray1;
+﻿using BinarySerializer.Ray1;
 using Microsoft.Xna.Framework;
+using System;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -14,12 +14,35 @@ namespace RayCarrot.Ray1Editor
         public int TileSetWidth { get; }
 
         protected override MapTile CreateNewTile() => new MapTile();
-        protected override MapTile[] GetTileSetMap() => Enumerable.Range(0, TileSet.TileSheet.Entries.Length).Select(x => new MapTile()
+        protected override MapTile[] GetTileSetMap()
         {
-            // TODO: Update for 2D tile-sets
-            // TODO: Set PC transparency
-            TileMapY = (ushort)x
-        }).ToArray();
+            var tilesCount = TileSet.TileSheet.Entries.Length;
+            var width = TileSetWidth;
+            var height = (int)Math.Ceiling(TileSet.TileSheet.Entries.Length / (float)width);
+
+            var tiles = new MapTile[tilesCount];
+
+            for (ushort y = 0; y < height; y++)
+            {
+                for (ushort x = 0; x < width; x++)
+                {
+                    var index = y * width + x;
+
+                    if (index >= tilesCount)
+                        break;
+
+                    tiles[index] = new MapTile()
+                    {
+                        // TODO: Set PC transparency
+                        TileMapY = y,
+                        TileMapX = x
+                    };
+                }
+            }
+
+            return tiles;
+        }
+
         protected override int GetTileSetMapWidth() => TileSetWidth == 1 ? 24 : TileSetWidth;
         protected override int GetTileSetIndex(MapTile tile) => tile.TileMapY * TileSetWidth + tile.TileMapX;
         protected override MapTile CloneTile(MapTile srcTile, MapTile destTile) => new MapTile

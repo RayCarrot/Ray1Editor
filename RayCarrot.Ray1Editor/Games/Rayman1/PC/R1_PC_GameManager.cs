@@ -2,12 +2,11 @@
 using BinarySerializer.Image;
 using BinarySerializer.Ray1;
 using Microsoft.Xna.Framework;
-using Newtonsoft.Json;
-using NLog;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -153,126 +152,6 @@ namespace RayCarrot.Ray1Editor
 
             // Save the file
             FileFactory.Write<SerializableEditorFile<PC_LevFile>>(Path_LevelFile(ray1Settings), context);
-        }
-
-        public override IEnumerable<EditorFieldViewModel> GetEditorObjFields(GameData gameData, Func<GameObject> getSelectedObj)
-        {
-            // Helper methods
-            R1_GameObject getObj() => (R1_GameObject)getSelectedObj();
-            ObjData getObjData() => getObj().ObjData;
-
-            var data = (R1_GameData)gameData;
-            var settings = data.Context.GetSettings<Ray1Settings>();
-
-            var dropDownItems_type = Enum.GetValues(typeof(ObjType)).
-                Cast<ObjType>().
-                Where(x => (int)x <= MaxObjType && x != ObjType.ObjType_255).
-                Select(x => new EditorDropDownFieldViewModel.DropDownItem<ObjType>(x.ToString(), x)).
-                ToArray();
-            var dropDownLookup_type = dropDownItems_type.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data, x => x.i);
-            
-            var dropDownItems_des = data.DES.Select((x, i) => new EditorDropDownFieldViewModel.DropDownItem<R1_GameData.DESData>($"DES {i + 1}{(x.Name != null ? $" ({x.Name})" : "")}", x)).ToArray();
-            var dropDownLookup_des = dropDownItems_des.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data.SpritesData, x => x.i);
-            
-            var dropDownItems_eta = data.ETA.Select((x, i) => new EditorDropDownFieldViewModel.DropDownItem<ETA>($"ETA {i}{(x.Name != null ? $" ({x.Name})" : "")}", x.ETA)).ToArray();
-            var dropDownLookup_eta = dropDownItems_eta.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data, x => x.i);
-            
-            var dropDownItems_state = new Dictionary<ETA, EditorDropDownFieldViewModel.DropDownItem<DropDownFieldData_State>[]>();
-            var dropDownLookup_state = new Dictionary<ETA, Dictionary<int, int>>();
-
-            yield return new EditorDropDownFieldViewModel(
-                header: "Type",
-                info: null,
-                getValueAction: () => dropDownLookup_type[getObjData().Type],
-                setValueAction: x => getObjData().Type = dropDownItems_type[x].Data,
-                getItemsAction: () => dropDownItems_type);
-            
-            yield return new EditorDropDownFieldViewModel(
-                header: "DES",
-                info: "The group of sprites and animations to use.",
-                getValueAction: () => dropDownLookup_des[getObjData().Sprites],
-                setValueAction: x =>
-                {
-                    getObjData().Sprites = dropDownItems_des[x].Data.SpritesData;
-                    getObjData().Animations = dropDownItems_des[x].Data.AnimationsData;
-                    getObjData().ImageBuffer = dropDownItems_des[x].Data.ImageBuffer;
-                },
-                getItemsAction: () => dropDownItems_des);
-
-            yield return new EditorDropDownFieldViewModel(
-                header: "ETA",
-                info: "The group of states to use. This determines from which group the state indices are for.",
-                getValueAction: () => dropDownLookup_eta[getObjData().ETA],
-                setValueAction: x => getObjData().ETA = dropDownItems_eta[x].Data,
-                getItemsAction: () => dropDownItems_eta);
-
-            yield return new EditorDropDownFieldViewModel(
-                header: "State",
-                info: "The object state (ETA), grouped by the primary state (etat) and sub-state (sub-etat). The state primarily determines which animation to play, but also other factors such as how the object should behave (based on the type).",
-                getValueAction: () => dropDownLookup_state[getObjData().ETA][DropDownFieldData_State.GetID(getObjData().Etat, getObjData().SubEtat)],
-                setValueAction: x =>
-                {
-                    getObjData().Etat = dropDownItems_state[getObjData().ETA][x].Data.Etat;
-                    getObjData().SubEtat = dropDownItems_state[getObjData().ETA][x].Data.SubEtat;
-                },
-                getItemsAction: () =>
-                {
-                    var eta = getObjData().ETA;
-
-                    if (!dropDownItems_state.ContainsKey(eta))
-                    {
-                        dropDownItems_state[eta] = eta.States.Select((etat, etatIndex) => etat.Select((subEtat, subEtatIndex) =>
-                            new EditorDropDownFieldViewModel.DropDownItem<DropDownFieldData_State>($"State {etatIndex}-{subEtatIndex} (Animation {subEtat.AnimationIndex})", new DropDownFieldData_State((byte)etatIndex, (byte)subEtatIndex)))).SelectMany(x => x).ToArray();
-                        dropDownLookup_state[eta] = dropDownItems_state[eta].Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data.ID, x => x.i);
-                    }
-
-                    return dropDownItems_state[eta];
-                });
-
-            yield return new EditorPointFieldViewModel(
-                header: "Pivot",
-                info: "The object pivot (BX and BY).",
-                getValueAction: () => getSelectedObj().Pivot,
-                setValueAction: x =>
-                {
-                    getObjData().OffsetBX = (byte)x.X;
-                    getObjData().OffsetBY = (byte)x.Y;
-                },
-                max: Byte.MaxValue);
-
-            yield return new EditorIntFieldViewModel(
-                header: "Offset HY",
-                info: "This offset is relative to the follow sprite position and is usually used for certain platform collision.",
-                getValueAction: () => getObjData().OffsetHY,
-                setValueAction: x => getObjData().OffsetHY = (byte)x,
-                max: Byte.MaxValue);
-
-            yield return new EditorBoolFieldViewModel(
-                header: "Follow",
-                info: "This indicates if the object has platform collision, such as that used on clouds and plums.",
-                getValueAction: () => getObjData().GetFollowEnabled(settings),
-                setValueAction: x => getObjData().SetFollowEnabled(settings, x));
-
-            yield return new EditorIntFieldViewModel(
-                header: "Follow-Sprite",
-                info: "The index of the sprite which has platform collision, if follow is enabled.",
-                getValueAction: () => getObjData().FollowSprite,
-                setValueAction: x => getObjData().FollowSprite = (byte)x,
-                max: Byte.MaxValue);
-
-            yield return new EditorIntFieldViewModel(
-                header: "Hit-Points",
-                info: "This value usually determines how many hits it takes to defeat the enemy. For non-enemy objects this can have other usages, such as determining the color or changing other specific attributes.",
-                getValueAction: () => getObjData().ActualHitPoints,
-                setValueAction: x => getObjData().ActualHitPoints = (uint)x,
-                max: settings.EngineVersion is Ray1EngineVersion.PC_Edu or Ray1EngineVersion.PS1_Edu or Ray1EngineVersion.PC_Kit or Ray1EngineVersion.PC_Fan ? Int32.MaxValue : Byte.MaxValue);
-
-            yield return new EditorIntFieldViewModel(
-                header: "Hit-Sprite",
-                info: "If under 253 this is the index of the sprite which has collision, if above 253 the sprite uses type collision instead.",
-                getValueAction: () => getObjData().HitSprite,
-                setValueAction: x => getObjData().HitSprite = (byte)x,
-                max: Byte.MaxValue);
         }
 
         #endregion
@@ -423,6 +302,12 @@ namespace RayCarrot.Ray1Editor
         {
             var map = lev.MapData;
 
+            var tileSet = LoadTileSet(data, lev, textureManager);
+            LoadMap(data, textureManager, tileSet, map.Tiles, map.Width, map.Height, map.Offset);
+        }
+
+        public TileSet LoadTileSet(R1_PC_GameData data, PC_LevFile lev, TextureManager textureManager)
+        {
             var tileSize = new Point(Ray1Settings.CellSize, Ray1Settings.CellSize);
 
             var tileSheet = new PalettedTextureSheet(textureManager, Enumerable.Repeat((Point?)tileSize, lev.TileTextureData.TexturesOffsetTable.Length).ToArray());
@@ -438,20 +323,7 @@ namespace RayCarrot.Ray1Editor
                 tileSheet.InitEntry(i, data.PC_Palettes[0], tex.ImgData.Select(x => (byte)(255 - x)).ToArray());
             }
 
-            var mapLayer = new R1_TileMapLayer(map.Tiles, Point.Zero, new Point(map.Width, map.Height), tileSet)
-            {
-                Pointer = map.Offset
-            };
-            var colLayer = new R1_CollisionMapLayer(map.Tiles, Point.Zero, new Point(map.Width, map.Height), textureManager)
-            {
-                Pointer = map.Offset
-            };
-
-            mapLayer.LinkedLayers.Add(colLayer);
-            mapLayer.Select();
-
-            data.Layers.Add(mapLayer);
-            data.Layers.Add(colLayer);
+            return tileSet;
         }
 
         public virtual void LoadFond(R1_PC_GameData data, PC_WorldFile wld, PC_LevFile lev, TextureManager textureManager)
@@ -584,20 +456,6 @@ namespace RayCarrot.Ray1Editor
             }
 
             return linkTable;
-        }
-
-        #endregion
-
-        #region Field Records
-
-        protected record DropDownFieldData_State(byte Etat, byte SubEtat)
-        {
-            /// <summary>
-            /// A unique ID for the state, used for comparisons
-            /// </summary>
-            public int ID => GetID(Etat, SubEtat);
-
-            public static int GetID(byte etat, byte subEtat) => etat * 256 + subEtat;
         }
 
         #endregion

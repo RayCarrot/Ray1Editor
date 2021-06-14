@@ -56,6 +56,12 @@ namespace RayCarrot.Ray1Editor
 
         public void UpdateMapSize(GameData data)
         {
+            if (!data.Layers.Any())
+            {
+                MapSize = Point.Zero;
+                return;
+            }
+
             MapSize = new Point(data.Layers.Max(x => x.Rectangle.Right), data.Layers.Max(x => x.Rectangle.Bottom));
         }
 

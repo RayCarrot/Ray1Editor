@@ -141,8 +141,6 @@
     <Content Remove="Assets\Rayman1\Events\Events.csv" />
     <Content Remove="Assets\Rayman1\Events\r1_pc_des.json" />
     <Content Remove="Assets\Rayman1\Events\r1_pc_eta.json" />
-    <Content Remove="Assets\Rayman1\Events\r1_ps1_des.json" />
-    <Content Remove="Assets\Rayman1\Events\r1_ps1_eta.json" />
     <Content Remove="Assets\Object\object.png" />
     <Content Remove="Assets\Object\trigger.png" />
     <Content Remove="Assets\Object\waypoint.png" />
@@ -154,8 +152,8 @@
     <EmbeddedResource Include="Assets\Rayman1\Events\Events.csv" />
     <EmbeddedResource Include="Assets\Rayman1\Events\r1_pc_des.json" />
     <EmbeddedResource Include="Assets\Rayman1\Events\r1_pc_eta.json" />
-    <EmbeddedResource Include="Assets\Rayman1\Events\r1_ps1_des.json" />
-    <EmbeddedResource Include="Assets\Rayman1\Events\r1_ps1_eta.json" />
+    <EmbeddedResource Include="Assets\Rayman1\Events\r1_ps1_us_des.json" />
+    <EmbeddedResource Include="Assets\Rayman1\Events\r1_ps1_us_eta.json" />
     <EmbeddedResource Include="Assets\Object\object.png" />
     <EmbeddedResource Include="Assets\Object\trigger.png" />
     <EmbeddedResource Include="Assets\Object\waypoint.png" />

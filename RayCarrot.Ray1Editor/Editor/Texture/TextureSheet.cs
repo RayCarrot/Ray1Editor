@@ -65,6 +65,14 @@ namespace RayCarrot.Ray1Editor
             Entries = textures.Select(x => new Entry(x)).ToArray();
         }
 
+        public TextureSheet(TextureManager manager, Texture2D texture, IEnumerable<Rectangle> textures)
+        {
+            manager.AddTextureSheet(this);
+
+            Sheet = texture;
+            Entries = textures.Select(x => new Entry(x)).ToArray();
+        }
+
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public Texture2D Sheet { get; }

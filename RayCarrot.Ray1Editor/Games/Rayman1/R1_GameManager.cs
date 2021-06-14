@@ -1,10 +1,10 @@
-﻿using BinarySerializer.Ray1;
+﻿using BinarySerializer;
+using BinarySerializer.Ray1;
 using Microsoft.Xna.Framework;
 using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BinarySerializer;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -31,6 +31,301 @@ namespace RayCarrot.Ray1Editor
 
         protected abstract int MaxObjType { get; }
         protected virtual bool UsesLocalCommands => false;
+
+        #endregion
+
+        #region Manager
+
+        public override IEnumerable<EditorFieldViewModel> GetEditorObjFields(GameData gameData, Func<GameObject> getSelectedObj)
+        {
+            // Helper methods
+            R1_GameObject getObj() => (R1_GameObject)getSelectedObj();
+            ObjData getObjData() => getObj().ObjData;
+
+            var data = (R1_GameData)gameData;
+            var settings = data.Context.GetSettings<Ray1Settings>();
+
+            var dropDownItems_type = Enum.GetValues(typeof(ObjType)).
+                Cast<ObjType>().
+                Where(x => (int)x <= MaxObjType && x != ObjType.ObjType_255).
+                Select(x => new EditorDropDownFieldViewModel.DropDownItem<ObjType>(x.ToString(), x)).
+                ToArray();
+            var dropDownLookup_type = dropDownItems_type.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data, x => x.i);
+
+            var dropDownItems_des = data.DES.Select((x, i) => new EditorDropDownFieldViewModel.DropDownItem<R1_GameData.DESData>($"DES {i + 1}{(x.Name != null ? $" ({x.Name})" : "")}", x)).ToArray();
+            var dropDownLookup_des = dropDownItems_des.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data.SpritesData, x => x.i);
+
+            var dropDownItems_eta = data.ETA.Select((x, i) => new EditorDropDownFieldViewModel.DropDownItem<ETA>($"ETA {i}{(x.Name != null ? $" ({x.Name})" : "")}", x.ETA)).ToArray();
+            var dropDownLookup_eta = dropDownItems_eta.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data, x => x.i);
+
+            var dropDownItems_state = new Dictionary<ETA, EditorDropDownFieldViewModel.DropDownItem<DropDownFieldData_State>[]>();
+            var dropDownLookup_state = new Dictionary<ETA, Dictionary<int, int>>();
+
+            yield return new EditorDropDownFieldViewModel(
+                header: "Type",
+                info: null,
+                getValueAction: () => dropDownLookup_type[getObjData().Type],
+                setValueAction: x => getObjData().Type = dropDownItems_type[x].Data,
+                getItemsAction: () => dropDownItems_type);
+
+            yield return new EditorDropDownFieldViewModel(
+                header: "DES",
+                info: "The group of sprites and animations to use.",
+                getValueAction: () => dropDownLookup_des[getObjData().Sprites],
+                setValueAction: x =>
+                {
+                    getObjData().Sprites = dropDownItems_des[x].Data.SpritesData;
+                    getObjData().Animations = dropDownItems_des[x].Data.AnimationsData;
+                    getObjData().ImageBuffer = dropDownItems_des[x].Data.ImageBuffer;
+                },
+                getItemsAction: () => dropDownItems_des);
+
+            yield return new EditorDropDownFieldViewModel(
+                header: "ETA",
+                info: "The group of states to use. This determines from which group the state indices are for.",
+                getValueAction: () => dropDownLookup_eta[getObjData().ETA],
+                setValueAction: x => getObjData().ETA = dropDownItems_eta[x].Data,
+                getItemsAction: () => dropDownItems_eta);
+
+            yield return new EditorDropDownFieldViewModel(
+                header: "State",
+                info: "The object state (ETA), grouped by the primary state (etat) and sub-state (sub-etat). The state primarily determines which animation to play, but also other factors such as how the object should behave (based on the type).",
+                getValueAction: () => dropDownLookup_state[getObjData().ETA][DropDownFieldData_State.GetID(getObjData().Etat, getObjData().SubEtat)],
+                setValueAction: x =>
+                {
+                    getObjData().Etat = dropDownItems_state[getObjData().ETA][x].Data.Etat;
+                    getObjData().SubEtat = dropDownItems_state[getObjData().ETA][x].Data.SubEtat;
+                },
+                getItemsAction: () =>
+                {
+                    var eta = getObjData().ETA;
+
+                    if (!dropDownItems_state.ContainsKey(eta))
+                    {
+                        dropDownItems_state[eta] = eta.States.Select((etat, etatIndex) => etat.Select((subEtat, subEtatIndex) =>
+                            new EditorDropDownFieldViewModel.DropDownItem<DropDownFieldData_State>($"State {etatIndex}-{subEtatIndex} (Animation {subEtat.AnimationIndex})", new DropDownFieldData_State((byte)etatIndex, (byte)subEtatIndex)))).SelectMany(x => x).ToArray();
+                        dropDownLookup_state[eta] = dropDownItems_state[eta].Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data.ID, x => x.i);
+                    }
+
+                    return dropDownItems_state[eta];
+                });
+
+            yield return new EditorPointFieldViewModel(
+                header: "Pivot",
+                info: "The object pivot (BX and BY).",
+                getValueAction: () => getSelectedObj().Pivot,
+                setValueAction: x =>
+                {
+                    getObjData().OffsetBX = (byte)x.X;
+                    getObjData().OffsetBY = (byte)x.Y;
+                },
+                max: Byte.MaxValue);
+
+            yield return new EditorIntFieldViewModel(
+                header: "Offset HY",
+                info: "This offset is relative to the follow sprite position and is usually used for certain platform collision.",
+                getValueAction: () => getObjData().OffsetHY,
+                setValueAction: x => getObjData().OffsetHY = (byte)x,
+                max: Byte.MaxValue);
+
+            yield return new EditorBoolFieldViewModel(
+                header: "Follow",
+                info: "This indicates if the object has platform collision, such as that used on clouds and plums.",
+                getValueAction: () => getObjData().GetFollowEnabled(settings),
+                setValueAction: x => getObjData().SetFollowEnabled(settings, x));
+
+            yield return new EditorIntFieldViewModel(
+                header: "Follow-Sprite",
+                info: "The index of the sprite which has platform collision, if follow is enabled.",
+                getValueAction: () => getObjData().FollowSprite,
+                setValueAction: x => getObjData().FollowSprite = (byte)x,
+                max: Byte.MaxValue);
+
+            yield return new EditorIntFieldViewModel(
+                header: "Hit-Points",
+                info: "This value usually determines how many hits it takes to defeat the enemy. For non-enemy objects this can have other usages, such as determining the color or changing other specific attributes.",
+                getValueAction: () => getObjData().ActualHitPoints,
+                setValueAction: x => getObjData().ActualHitPoints = (uint)x,
+                max: settings.EngineVersion is Ray1EngineVersion.PC_Edu or Ray1EngineVersion.PS1_Edu or Ray1EngineVersion.PC_Kit or Ray1EngineVersion.PC_Fan ? Int32.MaxValue : Byte.MaxValue);
+
+            yield return new EditorIntFieldViewModel(
+                header: "Hit-Sprite",
+                info: "If under 253 this is the index of the sprite which has collision, if above 253 the sprite uses type collision instead.",
+                getValueAction: () => getObjData().HitSprite,
+                setValueAction: x => getObjData().HitSprite = (byte)x,
+                max: Byte.MaxValue);
+        }
+
+        public override void PostLoad(GameData gameData)
+        {
+            var data = (R1_GameData)gameData;
+
+            // Hard-code event animations for the different Rayman types
+            Animation[] rayAnim = null;
+
+            var ray = data.Rayman ?? data.Objects.OfType<R1_GameObject>().FirstOrDefault(x => x.ObjData.Type == ObjType.TYPE_RAY_POS)?.ObjData;
+
+            if (ray != null)
+                rayAnim = ray.Animations;
+
+            if (rayAnim != null)
+            {
+                var miniRay = data.Objects.OfType<R1_GameObject>().FirstOrDefault(x => x.ObjData.Type == ObjType.TYPE_DEMI_RAYMAN);
+
+                // TODO: If not found in map use template
+                if (miniRay != null)
+                {
+                    data.Animations.Remove(miniRay.ObjData.Animations);
+                    miniRay.ObjData.Animations = rayAnim.Select(x => new Animation
+                    {
+                        LayersPerFrameSerialized = x.LayersPerFrameSerialized,
+                        FrameCountSerialized = x.FrameCountSerialized,
+                        Layers = x.Layers.Select(l => new AnimationLayer
+                        {
+                            IsFlippedHorizontally = l.IsFlippedHorizontally,
+                            IsFlippedVertically = l.IsFlippedVertically,
+                            XPosition = (byte)(l.XPosition / 2),
+                            YPosition = (byte)(l.YPosition / 2),
+                            SpriteIndex = l.SpriteIndex
+                        }).ToArray(),
+                    }).ToArray();
+                    data.Animations[miniRay.ObjData.Animations] = miniRay.ObjData.Animations.Select(x => ToCommonAnimation(x)).ToArray();
+                }
+
+                var badRay = data.Objects.OfType<R1_GameObject>().FirstOrDefault(x => x.ObjData.Type == ObjType.TYPE_BLACK_RAY);
+
+                // TODO: If not found in map use template
+                if (badRay != null)
+                {
+                    data.Animations.Remove(badRay.ObjData.Animations);
+                    badRay.ObjData.Animations = rayAnim;
+                }
+            }
+
+            // Set frames for linked events
+            for (int i = 0; i < data.Objects.Count; i++)
+            {
+                // Recreated from allocateOtherPosts
+                var baseEvent = (R1_GameObject)data.Objects[i];
+                var linkedIndex = data.LinkTable[i];
+
+                if (!baseEvent.ObjData.Type.UsesRandomFrameLinks() || i == linkedIndex)
+                    continue;
+
+                var index = 0;
+
+                do
+                {
+                    index++;
+
+                    var e = (R1_GameObject)data.Objects[linkedIndex];
+                    e.ForceFrame = (byte)((baseEvent.ForceFrame + index) % (e.CurrentAnimation?.Frames.Length ?? 1));
+
+                    // TODO: Uncomment? Game does this on load.
+                    //e.ObjData.XPosition = (short)(baseEvent.ObjData.XPosition + 32 * index * (baseEvent.ObjData.HitPoints - 2));
+                    //e.ObjData.YPosition = baseEvent.ObjData.YPosition;
+
+                    linkedIndex = data.LinkTable[linkedIndex];
+                } while (i != linkedIndex);
+            }
+        }
+
+        public override IEnumerable<string> GetAvailableObjects(GameData gameData)
+        {
+            return ((R1_GameData)gameData).EventDefinitions?.Select(x => x.Name) ?? new string[0];
+        }
+
+        public override GameObject CreateGameObject(GameData gameData, int index)
+        {
+            var data = (R1_GameData)gameData;
+            var settings = data.Context.GetSettings<Ray1Settings>();
+            var def = data.EventDefinitions[index];
+
+            // Get the commands and label offsets
+            CommandCollection cmds = null;
+            ushort[] labelOffsets = null;
+
+            // If local (non-compiled) commands are used, attempt to get them from the event info or decompile the compiled ones
+            if (UsesLocalCommands)
+            {
+                cmds = ObjCommandCompiler.Decompile(new ObjCommandCompiler.CompiledObjCommandData(CommandCollection.FromBytes(def.Commands, () =>
+                {
+                    var c = new EditorContext(data.Context.BasePath, noLog: true);
+                    c.AddSettings(settings);
+                    return c;
+                }), def.LabelOffsets), def.Commands);
+            }
+            else if (def.Commands.Any())
+            {
+                cmds = CommandCollection.FromBytes(def.Commands, () =>
+                {
+                    var c = new EditorContext(data.Context.BasePath, noLog: true);
+                    c.AddSettings(settings);
+                    return c;
+                });
+                labelOffsets = def.LabelOffsets.Any() ? def.LabelOffsets : null;
+            }
+
+            var des = data.DES.First(x => x.Name == def.DES);
+            var eta = data.ETA.First(x => x.Name == def.ETA);
+
+            var obj = new R1_GameObject(ObjData.CreateObj(settings), def);
+
+            obj.ObjData.Type = (ObjType)def.Type;
+            obj.ObjData.Etat = def.Etat;
+            obj.ObjData.SubEtat = def.SubEtat;
+            obj.ObjData.OffsetBX = def.OffsetBX;
+            obj.ObjData.OffsetBY = def.OffsetBY;
+            obj.ObjData.OffsetHY = def.OffsetHY;
+            obj.ObjData.FollowSprite = def.FollowSprite;
+            obj.ObjData.HitSprite = def.HitSprite;
+            obj.ObjData.Commands = cmds;
+            obj.ObjData.LabelOffsets = labelOffsets;
+            obj.ObjData.Animations = des.AnimationsData;
+            obj.ObjData.ImageBuffer = des.ImageBuffer;
+            obj.ObjData.Sprites = des.SpritesData;
+            obj.ObjData.ETA = eta.ETA;
+            obj.ObjData.SetFollowEnabled(data.Context.GetSettings<Ray1Settings>(), def.FollowEnabled);
+            obj.ObjData.ActualHitPoints = def.HitPoints;
+
+            Logger.Log(LogLevel.Trace, "Created object {0}", obj.DisplayName);
+
+            return obj;
+        }
+
+        public override int GetMaxObjCount(GameData gameData)
+        {
+            switch (gameData.Context.GetSettings<Ray1Settings>().EngineVersion)
+            {
+                case Ray1EngineVersion.PS1_JPDemoVol3:
+                case Ray1EngineVersion.PS1_JPDemoVol6:
+                case Ray1EngineVersion.PS1:
+                case Ray1EngineVersion.PS1_EUDemo:
+                case Ray1EngineVersion.PS1_JP:
+                case Ray1EngineVersion.Saturn:
+                    return 254; // Event index is a byte, 0xFF is Rayman
+
+                case Ray1EngineVersion.R2_PS1:
+                    return 254; // Event index is a short, so might be higher
+
+                case Ray1EngineVersion.PC:
+                case Ray1EngineVersion.PocketPC:
+                case Ray1EngineVersion.GBA:
+                case Ray1EngineVersion.DSi:
+                    return 254; // Event index is a short, so might be higher
+
+                case Ray1EngineVersion.PC_Kit:
+                case Ray1EngineVersion.PC_Fan:
+                case Ray1EngineVersion.PC_Edu:
+                case Ray1EngineVersion.PS1_Edu:
+                    return 700; // This is the max in KIT/FAN - same in EDU?
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public override int MaxDisplayPrio => 7;
 
         #endregion
 
@@ -200,80 +495,6 @@ namespace RayCarrot.Ray1Editor
             data.Rayman = ObjData.GetRayman(data.Context, data.Objects.OfType<R1_GameObject>().FirstOrDefault(x => x.ObjData.Type == ObjType.TYPE_RAY_POS)?.ObjData);
         }
 
-        public override void PostLoad(GameData gameData)
-        {
-            var data = (R1_GameData)gameData;
-
-            // Hard-code event animations for the different Rayman types
-            Animation[] rayAnim = null;
-
-            var ray = data.Rayman ?? data.Objects.OfType<R1_GameObject>().FirstOrDefault(x => x.ObjData.Type == ObjType.TYPE_RAY_POS)?.ObjData;
-
-            if (ray != null)
-                rayAnim = ray.Animations;
-
-            if (rayAnim != null)
-            {
-                var miniRay = data.Objects.OfType<R1_GameObject>().FirstOrDefault(x => x.ObjData.Type == ObjType.TYPE_DEMI_RAYMAN);
-
-                // TODO: If not found in map use template
-                if (miniRay != null)
-                {
-                    data.Animations.Remove(miniRay.ObjData.Animations);
-                    miniRay.ObjData.Animations = rayAnim.Select(x => new Animation
-                    {
-                        LayersPerFrameSerialized = x.LayersPerFrameSerialized,
-                        FrameCountSerialized = x.FrameCountSerialized,
-                        Layers = x.Layers.Select(l => new AnimationLayer
-                        {
-                            IsFlippedHorizontally = l.IsFlippedHorizontally,
-                            IsFlippedVertically = l.IsFlippedVertically,
-                            XPosition = (byte)(l.XPosition / 2),
-                            YPosition = (byte)(l.YPosition / 2),
-                            SpriteIndex = l.SpriteIndex
-                        }).ToArray(),
-                    }).ToArray();
-                    data.Animations[miniRay.ObjData.Animations] = miniRay.ObjData.Animations.Select(x => ToCommonAnimation(x)).ToArray();
-                }
-
-                var badRay = data.Objects.OfType<R1_GameObject>().FirstOrDefault(x => x.ObjData.Type == ObjType.TYPE_BLACK_RAY);
-
-                // TODO: If not found in map use template
-                if (badRay != null)
-                {
-                    data.Animations.Remove(badRay.ObjData.Animations);
-                    badRay.ObjData.Animations = rayAnim;
-                }
-            }
-
-            // Set frames for linked events
-            for (int i = 0; i < data.Objects.Count; i++)
-            {
-                // Recreated from allocateOtherPosts
-                var baseEvent = (R1_GameObject)data.Objects[i];
-                var linkedIndex = data.LinkTable[i];
-
-                if (!baseEvent.ObjData.Type.UsesRandomFrameLinks() || i == linkedIndex) 
-                    continue;
-
-                var index = 0;
-
-                do
-                {
-                    index++;
-
-                    var e = (R1_GameObject)data.Objects[linkedIndex];
-                    e.ForceFrame = (byte)((baseEvent.ForceFrame + index) % (e.CurrentAnimation?.Frames.Length ?? 1));
-
-                    // TODO: Uncomment? Game does this on load.
-                    //e.ObjData.XPosition = (short)(baseEvent.ObjData.XPosition + 32 * index * (baseEvent.ObjData.HitPoints - 2));
-                    //e.ObjData.YPosition = baseEvent.ObjData.YPosition;
-
-                    linkedIndex = data.LinkTable[linkedIndex];
-                } while (i != linkedIndex);
-            }
-        }
-
         public void LoadEditorEventDefinitions(R1_GameData data)
         {
             var engine = R1_EventDefinition.Engine.R1;
@@ -291,6 +512,24 @@ namespace RayCarrot.Ray1Editor
                            data.DES.Any(d => d.Name == x.DES) && 
                            data.ETA.Any(e => e.Name == x.ETA)).
                 ToArray();
+        }
+
+        public void LoadMap(R1_GameData data, TextureManager textureManager, TileSet tileSet, MapTile[] tileMap, int width, int height, Pointer mapPointer, int tileSetWidth = 1)
+        {
+            var mapLayer = new R1_TileMapLayer(tileMap, Point.Zero, new Point(width, height), tileSet, tileSetWidth)
+            {
+                Pointer = mapPointer
+            };
+            var colLayer = new R1_CollisionMapLayer(tileMap, Point.Zero, new Point(width, height), textureManager)
+            {
+                Pointer = mapPointer
+            };
+
+            mapLayer.LinkedLayers.Add(colLayer);
+            mapLayer.Select();
+
+            data.Layers.Add(mapLayer);
+            data.Layers.Add(colLayer);
         }
 
         public R1_EventDefinition FindMatchingEventDefinition(R1_GameData data, ObjData e)
@@ -353,103 +592,6 @@ namespace RayCarrot.Ray1Editor
             // Return the item
             return match;
         }
-
-        public override IEnumerable<string> GetAvailableObjects(GameData gameData)
-        {
-            return ((R1_GameData)gameData).EventDefinitions.Select(x => x.Name);
-        }
-
-        public override GameObject CreateGameObject(GameData gameData, int index)
-        {
-            var data = (R1_GameData)gameData;
-            var settings = data.Context.GetSettings<Ray1Settings>();
-            var def = data.EventDefinitions[index];
-
-            // Get the commands and label offsets
-            CommandCollection cmds = null;
-            ushort[] labelOffsets = null;
-
-            // If local (non-compiled) commands are used, attempt to get them from the event info or decompile the compiled ones
-            if (UsesLocalCommands)
-            {
-                cmds = ObjCommandCompiler.Decompile(new ObjCommandCompiler.CompiledObjCommandData(CommandCollection.FromBytes(def.Commands, () =>
-                {
-                    var c = new EditorContext(data.Context.BasePath, noLog: true);
-                    c.AddSettings(settings);
-                    return c;
-                }), def.LabelOffsets), def.Commands);
-            }
-            else if (def.Commands.Any())
-            {
-                cmds = CommandCollection.FromBytes(def.Commands, () =>
-                {
-                    var c = new EditorContext(data.Context.BasePath, noLog: true);
-                    c.AddSettings(settings);
-                    return c;
-                });
-                labelOffsets = def.LabelOffsets.Any() ? def.LabelOffsets : null;
-            }
-
-            var des = data.DES.First(x => x.Name == def.DES);
-            var eta = data.ETA.First(x => x.Name == def.ETA);
-
-            var obj = new R1_GameObject(ObjData.CreateObj(settings), def);
-
-            obj.ObjData.Type = (ObjType)def.Type;
-            obj.ObjData.Etat = def.Etat;
-            obj.ObjData.SubEtat = def.SubEtat;
-            obj.ObjData.OffsetBX = def.OffsetBX;
-            obj.ObjData.OffsetBY = def.OffsetBY;
-            obj.ObjData.OffsetHY = def.OffsetHY;
-            obj.ObjData.FollowSprite = def.FollowSprite;
-            obj.ObjData.HitSprite = def.HitSprite;
-            obj.ObjData.Commands = cmds;
-            obj.ObjData.LabelOffsets = labelOffsets;
-            obj.ObjData.Animations = des.AnimationsData;
-            obj.ObjData.ImageBuffer = des.ImageBuffer;
-            obj.ObjData.Sprites = des.SpritesData;
-            obj.ObjData.ETA = eta.ETA;
-            obj.ObjData.SetFollowEnabled(data.Context.GetSettings<Ray1Settings>(), def.FollowEnabled);
-            obj.ObjData.ActualHitPoints = def.HitPoints;
-
-            Logger.Log(LogLevel.Trace, "Created object {0}", obj.DisplayName);
-
-            return obj;
-        }
-
-        public override int GetMaxObjCount(GameData gameData)
-        {
-            switch (gameData.Context.GetSettings<Ray1Settings>().EngineVersion)
-            {
-                case Ray1EngineVersion.PS1_JPDemoVol3:
-                case Ray1EngineVersion.PS1_JPDemoVol6:
-                case Ray1EngineVersion.PS1:
-                case Ray1EngineVersion.PS1_EUDemo:
-                case Ray1EngineVersion.PS1_JP:
-                case Ray1EngineVersion.Saturn:
-                    return 254; // Event index is a byte, 0xFF is Rayman
-
-                case Ray1EngineVersion.R2_PS1:
-                    return 254; // Event index is a short, so might be higher
-
-                case Ray1EngineVersion.PC:
-                case Ray1EngineVersion.PocketPC:
-                case Ray1EngineVersion.GBA:
-                case Ray1EngineVersion.DSi:
-                    return 254; // Event index is a short, so might be higher
-
-                case Ray1EngineVersion.PC_Kit:
-                case Ray1EngineVersion.PC_Fan:
-                case Ray1EngineVersion.PC_Edu:
-                case Ray1EngineVersion.PS1_Edu:
-                    return 700; // This is the max in KIT/FAN - same in EDU?
-
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        public override int MaxDisplayPrio => 7;
 
         #endregion
 
@@ -526,6 +668,20 @@ namespace RayCarrot.Ray1Editor
             0xA9, 0x01, 0x09, 0x00, 0xDB, 0x01, 0xD2, 0x01, 0xBA, 0x00, 0x0A, 0x00,
             0x07, 0x03, 0x1B, 0x07, 0x07, 0x03, 0x1B, 0x03
         };
+
+        #endregion
+
+        #region Field Records
+
+        protected record DropDownFieldData_State(byte Etat, byte SubEtat)
+        {
+            /// <summary>
+            /// A unique ID for the state, used for comparisons
+            /// </summary>
+            public int ID => GetID(Etat, SubEtat);
+
+            public static int GetID(byte etat, byte subEtat) => etat * 256 + subEtat;
+        }
 
         #endregion
     }

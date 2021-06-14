@@ -9,7 +9,8 @@ namespace RayCarrot.Ray1Editor
         // TODO: Due to games being separated into game records and managers we could implement external loading through plugins, dynamically populating this array
         public static Game[] LoadedGames { get; } = new Game[]
         {
-            // TODO: Add PS1
+            // Rayman 1 (PS1)
+            new R1_Game("R1_PS1_US", "Rayman 1 (PS1 - US)", () => new R1_PS1_GameManager(), GameModePathType.Directory, Ray1EngineVersion.PS1, "r1_ps1_us"),
 
             // Rayman 1 (PC)
             new R1_Game("R1_PC_1_00", "Rayman 1 (PC - 1.00)", () => new R1_PC_GameManager(), GameModePathType.Directory, Ray1EngineVersion.PC, "r1_pc", Ray1PCVersion.PC_1_00),
