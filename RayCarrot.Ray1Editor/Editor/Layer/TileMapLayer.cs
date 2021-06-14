@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using NLog;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -41,6 +42,12 @@ namespace RayCarrot.Ray1Editor
                 {
                     var map = GetTileSetMap();
                     var width = GetTileSetMapWidth();
+
+                    // If the set isn't totally filled to the width*height we need to add some empty tiles as padding
+                    var missingTilesCount = width - (map.Length % width);
+
+                    if (missingTilesCount != 0)
+                        map = map.Concat(Enumerable.Range(0, missingTilesCount).Select(x => CreateNewTile())).ToArray();
 
                     _tileSetLayer = new TileSetLayer<T>(map, Position, new Point(width, map.Length / width), TileSet,
                         GetTileSetIndex, CloneTile)
