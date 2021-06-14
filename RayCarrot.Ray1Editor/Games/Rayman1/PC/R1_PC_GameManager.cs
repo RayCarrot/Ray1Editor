@@ -149,8 +149,7 @@ namespace RayCarrot.Ray1Editor
             mapData.Tiles = mapLayer.TileMap;
 
             // Save the background
-            lvlData.FNDIndex = (byte)data.Layers.OfType<BackgroundLayer>().ElementAt(0).SelectedBackgroundIndex;
-            lvlData.ScrollDiffFNDIndex = (byte)data.Layers.OfType<BackgroundLayer>().ElementAt(1).SelectedBackgroundIndex;
+            SaveFond(data, lvlData);
 
             // Save the file
             FileFactory.Write<SerializableEditorFile<PC_LevFile>>(Path_LevelFile(ray1Settings), context);
@@ -478,6 +477,12 @@ namespace RayCarrot.Ray1Editor
             textureManager.AddPalettedTexture(tex);
 
             return new R1_PC_BackgroundLayer.BackgroundEntry_R1_PC(tex.Texture, pcx.Offset, $"{index}.pcx", pcx);
+        }
+
+        public virtual void SaveFond(R1_PC_GameData data, PC_LevFile lev)
+        {
+            lev.FNDIndex = (byte)data.Layers.OfType<BackgroundLayer>().ElementAt(0).SelectedBackgroundIndex;
+            lev.ScrollDiffFNDIndex = (byte)data.Layers.OfType<BackgroundLayer>().ElementAt(1).SelectedBackgroundIndex;
         }
 
         public string[][] LoadEditorNameTable(string fileName)

@@ -57,8 +57,8 @@ namespace RayCarrot.Ray1Editor
             // Load every available background
             var fondOptions = wld.Plan0NumPcxFiles.Select(x => LoadFond(data, textureManager, x)).ToArray();
 
-            // Create a layer for the normal and parallax backgrounds
-            data.Layers.Add(new R1_PC_BackgroundLayer(fondOptions, Point.Zero, lev.LevelDefines.BG_0, name: "Background"));
+            // Create a layer for the normal background
+            data.Layers.Add(new R1_PC_BackgroundLayer(fondOptions, Point.Zero, lev.LevelDefines.FNDIndex, name: "Background"));
         }
 
         public R1_PC_BackgroundLayer.BackgroundEntry_R1_PC LoadFond(R1_PC_GameData data, TextureManager textureManager, string fileName)
@@ -74,6 +74,11 @@ namespace RayCarrot.Ray1Editor
             textureManager.AddPalettedTexture(tex);
 
             return new R1_PC_BackgroundLayer.BackgroundEntry_R1_PC(tex.Texture, pcx.Offset, $"{fileName}.pcx", pcx);
+        }
+
+        public override void SaveFond(R1_PC_GameData data, PC_LevFile lev)
+        {
+            lev.LevelDefines.FNDIndex = lev.LevelDefines.ScrollDiffFNDIndex = (byte)data.Layers.OfType<BackgroundLayer>().ElementAt(0).SelectedBackgroundIndex;
         }
 
         public T LoadArchiveFile<T>(Context context, string archivePath, string fileName)
