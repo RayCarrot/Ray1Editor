@@ -102,6 +102,9 @@ namespace RayCarrot.Ray1Editor
         public void LoadPalettes(R1_PS1_GameData data, PS1_WorldFile wld)
         {
             data.PS1_TilePalettes = wld.TilePalettes.Select((x, i) => new Palette(x, $"Tile Palette {i}")).ToArray();
+
+            foreach (var pal in data.PS1_TilePalettes)
+                data.TextureManager.AddPalette(pal);
         }
 
         public void LoadMap(R1_PS1_GameData data, PS1_WorldFile wld, MapData map, TextureManager textureManager)
