@@ -249,10 +249,18 @@ namespace RayCarrot.Ray1Editor
             else if (State == TileEditorState.Tiling)
                 previewBox = GetMapSelection();
 
+            // Only draw tiles which are visible. We could have the renderer check each tile if it's in view during the drawing, but that
+            // will impact performance for larger levels with multiple tile layers due to it having to loop through every tile each frame
+            var visibleArea = Camera.VisibleArea;
+            var xStart = (Math.Max(visibleArea.Left, Rectangle.Left) - Rectangle.X) / TileSet.TileSize.X;
+            var yStart = (Math.Max(visibleArea.Top, Rectangle.Top) - Rectangle.Y) / TileSet.TileSize.Y;
+            var xEnd = Math.Ceiling((Math.Min(visibleArea.Right, Rectangle.Right) - Rectangle.X) / (float)TileSet.TileSize.X);
+            var yEnd = Math.Ceiling((Math.Min(visibleArea.Bottom, Rectangle.Bottom) - Rectangle.Y) / (float)TileSet.TileSize.Y);
+
             // Draw map
-            for (int y = 0; y < MapSize.Y; y++)
+            for (int y = yStart; y < yEnd; y++)
             {
-                for (int x = 0; x < MapSize.X; x++)
+                for (int x = xStart; x < xEnd; x++)
                 {
                     T tile;
 
@@ -262,16 +270,16 @@ namespace RayCarrot.Ray1Editor
                     else
                         tile = GetTileAt(x, y);
 
-                    var dest = GetTileRect(x, y);
                     var tileIndex = GetTileSetIndex(tile);
 
                     // Skip fully transparent tiles to improve performance
                     if (TileSet.IsFullyTransparent(tileIndex))
                         continue;
 
+                    var dest = GetTileRect(x, y);
                     var src = TileSet.TileSheet.Entries[tileIndex].Source;
 
-                    r.Draw(TileSet.TileSheet.Sheet, dest, src);
+                    r.SpriteBatch.Draw(TileSet.TileSheet.Sheet, dest, src, Color.White);
                 }
             }
 
