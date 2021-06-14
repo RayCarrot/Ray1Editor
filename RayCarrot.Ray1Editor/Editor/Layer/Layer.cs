@@ -47,7 +47,7 @@ namespace RayCarrot.Ray1Editor
         /// <summary>
         /// Indicates if the layer is currently visible
         /// </summary>
-        public bool IsVisible { get; set; }
+        public bool IsVisible { get; protected set; }
 
         public abstract IEnumerable<EditorFieldViewModel> GetFields();
 
@@ -94,6 +94,11 @@ namespace RayCarrot.Ray1Editor
 
             foreach (var l in Data.Layers.Where(x => x != this))
                 l.IsSelected = false;
+        }
+        public virtual void UpdateVisibility(bool isVisible)
+        {
+            IsVisible = isVisible;
+            ToggleField_Show.Refresh();
         }
         public virtual void OnModeChanged(EditorMode oldMode, EditorMode newMode)
         {

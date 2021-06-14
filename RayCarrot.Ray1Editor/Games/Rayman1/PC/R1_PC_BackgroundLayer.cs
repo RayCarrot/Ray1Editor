@@ -14,10 +14,11 @@ namespace RayCarrot.Ray1Editor
     public class R1_PC_BackgroundLayer : BackgroundLayer
     {
         // ReSharper disable once CoVariantArrayConversion
-        public R1_PC_BackgroundLayer(BackgroundEntry_R1_PC[] backgroundEntries, Point position, int defaultIndex, string name = "Background") : base(backgroundEntries, position, defaultIndex, name)
+        public R1_PC_BackgroundLayer(BackgroundEntry_R1_PC[] backgroundEntries, Point position, int defaultIndex, string name = "Background", bool isVisible = true) : base(backgroundEntries, position, defaultIndex, name)
         {
             ExcludeTileColors = true;
             AutoUpdatePalette = true;
+            IsVisible = isVisible;
         }
 
         public bool ExcludeTileColors { get; set; }

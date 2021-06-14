@@ -462,10 +462,7 @@ namespace RayCarrot.Ray1Editor
 
             // Create a layer for the normal and parallax backgrounds
             data.Layers.Add(new R1_PC_BackgroundLayer(fondOptions, Point.Zero, lev.FNDIndex, name: "Background"));
-            data.Layers.Add(new R1_PC_BackgroundLayer(fondOptions, Point.Zero, lev.ScrollDiffFNDIndex, name: "Parallax Background")
-            {
-                IsVisible = false
-            });
+            data.Layers.Add(new R1_PC_BackgroundLayer(fondOptions, Point.Zero, lev.ScrollDiffFNDIndex, name: "Parallax Background", isVisible: false));
         }
 
         public R1_PC_BackgroundLayer.BackgroundEntry_R1_PC LoadFond(R1_PC_GameData data, TextureManager textureManager, int index)

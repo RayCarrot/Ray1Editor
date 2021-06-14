@@ -311,7 +311,7 @@ namespace RayCarrot.Ray1Editor
                 return;
 
             foreach (var l in Layers.Select(x => x.Layer).Where(x => x.Type == type))
-                l.IsVisible = !isVisible.Value;
+                l.UpdateVisibility(!isVisible.Value);
         }
 
         public void ResetPosition()
