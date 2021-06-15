@@ -8,7 +8,7 @@ namespace RayCarrot.Ray1Editor
     /// A tile set layer to be used with a <see cref="TileMapLayer{T}"/>
     /// </summary>
     /// <typeparam name="T">The tile type</typeparam>
-    public class TileSetLayer<T> : TileMapBaseLayer<T>
+    public sealed class TileSetLayer<T> : TileMapBaseLayer<T>
     {
         #region Constructor
 
@@ -16,6 +16,7 @@ namespace RayCarrot.Ray1Editor
         {
             GetTileSetIndexFunc = getTileSetIndexFunc;
             CloneTileFunc = cloneTileFunc;
+            IsSelected = true;
         }
 
         #endregion
