@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using BinarySerializer;
 using BinarySerializer.Image;
@@ -84,6 +85,6 @@ namespace RayCarrot.Ray1Editor
             }
         }
 
-        public record BackgroundEntry_R1_PC(Texture2D Tex, Pointer Offset, string Name, PCX PCX) : BackgroundEntry(Tex, Offset, Name);
+        public record BackgroundEntry_R1_PC(Func<Texture2D> GetTex, Pointer Offset, string Name, PCX PCX) : BackgroundEntry(GetTex, Offset, Name);
     }
 }

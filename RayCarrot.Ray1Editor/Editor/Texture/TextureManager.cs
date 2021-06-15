@@ -39,6 +39,13 @@ namespace RayCarrot.Ray1Editor
                 yield return tex;
         }
 
+        public Texture2D CreateTexture(int width, int height)
+        {
+            var tex = new Texture2D(GraphicsDevice, width, height);
+            AddTexture(tex);
+            return tex;
+        }
+
         public void AddTexture(Texture2D tex) => Textures.Add(tex);
         public void AddPalettedTexture(PalettedTextureData palData)
         {

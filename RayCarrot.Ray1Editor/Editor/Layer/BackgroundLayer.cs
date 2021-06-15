@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using BinarySerializer;
+﻿using BinarySerializer;
 using MahApps.Metro.IconPacks;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -104,6 +104,10 @@ namespace RayCarrot.Ray1Editor
         }
 
 
-        public record BackgroundEntry(Texture2D Tex, Pointer Offset, string Name);
+        public record BackgroundEntry(Func<Texture2D> GetTex, Pointer Offset, string Name)
+        {
+            private Texture2D _tex;
+            public Texture2D Tex => _tex ??= GetTex();
+        }
     }
 }

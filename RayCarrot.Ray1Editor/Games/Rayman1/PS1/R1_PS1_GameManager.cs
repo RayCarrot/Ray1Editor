@@ -38,6 +38,8 @@ namespace RayCarrot.Ray1Editor
                 RecreateOnWrite = false
             });
 
+            context.AddPreDefinedPointers(PS1_DefinedPointers.PS1_US); // TODO: Different for each release!
+
             // Create the data
             var data = new R1_PS1_GameData(context, textureManager);
 
@@ -73,6 +75,9 @@ namespace RayCarrot.Ray1Editor
 
             // Load palettes
             LoadPalettes(data, wld);
+
+            // Load fond (background)
+            LoadFond(data, exe, textureManager);
 
             // Load map
             LoadMap(data, wld, lev.MapData, textureManager);
@@ -148,6 +153,92 @@ namespace RayCarrot.Ray1Editor
             }
 
             return tileSet;
+        }
+
+        public void LoadFond(R1_PS1_GameData data, PS1_Executable exe, TextureManager textureManager)
+        {
+            var context = data.Context;
+            var settings = context.GetSettings<Ray1Settings>();
+
+            // Get the current fond
+            var fndIndex = exe.PS1_LevelBackgroundIndexTable[(int)settings.World - 1][settings.Level - 1];
+
+            var fndCount = (int)exe.Pre_PS1_Config.FileTableInfos.First(x => x.FileType == PS1_FileType.fnd_file).Count;
+
+            var backgrounds = Enumerable.Range(0, fndCount).Select(x =>
+            {
+                // Get the file entry
+                var fndFileEntry = exe.PS1_FileTable[exe.GetFileTypeIndex(exe.Pre_PS1_Config, PS1_FileType.fnd_file) + x];
+                
+                // Have the background loading be in a func so it only loads when the background gets requested. Otherwise the 
+                // initial load will be too slow since the PS1 version has a lot of backgrounds, and unlike the PC version
+                // they're not split up into worlds.
+                Texture2D getTex()
+                {
+                    using (context)
+                    {
+                        // Add the file to the context
+                        LoadFile(context, fndFileEntry);
+
+                        // Read the file
+                        var fnd = FileFactory.Read<PS1_BackgroundVignetteFile>(fndFileEntry.ProcessedFilePath, context);
+                        var img = fnd.ImageBlock;
+
+                        var texture = LoadFond(img, settings, textureManager);
+
+                        // Remove the file from the context
+                        context.RemoveFile(fndFileEntry.ProcessedFilePath);
+
+                        return texture;
+                    }
+                }
+
+                return new BackgroundLayer.BackgroundEntry(getTex, null, fndFileEntry.ProcessedFilePath);
+            }).ToArray();
+
+            // Add the layer
+            data.Layers.Add(new BackgroundLayer(backgrounds, Point.Zero, fndIndex, name: "Background"));
+        }
+
+        public Texture2D LoadFond(PS1_VignetteBlockGroup img, Ray1Settings settings, TextureManager textureManager)
+        {
+            // Get the block width
+            var blockWidth = img.GetBlockWidth(settings.EngineVersion);
+
+            // Create the texture
+            var texture = textureManager.CreateTexture(img.Width, img.Height);
+
+            var pixels = new Color[img.Width * img.Height];
+
+            // Handle each block
+            for (int blockIndex = 0; blockIndex < img.ImageBlocks.Length; blockIndex++)
+            {
+                // Get the block data
+                var blockData = img.ImageBlocks[blockIndex];
+
+                // Handle the block
+                for (int y = 0; y < img.Height; y++)
+                {
+                    for (int x = 0; x < blockWidth; x++)
+                    {
+                        // Get the color
+                        var c = blockData[x + (y * blockWidth)];
+
+                        c.Alpha = Byte.MaxValue;
+
+                        var imgX = x + (blockIndex * blockWidth);
+                        var imgY = y;
+
+                        // Set the pixel
+                        pixels[imgY * img.Width + imgX] = new Color(c.Red, c.Green, c.Blue);
+                    }
+                }
+            }
+
+            // Set the texture data
+            texture.SetData(pixels);
+
+            return texture;
         }
 
         #endregion

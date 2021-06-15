@@ -73,7 +73,7 @@ namespace RayCarrot.Ray1Editor
 
             textureManager.AddPalettedTexture(tex);
 
-            return new R1_PC_BackgroundLayer.BackgroundEntry_R1_PC(tex.Texture, pcx.Offset, $"{fileName}.pcx", pcx);
+            return new R1_PC_BackgroundLayer.BackgroundEntry_R1_PC(() => tex.Texture, pcx.Offset, $"{fileName}.pcx", pcx);
         }
 
         public override void SaveFond(R1_PC_GameData data, PC_LevFile lev)
