@@ -212,6 +212,7 @@ namespace RayCarrot.Ray1Editor
             ToggleField_TileSet.IsVisible = newMode == EditorMode.Layers && CanEdit;
 
             ToggleTileSet(false);
+            ToggleField_TileSet.Refresh();
         }
 
         public override void UpdateLayerEditing(EditorUpdateData updateData)
