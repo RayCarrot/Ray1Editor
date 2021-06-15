@@ -1,8 +1,7 @@
-﻿using System;
-using BinarySerializer;
+﻿using BinarySerializer;
 using BinarySerializer.Ray1;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Linq;
 
 namespace RayCarrot.Ray1Editor
@@ -113,7 +112,7 @@ namespace RayCarrot.Ray1Editor
 
         // Animations
         public override ObjAnimation_HitBoxLayer[] HitBoxLayers => null; // TODO: Implement from ZDC
-        public override ObjAnimation CurrentAnimation => Data.Animations.TryGetValue(ObjData.Animations)?.ElementAtOrDefault(CurrentState?.AnimationIndex ?? -1);
+        public override ObjAnimation CurrentAnimation => Data.GetAnimations(ObjData.Animations)?.ElementAtOrDefault(CurrentState?.AnimationIndex ?? -1);
         public override int AnimationFrame
         {
             get => ObjData.CurrentAnimationFrame;
@@ -121,7 +120,7 @@ namespace RayCarrot.Ray1Editor
         }
         public byte ForceFrame { get; set; }
         public override int AnimSpeed => (ObjData.Type.IsHPFrame() ? 0 : CurrentState?.AnimationSpeed ?? 0);
-        public override TextureSheet SpriteSheet => Data.Sprites.TryGetValue(ObjData.Sprites);
+        public override TextureSheet SpriteSheet => Data.GetSprites(ObjData.Sprites);
         public override Point Pivot => new Point(ObjData.OffsetBX, ObjData.OffsetBY);
         protected override bool ShouldUpdateFrame()
         {

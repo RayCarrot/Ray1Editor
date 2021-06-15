@@ -1,6 +1,7 @@
 ﻿using BinarySerializer;
 using BinarySerializer.Ray1;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -11,8 +12,8 @@ namespace RayCarrot.Ray1Editor
     {
         public R1_GameData(Context context, TextureManager textureManager) : base(context, textureManager)
         {
-            Sprites = new Dictionary<Sprite[], PalettedTextureSheet>();
-            Animations = new Dictionary<Animation[], ObjAnimation[]>();
+            Sprites = new Dictionary<Sprite, PalettedTextureSheet>();
+            Animations = new Dictionary<Animation, ObjAnimation[]>();
             DES = new List<DESData>();
             ETA = new List<ETAData>();
         }
@@ -40,17 +41,21 @@ namespace RayCarrot.Ray1Editor
         /// <summary>
         /// The loaded sprite sheets for each sprite array
         /// </summary>
-        public Dictionary<Sprite[], PalettedTextureSheet> Sprites { get; }
+        public Dictionary<Sprite, PalettedTextureSheet> Sprites { get; }
 
         /// <summary>
         /// The loaded editor animations for each animation array
         /// </summary>
-        public Dictionary<Animation[], ObjAnimation[]> Animations { get; }
+        public Dictionary<Animation, ObjAnimation[]> Animations { get; }
         
         /// <summary>
         /// The loaded ETA
         /// </summary>
         public List<ETAData> ETA { get; }
+
+        // TODO: Find better way of handling this. Right now we use the first entry in the sprites/animations array as the key. We can't use the array as the array instances can be different (PS1 for example where it's parsed per object - arrays are not cached, only objects).
+        public PalettedTextureSheet GetSprites(Sprite[] sprites) => Sprites.TryGetValue(sprites.First());
+        public ObjAnimation[] GetAnimations(Animation[] anims) => Animations.TryGetValue(anims.First());
 
         public ushort GetNextRandom(int max)
         {
@@ -65,8 +70,10 @@ namespace RayCarrot.Ray1Editor
             if (des == null)
                 return;
 
-            Sprites[des.SpritesData] = des.Sprites;
-            Animations[des.AnimationsData] = des.Animations;
+            if (des.SpritesData.Any())
+                Sprites[des.SpritesData.First()] = des.Sprites;
+            if (des.AnimationsData.Any())
+                Animations[des.AnimationsData.First()] = des.Animations;
         }
 
         public class DESData

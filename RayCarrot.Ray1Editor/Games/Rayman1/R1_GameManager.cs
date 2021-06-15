@@ -177,7 +177,6 @@ namespace RayCarrot.Ray1Editor
                 // TODO: If not found in map use template
                 if (miniRay != null)
                 {
-                    data.Animations.Remove(miniRay.ObjData.Animations);
                     miniRay.ObjData.Animations = rayAnim.Select(x => new Animation
                     {
                         LayersPerFrameSerialized = x.LayersPerFrameSerialized,
@@ -191,17 +190,14 @@ namespace RayCarrot.Ray1Editor
                             SpriteIndex = l.SpriteIndex
                         }).ToArray(),
                     }).ToArray();
-                    data.Animations[miniRay.ObjData.Animations] = miniRay.ObjData.Animations.Select(x => ToCommonAnimation(x)).ToArray();
+                    data.Animations[miniRay.ObjData.Animations.First()] = miniRay.ObjData.Animations.Select(x => ToCommonAnimation(x)).ToArray();
                 }
 
                 var badRay = data.Objects.OfType<R1_GameObject>().FirstOrDefault(x => x.ObjData.Type == ObjType.TYPE_BLACK_RAY);
 
                 // TODO: If not found in map use template
                 if (badRay != null)
-                {
-                    data.Animations.Remove(badRay.ObjData.Animations);
                     badRay.ObjData.Animations = rayAnim;
-                }
             }
 
             // Set frames for linked events

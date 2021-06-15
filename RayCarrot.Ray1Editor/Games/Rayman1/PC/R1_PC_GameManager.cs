@@ -342,7 +342,7 @@ namespace RayCarrot.Ray1Editor
 
             var imgData = pcx.ScanLines.SelectMany(x => x).ToArray();
 
-            var tex = new PalettedTextureData(textureManager.GraphicsDevice, imgData, new Point(pcx.ImageWidth, pcx.ImageHeight), PalettedTextureData.ImageFormat.BPP_8, data.PC_Palettes[0]);
+            var tex = new PalettedTextureData(textureManager.GraphicsDevice, imgData, new Point(pcx.ImageWidth, pcx.ImageHeight), PalettedTextureData.ImageFormat.Linear_8bpp, data.PC_Palettes[0]);
 
             tex.Apply();
 

@@ -1,9 +1,8 @@
-﻿using RayCarrot.UI;
-using System;
+﻿using NLog;
+using RayCarrot.UI;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Media;
-using NLog;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -14,7 +13,7 @@ namespace RayCarrot.Ray1Editor
         public EditPaletteViewModel(Palette palette)
         {
             Palette = palette;
-            ColorWrap = Math.Min(palette.Wrap, 16);
+            ColorWrap = palette.DisplayWrap ?? 16;
 
             Items = new ObservableCollection<PaletteEntryViewModel>(palette.Colors.Select((x, i) => 
                 new PaletteEntryViewModel(Color.FromArgb(x.A, x.R, x.G, x.B), palette.IsFirstTransparent && i == 0, palette.CanEditAlpha)));

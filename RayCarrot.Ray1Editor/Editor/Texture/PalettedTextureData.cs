@@ -1,7 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿using BinarySerializer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.IO;
+using System.Linq;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -30,12 +32,33 @@ namespace RayCarrot.Ray1Editor
         public Rectangle Rectangle { get; }
         public ImageFormat Format { get; }
         public Palette Palette { get; set; }
+        public int PaletteOffset { get; init; }
 
         public void Apply()
         {
-            if (Format == ImageFormat.BPP_8)
+            if (Format == ImageFormat.Linear_8bpp)
             {
-                Texture.SetData<Color>(0, Rectangle, ImgData.Select(x => Palette.GetColor(x)).ToArray(), ImgDataStartIndex, ImgDataLength);
+                Texture.SetData<Color>(0, Rectangle, ImgData.Skip(ImgDataStartIndex).Take(ImgDataLength).Select(x => Palette.GetColor(PaletteOffset + x)).ToArray(), 0, ImgDataLength);
+            }
+            else if (Format == ImageFormat.Linear_4bpp)
+            {
+                var colors = new Color[Rectangle.Width * Rectangle.Height];
+
+                for (int y = 0; y < Rectangle.Height; y++)
+                {
+                    var colorsYOffset = y * Rectangle.Width;
+
+                    for (int x = 0; x < Rectangle.Width; x++)
+                    {
+                        var b = ImgData[ImgDataStartIndex + (colorsYOffset + x) / 2];
+
+                        b = (byte)BitHelpers.ExtractBits(b, 4, x % 2 == 0 ? 0 : 4);
+
+                        colors[colorsYOffset + x] = Palette.GetColor(PaletteOffset + b);
+                    }
+                }
+
+                Texture.SetData<Color>(0, Rectangle, colors, 0, colors.Length);
             }
             else
             {
@@ -45,7 +68,8 @@ namespace RayCarrot.Ray1Editor
 
         public enum ImageFormat
         {
-            BPP_8,
+            Linear_4bpp,
+            Linear_8bpp,
         }
     }
 }

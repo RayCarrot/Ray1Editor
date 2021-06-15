@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BinarySerializer;
+using BinarySerializer.PS1;
 using BinarySerializer.Ray1;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -56,7 +57,7 @@ namespace RayCarrot.Ray1Editor
 
             // Add and read allfix
             LoadFile(context, fileEntryFix);
-            FileFactory.Read<PS1_AllfixFile>(fileEntryFix.ProcessedFilePath, context);
+            var fix = FileFactory.Read<PS1_AllfixFile>(fileEntryFix.ProcessedFilePath, context);
 
             // Add and read world
             LoadFile(context, fileEntryworld);
@@ -73,8 +74,11 @@ namespace RayCarrot.Ray1Editor
             var desNames = LoadNameTable_DES(data, game);
             var etaNames = LoadNameTable_ETA(data, game);
 
+            // Load VRAM
+            var vram = LoadVRAM(fix, wld, lev);
+
             // Load palettes
-            LoadPalettes(data, wld);
+            LoadPalettes(data, vram, wld);
 
             // Load fond (background)
             LoadFond(data, exe, textureManager);
@@ -83,7 +87,7 @@ namespace RayCarrot.Ray1Editor
             LoadMap(data, wld, lev.MapData, textureManager);
 
             // Load DES (sprites & animations)
-            LoadDES(data, lev.ObjData, desNames, textureManager);
+            LoadDES(data, vram, lev.ObjData, desNames, textureManager);
 
             // Load ETA (states)
             LoadETA(data, lev.ObjData, etaNames);
@@ -129,17 +133,29 @@ namespace RayCarrot.Ray1Editor
             return LoadEditorNameTable<Dictionary<string, Dictionary<string, uint>>>(game.NameTablesName, EditorNameTableType.ETA);
         }
 
-        public void LoadPalettes(R1_PS1_GameData data, PS1_WorldFile wld)
+        public PS1_VRAM LoadVRAM(PS1_AllfixFile allfix, PS1_WorldFile world, PS1_LevFile lev)
         {
+            return PS1VramHelpers.PS1_FillVRAM(PS1VramHelpers.VRAMMode.Level, allfix, world, null, lev, null, true); // TODO: Set to not be US version for other versions!
+        }
+
+        public void LoadPalettes(R1_PS1_GameData data, PS1_VRAM vram, PS1_WorldFile wld)
+        {
+            // Add tile palettes
             data.PS1_TilePalettes = wld.TilePalettes.Select((x, i) => new Palette(x, $"Tile Palette {i}")).ToArray();
 
             foreach (var pal in data.PS1_TilePalettes)
                 data.TextureManager.AddPalette(pal);
+
+            // Add sprite palettes
+            data.PS1_SpritePalettes = vram.Palettes.Select(x => new R1_PS1_GameData.LoadedPalette(x.Colors, new Palette(x.Colors, $"Sprite Palette {x.Y}"))).ToArray();
+
+            foreach (var pal in data.PS1_SpritePalettes)
+                data.TextureManager.AddPalette(pal.Palette);
         }
 
-        public void LoadDES(R1_PS1_GameData data, PS1_ObjBlock objBlock, Dictionary<string, Dictionary<string, DESPointers>> nameTable, TextureManager textureManager)
+        public void LoadDES(R1_PS1_GameData data, PS1_VRAM vram, PS1_ObjBlock objData, Dictionary<string, Dictionary<string, DESPointers>> nameTable, TextureManager textureManager)
         {
-            foreach (var des in GetLevelDES(data.Context, objBlock.Objects, nameTable))
+            foreach (var des in GetLevelDES(data.Context, objData.Objects, nameTable))
             {
                 if (des.SpritesPointer != null && data.DES.All(x => x.SpritesData[0].Offset != des.SpritesPointer))
                 {
@@ -149,17 +165,20 @@ namespace RayCarrot.Ray1Editor
                     var animations = des.EventData?.Animations ?? s.DoAt(des.AnimationsPointer, () => s.SerializeObjectArray<Animation>(default, des.AnimationsCount, name: $"AnimationDescriptors"));
                     var imgBuffer = des.EventData?.ImageBuffer ?? s.DoAt(des.ImageBufferPointer, () => s.SerializeArray<byte>(default, des.ImageBufferLength ?? 0, name: $"ImageBuffer"));
 
+                    // Create the sprite sheet
                     var spriteSheet = new PalettedTextureSheet(textureManager, sprites.Select(x => x.IsDummySprite() ? (Point?)null : new Point(x.Width, x.Height)).ToArray());
 
-                    // TODO: Initialize the sprites - need to fill VRAM first
+                    // Initialize the sprites
                     for (var i = 0; i < sprites.Length; i++)
                     {
-                        var sprite = sprites[i];
+                        // Ignore dummy sprites
+                        if (spriteSheet.Entries[i] == null)
+                            continue;
 
-
-                        //spriteSheet.InitEntry(i, );
+                        InitializeSprite(data, vram, sprites[i], spriteSheet, i);
                     }
 
+                    // Get the DES name
                     var desName = des.Name ?? nameTable?.TryGetValue(des.SpritesPointer?.File.FilePath)?.FirstOrDefault(x =>
                         x.Value.ImageDescriptors == des.SpritesPointer?.AbsoluteOffset &&
                         x.Value.AnimationDescriptors == des.AnimationsPointer?.AbsoluteOffset &&
@@ -171,6 +190,73 @@ namespace RayCarrot.Ray1Editor
                     });
                 }
             }
+        }
+
+        public virtual void InitializeSprite(R1_PS1_GameData data, PS1_VRAM vram, Sprite sprite, PalettedTextureSheet sheet, int index)
+        {
+            // Get the palette x and y offsets in the vram
+            var palX = sprite.PaletteX * 16; // Each palette section is 16 colors
+            var palY = sprite.PaletteY;
+
+            const int pageWidth = 256; // 256 colors
+
+            // If the offset is for a palette section we need to get the start of the full palette, and then the section index
+            var palStartX = palX / pageWidth * pageWidth;
+            var palOffset = palX % palStartX;
+
+            // Find the palette in the vram
+            var vramPal = vram.Palettes.FirstOrDefault(p => p.X == palStartX * 2 && p.Y == palY);
+
+            // Make sure a palette was found
+            if (vramPal == null)
+                throw new Exception($"Failed to initialize sprite from {sprite.Offset} due to not finding a matching palette in the VRAM at ({palX}, {palY})");
+
+            // Get the loaded palette
+            var pal = data.PS1_SpritePalettes.First(x => x.Colors == vramPal.Colors).Palette;
+
+            int pageX = sprite.TexturePageInfo.TX;
+            int pageY = sprite.TexturePageInfo.TY;
+
+            var is4Bit = sprite.TexturePageInfo.TP == PS1_TexturePageInfo.TexturePageTP.CLUT_4Bit;
+            var w = is4Bit ? (int)Math.Ceiling(sprite.Width / 2f) : sprite.Width;
+            var length = sprite.Width * sprite.Height;
+
+            if (is4Bit)
+                length = (int)Math.Ceiling(length / 2f);
+
+            var imgData = new byte[length];
+
+            for (int y = 0; y < sprite.Height; y++)
+            {
+                var imgDataYOffset = y * sprite.Width;
+
+                for (int x = 0; x < sprite.Width; x++)
+                {
+                    var offsetX = sprite.ImageOffsetInPageX + x;
+
+                    if (is4Bit)
+                        offsetX /= 2;
+
+                    var imgDataOffset = imgDataYOffset + x;
+
+                    if (is4Bit)
+                        imgDataOffset /= 2;
+
+                    imgData[imgDataOffset] = vram.GetPixel8(pageX, pageY, offsetX, sprite.ImageOffsetInPageY + y);
+
+                    if (is4Bit)
+                        x++;
+                }
+            }
+
+            var format = sprite.TexturePageInfo.TP switch
+            {
+                PS1_TexturePageInfo.TexturePageTP.CLUT_4Bit => PalettedTextureData.ImageFormat.Linear_4bpp,
+                PS1_TexturePageInfo.TexturePageTP.CLUT_8Bit => PalettedTextureData.ImageFormat.Linear_8bpp,
+                _ => throw new Exception($"Unsupported texture type {sprite.TexturePageInfo.TP}")
+            };
+
+            sheet.InitEntry(index, pal, imgData, format: format, paletteOffset: palOffset);
         }
 
         protected IEnumerable<DES> GetLevelDES(Context context, IEnumerable<ObjData> events, Dictionary<string, Dictionary<string, DESPointers>> nameTable_R1PS1DES)

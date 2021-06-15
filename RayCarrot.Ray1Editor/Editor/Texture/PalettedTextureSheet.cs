@@ -18,9 +18,12 @@ namespace RayCarrot.Ray1Editor
 
         public PalettedTextureData[] PalettedTextureDatas { get; }
 
-        public void InitEntry(int index, Palette palette, byte[] imgData, PalettedTextureData.ImageFormat format = PalettedTextureData.ImageFormat.BPP_8, int imgDataStartIndex = 0, int imgDataLength = -1)
+        public void InitEntry(int index, Palette palette, byte[] imgData, PalettedTextureData.ImageFormat format = PalettedTextureData.ImageFormat.Linear_8bpp, int imgDataStartIndex = 0, int imgDataLength = -1, int paletteOffset = 0)
         {
-            PalettedTextureDatas[index] = new PalettedTextureData(Sheet, imgData, Entries[index].Source, format, palette, imgDataStartIndex, imgDataLength);
+            PalettedTextureDatas[index] = new PalettedTextureData(Sheet, imgData, Entries[index].Source, format, palette, imgDataStartIndex, imgDataLength)
+            {
+                PaletteOffset = paletteOffset
+            };
             PalettedTextureDatas[index].Apply();
         }
 
