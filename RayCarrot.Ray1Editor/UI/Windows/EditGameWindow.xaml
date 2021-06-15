@@ -9,7 +9,7 @@
                   mc:Ignorable="d"
                   Title="Edit Game"
                   ResizeMode="NoResize"
-                  Width="450" Height="270"
+                  Width="450" SizeToContent="Height"
                   CloseWithEscape="True" 
                   Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}"
                   Background="{DynamicResource MahApps.Brushes.ThemeBackground}"
