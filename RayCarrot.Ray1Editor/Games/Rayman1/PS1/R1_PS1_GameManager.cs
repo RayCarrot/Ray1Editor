@@ -44,7 +44,7 @@ namespace RayCarrot.Ray1Editor
             var data = new R1_PS1_GameData(context, textureManager);
 
             // Read the exe file
-            var exe = FileFactory.Read<PS1_Executable>(Path_ExeFile, context, onPreSerialize: (s, o) => o.Pre_PS1_Config = exeConfig);
+            var exe = FileFactory.Read<PS1_Executable>(Path_ExeFile, context, onPreSerialize: (_, o) => o.Pre_PS1_Config = exeConfig);
 
             var worldIndex = (int)ray1Settings.World - 1;
             var lvlIndex = ray1Settings.Level - 1;
@@ -70,8 +70,8 @@ namespace RayCarrot.Ray1Editor
             InitRandom(data);
 
             // Load the editor name tables
-            //var desNames = LoadNameTable_DES(data, game, ray1Settings);
-            //var etaNames = LoadNameTable_ETA(data, game, ray1Settings);
+            var desNames = LoadNameTable_DES(data, game);
+            var etaNames = LoadNameTable_ETA(data, game);
 
             // Load palettes
             LoadPalettes(data, wld);
@@ -81,6 +81,21 @@ namespace RayCarrot.Ray1Editor
 
             // Load map
             LoadMap(data, wld, lev.MapData, textureManager);
+
+            // Load DES (sprites & animations)
+            LoadDES(data, lev.ObjData, desNames, textureManager);
+
+            // Load ETA (states)
+            LoadETA(data, lev.ObjData, etaNames);
+
+            // Load the editor event definitions
+            LoadEditorEventDefinitions(data);
+
+            // Load objects
+            LoadObjects(data, lev.ObjData);
+
+            // Load Rayman
+            LoadRayman(data);
 
             return data;
         }
@@ -104,12 +119,128 @@ namespace RayCarrot.Ray1Editor
             });
         }
 
+        protected virtual Dictionary<string, Dictionary<string, DESPointers>> LoadNameTable_DES(R1_GameData data, Games.R1_Game game)
+        {
+            return LoadEditorNameTable<Dictionary<string, Dictionary<string, DESPointers>>>(game.NameTablesName, EditorNameTableType.DES);
+        }
+
+        protected virtual Dictionary<string, Dictionary<string, uint>> LoadNameTable_ETA(R1_GameData data, Games.R1_Game game)
+        {
+            return LoadEditorNameTable<Dictionary<string, Dictionary<string, uint>>>(game.NameTablesName, EditorNameTableType.ETA);
+        }
+
         public void LoadPalettes(R1_PS1_GameData data, PS1_WorldFile wld)
         {
             data.PS1_TilePalettes = wld.TilePalettes.Select((x, i) => new Palette(x, $"Tile Palette {i}")).ToArray();
 
             foreach (var pal in data.PS1_TilePalettes)
                 data.TextureManager.AddPalette(pal);
+        }
+
+        public void LoadDES(R1_PS1_GameData data, PS1_ObjBlock objBlock, Dictionary<string, Dictionary<string, DESPointers>> nameTable, TextureManager textureManager)
+        {
+            foreach (var des in GetLevelDES(data.Context, objBlock.Objects, nameTable))
+            {
+                if (des.SpritesPointer != null && data.DES.All(x => x.SpritesData[0].Offset != des.SpritesPointer))
+                {
+                    // Read or get the data
+                    var s = data.Context.Deserializer;
+                    var sprites = des.EventData?.Sprites ?? s.DoAt(des.SpritesPointer, () => s.SerializeObjectArray<Sprite>(default, des.ImageDescriptorCount, name: $"ImageDescriptors"));
+                    var animations = des.EventData?.Animations ?? s.DoAt(des.AnimationsPointer, () => s.SerializeObjectArray<Animation>(default, des.AnimationsCount, name: $"AnimationDescriptors"));
+                    var imgBuffer = des.EventData?.ImageBuffer ?? s.DoAt(des.ImageBufferPointer, () => s.SerializeArray<byte>(default, des.ImageBufferLength ?? 0, name: $"ImageBuffer"));
+
+                    var spriteSheet = new PalettedTextureSheet(textureManager, sprites.Select(x => x.IsDummySprite() ? (Point?)null : new Point(x.Width, x.Height)).ToArray());
+
+                    // TODO: Initialize the sprites - need to fill VRAM first
+                    for (var i = 0; i < sprites.Length; i++)
+                    {
+                        var sprite = sprites[i];
+
+
+                        //spriteSheet.InitEntry(i, );
+                    }
+
+                    var desName = des.Name ?? nameTable?.TryGetValue(des.SpritesPointer?.File.FilePath)?.FirstOrDefault(x =>
+                        x.Value.ImageDescriptors == des.SpritesPointer?.AbsoluteOffset &&
+                        x.Value.AnimationDescriptors == des.AnimationsPointer?.AbsoluteOffset &&
+                        (!x.Value.ImageBuffer.HasValue || x.Value.ImageBuffer == des.ImageBufferPointer?.AbsoluteOffset)).Key;
+
+                    data.AddDES(new R1_GameData.DESData(sprites, spriteSheet, animations, animations.Select(x => ToCommonAnimation(x)).ToArray(), imgBuffer)
+                    {
+                        Name = desName
+                    });
+                }
+            }
+        }
+
+        protected IEnumerable<DES> GetLevelDES(Context context, IEnumerable<ObjData> events, Dictionary<string, Dictionary<string, DESPointers>> nameTable_R1PS1DES)
+        {
+            return events.Select(x => new DES
+            {
+                SpritesPointer = x.SpritesPointer,
+                AnimationsPointer = x.AnimationsPointer,
+                ImageBufferPointer = x.ImageBufferPointer,
+                ImageDescriptorCount = x.SpritesCount,
+                AnimationsCount = x.AnimationsCount,
+                ImageBufferLength = null,
+                Name = null,
+                EventData = x
+            }).Concat(nameTable_R1PS1DES?.Where(d => context.FileExists(d.Key)).SelectMany(d => d.Value.Select(des => new DES
+            {
+                SpritesPointer = des.Value.ImageDescriptors != null ? new Pointer(des.Value.ImageDescriptors.Value, context.GetFile(d.Key)) : null,
+                AnimationsPointer = des.Value.AnimationDescriptors != null ? new Pointer(des.Value.AnimationDescriptors.Value, context.GetFile(d.Key)) : null,
+                ImageBufferPointer = des.Value.ImageBuffer != null ? new Pointer(des.Value.ImageBuffer.Value, context.GetFile(d.Key)) : null,
+                ImageDescriptorCount = des.Value.ImageDescriptorsCount,
+                AnimationsCount = des.Value.AnimationDescriptorsCount,
+                ImageBufferLength = des.Value.ImageBufferLength,
+                Name = des.Key,
+                EventData = null
+            })) ?? new DES[0]);
+        }
+
+        public void LoadETA(R1_GameData data, PS1_ObjBlock objBlock, Dictionary<string, Dictionary<string, uint>> nameTable)
+        {
+            foreach (var eta in GetLevelETA(data.Context, objBlock.Objects, nameTable))
+            {
+                // Add if not found
+                if (eta.ETAPointer != null && data.ETA.All(x => x.ETA.Offset != eta.ETAPointer))
+                {
+                    var etaName = eta.Name ?? nameTable?.TryGetValue(eta.ETAPointer.File.FilePath)?.FirstOrDefault(x => x.Value == eta.ETAPointer.AbsoluteOffset).Key;
+
+                    var s = data.Context.Deserializer;
+
+                    var etaObj = eta.EventData?.ETA ?? s.DoAt(eta.ETAPointer, () => s.SerializeObject<BinarySerializer.Ray1.ETA>(default, name: $"ETA"));
+
+                    // Add to the ETA
+                    data.ETA.Add(new R1_GameData.ETAData(etaObj)
+                    {
+                        Name = etaName
+                    });
+                }
+            }
+        }
+
+        protected IEnumerable<ETA> GetLevelETA(Context context, IEnumerable<ObjData> events, Dictionary<string, Dictionary<string, uint>> nameTable_R1PS1ETA)
+        {
+            return events.Select(x => new ETA
+            {
+                ETAPointer = x.ETAPointer,
+                Name = null,
+                EventData = x
+            }).Concat(nameTable_R1PS1ETA?.Where(d => context.FileExists(d.Key)).SelectMany(d => d.Value.Select(des => new ETA
+            {
+                ETAPointer = new Pointer(des.Value, context.GetFile(d.Key)),
+                Name = des.Key,
+                EventData = null
+            })) ?? new ETA[0]);
+        }
+
+        public void LoadObjects(R1_PS1_GameData data, PS1_ObjBlock objBlock)
+        {
+            data.Objects.AddRange(objBlock.Objects.Select(obj => new R1_GameObject(obj, FindMatchingEventDefinition(data, obj))));
+
+            data.LinkTable = objBlock.ObjectLinkingTable.Select(x => (ushort)x).ToArray();
+            InitLinkGroups(data.Objects, data.LinkTable);
         }
 
         public void LoadMap(R1_PS1_GameData data, PS1_WorldFile wld, MapData map, TextureManager textureManager)
@@ -239,6 +370,38 @@ namespace RayCarrot.Ray1Editor
             texture.SetData(pixels);
 
             return texture;
+        }
+
+        #endregion
+
+        #region Data Types
+
+        public class DESPointers
+        {
+            public uint? ImageDescriptors { get; set; }
+            public ushort ImageDescriptorsCount { get; set; }
+            public uint? AnimationDescriptors { get; set; }
+            public byte AnimationDescriptorsCount { get; set; }
+            public uint? ImageBuffer { get; set; }
+            public uint ImageBufferLength { get; set; }
+        }
+
+        protected class DES
+        {
+            public Pointer SpritesPointer { get; set; }
+            public Pointer AnimationsPointer { get; set; }
+            public Pointer ImageBufferPointer { get; set; }
+            public ushort ImageDescriptorCount { get; set; }
+            public byte AnimationsCount { get; set; }
+            public uint? ImageBufferLength { get; set; }
+            public string Name { get; set; }
+            public ObjData EventData { get; set; }
+        }
+        protected class ETA
+        {
+            public Pointer ETAPointer { get; set; }
+            public string Name { get; set; }
+            public ObjData EventData { get; set; }
         }
 
         #endregion

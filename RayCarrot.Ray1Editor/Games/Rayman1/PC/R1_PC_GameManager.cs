@@ -162,12 +162,12 @@ namespace RayCarrot.Ray1Editor
 
         protected virtual string[] LoadNameTable_DES(R1_GameData data, Games.R1_Game game, Ray1Settings settings)
         {
-            return LoadEditorNameTable($"{game.NameTablesName}_des.json")[(int)settings.World - 1];
+            return LoadEditorNameTable<string[][]>(game.NameTablesName, EditorNameTableType.DES)[(int)settings.World - 1];
         }
 
         protected virtual string[] LoadNameTable_ETA(R1_GameData data, Games.R1_Game game, Ray1Settings settings)
         {
-            return LoadEditorNameTable($"{game.NameTablesName}_eta.json")[(int)settings.World - 1];
+            return LoadEditorNameTable<string[][]>(game.NameTablesName, EditorNameTableType.ETA)[(int)settings.World - 1];
         }
 
         public string GetWorldName(World world) => world switch
@@ -357,16 +357,6 @@ namespace RayCarrot.Ray1Editor
             lev.ScrollDiffFNDIndex = (byte)data.Layers.OfType<BackgroundLayer>().ElementAt(1).SelectedBackgroundIndex;
         }
 
-        public string[][] LoadEditorNameTable(string fileName)
-        {
-            using var stream = Assets.GetAsset(AssetPath_EventsDir + fileName);
-            var serializer = new JsonSerializer();
-
-            using var sr = new StreamReader(stream);
-            using var jsonTextReader = new JsonTextReader(sr);
-            return serializer.Deserialize<string[][]>(jsonTextReader);
-        }
-
         public T LoadArchiveFile<T>(Context context, string archivePath, int fileIndex)
             where T : BinarySerializable, new()
         {
@@ -374,88 +364,6 @@ namespace RayCarrot.Ray1Editor
                 return null;
 
             return FileFactory.Read<PC_FileArchive>(archivePath, context).ReadFile<T>(context, fileIndex);
-        }
-
-        public int InitLinkGroups(IList<GameObject> objects, ushort[] linkTable)
-        {
-            int currentId = 1;
-
-            for (int i = 0; i < objects.Count; i++)
-            {
-                if (i >= linkTable.Length)
-                    break;
-
-                // No link
-                if (linkTable[i] == i)
-                {
-                    objects[i].LinkGroup = 0;
-                }
-                else
-                {
-                    // Ignore already assigned ones
-                    if (objects[i].LinkGroup != 0)
-                        continue;
-
-                    // Link found, loop through everyone on the link chain
-                    int nextEvent = linkTable[i];
-                    objects[i].LinkGroup = currentId;
-                    int prevEvent = i;
-                    while (nextEvent != i && nextEvent != prevEvent)
-                    {
-                        prevEvent = nextEvent;
-                        objects[nextEvent].LinkGroup = currentId;
-                        nextEvent = linkTable[nextEvent];
-                    }
-                    currentId++;
-                }
-            }
-
-            return currentId;
-        }
-
-        public ushort[] SaveLinkGroups(IList<GameObject> objects)
-        {
-            var linkTable = new ushort[objects.Count];
-
-            List<int> alreadyChained = new List<int>();
-
-            for (ushort i = 0; i < objects.Count; i++)
-            {
-                var obj = objects[i];
-
-                // No link
-                if (obj.LinkGroup == 0)
-                {
-                    linkTable[i] = i;
-                }
-                else
-                {
-                    // Skip if already chained
-                    if (alreadyChained.Contains(i))
-                        continue;
-
-                    // Find all the events with the same linkId and store their indexes
-                    List<ushort> indexesOfSameId = new List<ushort>();
-                    int cur = obj.LinkGroup;
-                    foreach (var e in objects.Where(e => e.LinkGroup == cur))
-                    {
-                        indexesOfSameId.Add((ushort)objects.IndexOf(e));
-                        alreadyChained.Add(objects.IndexOf(e));
-                    }
-
-                    // Loop through and chain them
-                    for (int j = 0; j < indexesOfSameId.Count; j++)
-                    {
-                        int next = j + 1;
-                        if (next == indexesOfSameId.Count)
-                            next = 0;
-
-                        linkTable[indexesOfSameId[j]] = indexesOfSameId[next];
-                    }
-                }
-            }
-
-            return linkTable;
         }
 
         #endregion

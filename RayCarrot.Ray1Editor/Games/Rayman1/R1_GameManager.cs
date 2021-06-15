@@ -4,7 +4,9 @@ using Microsoft.Xna.Framework;
 using NLog;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -53,7 +55,7 @@ namespace RayCarrot.Ray1Editor
             var dropDownLookup_type = dropDownItems_type.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data, x => x.i);
 
             var dropDownItems_des = data.DES.Select((x, i) => new EditorDropDownFieldViewModel.DropDownItem<R1_GameData.DESData>($"DES {i + 1}{(x.Name != null ? $" ({x.Name})" : "")}", x)).ToArray();
-            var dropDownLookup_des = dropDownItems_des.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data.SpritesData, x => x.i);
+            var dropDownLookup_des = dropDownItems_des.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data.SpritesData.First(), x => x.i);
 
             var dropDownItems_eta = data.ETA.Select((x, i) => new EditorDropDownFieldViewModel.DropDownItem<ETA>($"ETA {i}{(x.Name != null ? $" ({x.Name})" : "")}", x.ETA)).ToArray();
             var dropDownLookup_eta = dropDownItems_eta.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data, x => x.i);
@@ -71,7 +73,7 @@ namespace RayCarrot.Ray1Editor
             yield return new EditorDropDownFieldViewModel(
                 header: "DES",
                 info: "The group of sprites and animations to use.",
-                getValueAction: () => dropDownLookup_des[getObjData().Sprites],
+                getValueAction: () => dropDownLookup_des[getObjData().Sprites.First()],
                 setValueAction: x =>
                 {
                     getObjData().Sprites = dropDownItems_des[x].Data.SpritesData;
@@ -492,6 +494,7 @@ namespace RayCarrot.Ray1Editor
 
         public void LoadRayman(R1_GameData data)
         {
+            // TODO: Get Rayman from template
             data.Rayman = ObjData.GetRayman(data.Context, data.Objects.OfType<R1_GameObject>().FirstOrDefault(x => x.ObjData.Type == ObjType.TYPE_RAY_POS)?.ObjData);
         }
 
@@ -593,6 +596,98 @@ namespace RayCarrot.Ray1Editor
             return match;
         }
 
+        public int InitLinkGroups(IList<GameObject> objects, ushort[] linkTable)
+        {
+            int currentId = 1;
+
+            for (int i = 0; i < objects.Count; i++)
+            {
+                if (i >= linkTable.Length)
+                    break;
+
+                // No link
+                if (linkTable[i] == i)
+                {
+                    objects[i].LinkGroup = 0;
+                }
+                else
+                {
+                    // Ignore already assigned ones
+                    if (objects[i].LinkGroup != 0)
+                        continue;
+
+                    // Link found, loop through everyone on the link chain
+                    int nextEvent = linkTable[i];
+                    objects[i].LinkGroup = currentId;
+                    int prevEvent = i;
+                    while (nextEvent != i && nextEvent != prevEvent)
+                    {
+                        prevEvent = nextEvent;
+                        objects[nextEvent].LinkGroup = currentId;
+                        nextEvent = linkTable[nextEvent];
+                    }
+                    currentId++;
+                }
+            }
+
+            return currentId;
+        }
+
+        public ushort[] SaveLinkGroups(IList<GameObject> objects)
+        {
+            var linkTable = new ushort[objects.Count];
+
+            List<int> alreadyChained = new List<int>();
+
+            for (ushort i = 0; i < objects.Count; i++)
+            {
+                var obj = objects[i];
+
+                // No link
+                if (obj.LinkGroup == 0)
+                {
+                    linkTable[i] = i;
+                }
+                else
+                {
+                    // Skip if already chained
+                    if (alreadyChained.Contains(i))
+                        continue;
+
+                    // Find all the events with the same linkId and store their indexes
+                    List<ushort> indexesOfSameId = new List<ushort>();
+                    int cur = obj.LinkGroup;
+                    foreach (var e in objects.Where(e => e.LinkGroup == cur))
+                    {
+                        indexesOfSameId.Add((ushort)objects.IndexOf(e));
+                        alreadyChained.Add(objects.IndexOf(e));
+                    }
+
+                    // Loop through and chain them
+                    for (int j = 0; j < indexesOfSameId.Count; j++)
+                    {
+                        int next = j + 1;
+                        if (next == indexesOfSameId.Count)
+                            next = 0;
+
+                        linkTable[indexesOfSameId[j]] = indexesOfSameId[next];
+                    }
+                }
+            }
+
+            return linkTable;
+        }
+
+        protected T LoadEditorNameTable<T>(string name, EditorNameTableType type)
+        {
+            using var stream = Assets.GetAsset(AssetPath_EventsDir + $"{name}_{type.ToString().ToLower()}.json");
+            var serializer = new JsonSerializer();
+
+            using var sr = new StreamReader(stream);
+            using var jsonTextReader = new JsonTextReader(sr);
+            return serializer.Deserialize<T>(jsonTextReader);
+        }
+
         #endregion
 
         #region Data Types
@@ -615,6 +710,12 @@ namespace RayCarrot.Ray1Editor
             Commands = 1 << 10,
 
             All = UInt16.MaxValue,
+        }
+
+        protected enum EditorNameTableType
+        {
+            DES,
+            ETA
         }
 
         #endregion
