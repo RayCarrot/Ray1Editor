@@ -95,8 +95,10 @@ namespace RayCarrot.Ray1Editor
                 getValueAction: () => dropDownLookup_state[getObjData().ETA][DropDownFieldData_State.GetID(getObjData().Etat, getObjData().SubEtat)],
                 setValueAction: x =>
                 {
-                    getObjData().Etat = dropDownItems_state[getObjData().ETA][x].Data.Etat;
-                    getObjData().SubEtat = dropDownItems_state[getObjData().ETA][x].Data.SubEtat;
+                    var obj = getObjData();
+
+                    obj.Etat = obj.InitialEtat = dropDownItems_state[getObjData().ETA][x].Data.Etat;
+                    obj.SubEtat = obj.InitialSubEtat = dropDownItems_state[getObjData().ETA][x].Data.SubEtat;
                 },
                 getItemsAction: () =>
                 {
@@ -207,9 +209,8 @@ namespace RayCarrot.Ray1Editor
                     var e = (R1_GameObject)data.Objects[linkedIndex];
                     e.ForceFrame = (byte)((baseEvent.ForceFrame + index) % (e.CurrentAnimation?.Frames.Length ?? 1));
 
-                    // TODO: Uncomment? Game does this on load.
-                    //e.ObjData.XPosition = (short)(baseEvent.ObjData.XPosition + 32 * index * (baseEvent.ObjData.HitPoints - 2));
-                    //e.ObjData.YPosition = baseEvent.ObjData.YPosition;
+                    e.ObjData.XPosition = (short)(baseEvent.ObjData.XPosition + 32 * index * (baseEvent.ObjData.HitPoints - 2));
+                    e.ObjData.YPosition = baseEvent.ObjData.YPosition;
 
                     linkedIndex = data.LinkTable[linkedIndex];
                 } while (i != linkedIndex);
@@ -481,13 +482,29 @@ namespace RayCarrot.Ray1Editor
             if (!data.ObjTemplates.ContainsKey(R1_GameData.WldObjType.Ray))
                 return;
 
-            // TODO: Instead of using Rayman from th template we should copy his properties to a new object. This is to ensure no values have been modified in the template when writing. This isn't currently an issue since we don't use the template for much, but if memory loading is introduced then it is required.
+            var template = data.ObjTemplates[R1_GameData.WldObjType.Ray];
 
-            var obj = data.ObjTemplates[R1_GameData.WldObjType.Ray];
+            var ray = new ObjData
+            {
+                PC_SpritesIndex = template.PC_SpritesIndex,
+                PC_AnimationsIndex = template.PC_AnimationsIndex,
+                PC_ImageBufferIndex = template.PC_ImageBufferIndex,
+                PC_ETAIndex = template.PC_ETAIndex,
+                SpritesPointer = template.SpritesPointer,
+                AnimationsPointer = template.AnimationsPointer,
+                ImageBufferPointer = template.ImageBufferPointer,
+                ETAPointer = template.ETAPointer,
+                CommandsPointer = template.CommandsPointer,
+                LabelOffsetsPointer = template.LabelOffsetsPointer,
+                SpriteCollection = template.SpriteCollection,
+                AnimationCollection = template.AnimationCollection,
+                ImageBuffer = template.ImageBuffer,
+                ETA = template.ETA
+            };
 
-            obj.InitRayman(data.Context, data.Objects.OfType<R1_GameObject>().FirstOrDefault(x => x.ObjData.Type == ObjType.TYPE_RAY_POS)?.ObjData);
+            ray.InitRayman(data.Context, data.Objects.OfType<R1_GameObject>().FirstOrDefault(x => x.ObjData.Type == ObjType.TYPE_RAY_POS)?.ObjData);
 
-            data.Rayman = obj;
+            data.Rayman = ray;
         }
 
         public void LoadEditorEventDefinitions(R1_GameData data)
@@ -714,7 +731,7 @@ namespace RayCarrot.Ray1Editor
 
         #region Data
 
-        // TODO: Move to BinarySerializer.Ray1
+        // IDEA: Move to BinarySerializer.Ray1
         protected byte[] RandomArrayData { get; } =
         {
             0xDE, 0x00, 0x25, 0x02, 0xC8, 0x00, 0xCD, 0x02, 0xCC, 0x03, 0x19, 0x01,

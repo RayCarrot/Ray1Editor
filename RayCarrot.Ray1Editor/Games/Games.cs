@@ -6,7 +6,7 @@ namespace RayCarrot.Ray1Editor
 {
     public static class Games
     {
-        // TODO: Due to games being separated into game records and managers we could implement external loading through plugins, dynamically populating this array
+        // IDEA: Due to games being separated into game records and managers we could implement external loading through plugins, dynamically populating this array
         public static Game[] LoadedGames { get; } = new Game[]
         {
             // Rayman 1 (PS1)

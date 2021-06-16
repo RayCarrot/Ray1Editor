@@ -4,7 +4,7 @@ using System;
 
 namespace RayCarrot.Ray1Editor
 {
-    // TODO: For maps with a lot of tiles there is a lot of lag. One way to fix that is to create a buffer texture, which holds the entire rendered map. This is then only used when NOT in edit mode since then we want to be able to quickly edit tiles.
+    // IDEA: For maps with a lot of tiles there is a lot of lag. One way to fix that is to create a buffer texture, which holds the entire rendered map. This is then only used when NOT in edit mode since then we want to be able to quickly edit tiles.
 
     /// <summary>
     /// A tile map layer

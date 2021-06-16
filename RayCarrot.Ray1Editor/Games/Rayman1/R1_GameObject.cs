@@ -28,13 +28,21 @@ namespace RayCarrot.Ray1Editor
         {
             var settings = Data.Context.GetSettings<Ray1Settings>();
 
+            var isEDUorKIT = settings.EngineVersion == Ray1EngineVersion.PC_Edu ||
+                             settings.EngineVersion == Ray1EngineVersion.PS1_Edu ||
+                             settings.EngineVersion == Ray1EngineVersion.PC_Kit ||
+                             settings.EngineVersion == Ray1EngineVersion.PC_Fan;
+
+            // Do like the game and keep track of the initial values
             ObjData.InitialEtat = ObjData.Etat;
             ObjData.InitialSubEtat = ObjData.SubEtat;
-            ObjData.DisplayPrio = R1_ObjHelpers.GetDisplayPrio(ObjData.Type, ObjData.HitPoints, settings.World, settings.Level);
+            ObjData.DisplayPrio = !isEDUorKIT 
+                ? R1_ObjHelpers.GetDisplayPrio(ObjData.Type, ObjData.HitPoints, settings.World, settings.Level) 
+                : R1_ObjHelpers.GetDisplayPrio_Kit(ObjData.Type, ObjData.HitPoints, true);
             ObjData.InitialXPosition = (short)ObjData.XPosition;
             ObjData.InitialYPosition = (short)ObjData.YPosition;
             ObjData.CurrentAnimationIndex = 0;
-            ObjData.InitialHitPoints = ObjData.HitPoints;
+            //ObjData.InitialHitPoints = ObjData.HitPoints; // TODO: Can't do this with HP due to later versions storing it as a uint (same in Save)
 
             // Set random frame
             if (ObjData.Type.UsesRandomFrame())
@@ -42,11 +50,14 @@ namespace RayCarrot.Ray1Editor
         }
         public override void Save()
         {
+            // Restore the initial values. This is to make sure any temporary version of the values won't be saved,
+            // such as when loading from memory. This also allows us to for example "play" object commands and such
+            // in the editor without effecting their initial states.
             ObjData.Etat = ObjData.InitialEtat;
             ObjData.SubEtat = ObjData.InitialSubEtat;
-            //ObjData.DisplayPrio = ObjData.InitialDisplayPrio;
-
-            // TODO: Set other runtime values like hp etc.?
+            ObjData.XPosition = ObjData.InitialXPosition;
+            ObjData.YPosition = ObjData.InitialYPosition;
+            //ObjData.ActualHitPoints = ObjData.InitialHitPoints;
         }
 
         // Layout
@@ -56,8 +67,8 @@ namespace RayCarrot.Ray1Editor
             get => new Point(ObjData.XPosition, ObjData.YPosition);
             set
             {
-                ObjData.XPosition = value.X;
-                ObjData.YPosition = value.Y;
+                ObjData.XPosition = ObjData.InitialXPosition = (short)value.X;
+                ObjData.YPosition = ObjData.InitialYPosition = (short)value.Y;
             }
         }
         public override bool FlipHorizontally

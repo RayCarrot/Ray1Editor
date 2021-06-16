@@ -26,7 +26,7 @@ namespace RayCarrot.Ray1Editor
         protected HashSet<int> FullyTransparentTiles { get; }
         public bool IsFullyTransparent(int index) => FullyTransparentTiles.Contains(index);
 
-        // TODO: Use this? It takes around 250ms for a tile-set, but improves performance in the editor and is more reliable than the isFirstTransparent param
+        // IDEA: Use this? It takes around 250ms for a tile-set, but improves performance in the editor and is more reliable than the isFirstTransparent param
         public void FindTransparentTiles()
         {
             for (var i = 0; i < TileSheet.Entries.Length; i++)

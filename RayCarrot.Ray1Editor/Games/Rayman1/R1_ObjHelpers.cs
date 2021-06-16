@@ -131,7 +131,6 @@ namespace RayCarrot.Ray1Editor
             }
         }
 
-        // TODO: Use this for EDU/KIT/FAN
         public static byte GetDisplayPrio_Kit(ObjType type, byte hitPoints, bool inEditor)
         {
             switch ((int)type)
