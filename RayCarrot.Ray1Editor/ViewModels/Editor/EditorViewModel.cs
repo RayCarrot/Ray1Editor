@@ -1,8 +1,8 @@
-﻿using RayCarrot.UI;
+﻿using NLog;
+using RayCarrot.UI;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Windows;
 using System.Windows.Input;
 
 namespace RayCarrot.Ray1Editor
@@ -36,6 +36,12 @@ namespace RayCarrot.Ray1Editor
             DeleteSelectedObjectCommand = new RelayCommand(DeleteSelectedObject);
             AddObjCommand = new RelayCommand(AddObject);
         }
+
+        #endregion
+
+        #region Logger
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         #endregion
 
@@ -339,9 +345,16 @@ namespace RayCarrot.Ray1Editor
 
         public void Save()
         {
-            // TODO: Try/catch
-            EditorScene.Save();
-            MessageBox.Show("Saved!"); // TODO: Have custom dialog window
+            try
+            {
+                EditorScene.Save();
+                App.UI.DisplayMessage("Successfully saved", "Saved", DialogMessageType.Success);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogLevel.Error, ex, "Saving");
+                App.UI.DisplayMessage($"An error occurred while saving. Error message: {ex.Message}", "Error saving", DialogMessageType.Error);
+            }
         }
 
         public override void Dispose()

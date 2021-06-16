@@ -1,6 +1,7 @@
 ﻿using NLog;
 using RayCarrot.UI;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Windows.Input;
 
@@ -77,9 +78,20 @@ namespace RayCarrot.Ray1Editor
         {
             Logger.Log(LogLevel.Info, "Loading editor with mode {0}", SelectedGame.Game.GameID);
 
-            // TODO: Verify the game path exists before loading the editor to avoid crash
-            // TODO: Try/catch
-            App.ChangeView(AppViewModel.AppView.Editor, new EditorViewModel(SelectedGame.Game, SelectedGame.Manager, SelectedLevel.Settings));
+            var gameData = SelectedGame.Game;
+            var g = Ray1Editor.Games.FromID(gameData.GameID);
+
+            // Verify the path exists
+            if (g.PathType == GameModePathType.File && !File.Exists(gameData.Path) || 
+                g.PathType == GameModePathType.Directory && !Directory.Exists(gameData.Path))
+            {
+                App.UI.DisplayMessage("The specified game path doesn't exist", "Path not found", DialogMessageType.Error);
+                SelectedGame.Edit();
+                return;
+            }
+
+            // TODO: Try/catch loading
+            App.ChangeView(AppViewModel.AppView.Editor, new EditorViewModel(gameData, SelectedGame.Manager, SelectedLevel.Settings));
 
             // Set the app title
             App.SetTitle($"{SelectedLevel.Header}");

@@ -631,8 +631,8 @@ namespace RayCarrot.Ray1Editor
         {
             if (GameData.Objects.Count >= GameManager.GetMaxObjCount(GameData))
             {
-                // TODO: Custom message box in UI manager
-                System.Windows.MessageBox.Show("Max obj count reached!");
+                AppViewModel.Instance.UI.DisplayMessage("Maximum number of objects has been reached in the level", "Max object count reached", DialogMessageType.Error);
+                
                 return;
             }
 
