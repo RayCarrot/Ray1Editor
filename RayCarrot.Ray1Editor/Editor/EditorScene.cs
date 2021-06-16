@@ -130,7 +130,6 @@ namespace RayCarrot.Ray1Editor
         #region Protected Properties
 
         // MonoGame
-        protected SpriteBatch SpriteBatch { get; set; }
         protected Renderer Renderer { get; set; }
         protected WpfMouse Mouse { get; }
         protected WpfKeyboard Keyboard { get; }
@@ -147,9 +146,6 @@ namespace RayCarrot.Ray1Editor
             // Create the graphics service
             _ = new WpfGraphicsDeviceService(this);
 
-            // Create a sprite batch
-            SpriteBatch = new SpriteBatch(GraphicsDevice);
-
             // Create the camera
             Cam = new Camera(GraphicsDevice.Viewport);
 
@@ -157,7 +153,7 @@ namespace RayCarrot.Ray1Editor
             Cam.ResetCamera();
 
             // Create a renderer
-            Renderer = new Renderer(Cam, SpriteBatch);
+            Renderer = new Renderer(Cam, new SpriteBatch(GraphicsDevice));
 
             // Initialize the base game, thus loading the content
             base.Initialize();
@@ -237,9 +233,8 @@ namespace RayCarrot.Ray1Editor
 
             base.UnloadContent();
 
-            SpriteBatch?.Dispose();
+            Renderer?.Dispose();
             GameData?.Dispose();
-            Primitives2D.Dipose();
 
             Logger.Log(LogLevel.Info, "Unloaded the editor scene");
         }
@@ -515,18 +510,18 @@ namespace RayCarrot.Ray1Editor
             GraphicsDevice.Clear(State.Color_Background);
 
             // Begin drawing using the camera's transform matrix
-            SpriteBatch.Begin(
+            Renderer.SpriteBatch.Begin(
                 samplerState: SamplerState.PointClamp, 
                 transformMatrix: Cam.TransformMatrix);
 
             // Draw map background color
-            SpriteBatch.DrawFilledRectangle(new Rectangle(Point.Zero, State.MapSize), State.Color_MapBackground);
+            Renderer.DrawFilledRectangle(new Rectangle(Point.Zero, State.MapSize), State.Color_MapBackground);
 
             // Draw the content
             Draw(Renderer);
 
             // End the drawing
-            SpriteBatch.End();
+            Renderer.SpriteBatch.End();
         }
 
         protected void Draw(Renderer r)
@@ -561,7 +556,7 @@ namespace RayCarrot.Ray1Editor
 
                 // Draw link grip border if hovering over it in links mode
                 if (Mode == EditorMode.Links && HoverLinkGripObj != null)
-                    r.SpriteBatch.DrawRectangle(HoverLinkGripObj.LinkGripBounds, State.Color_ObjBounds);
+                    r.DrawRectangle(HoverLinkGripObj.LinkGripBounds, State.Color_ObjBounds);
 
                 if (CanHoverOverObject)
                 {
@@ -571,11 +566,11 @@ namespace RayCarrot.Ray1Editor
                     // When in links mode we show the bounds for the object the link is being
                     // moved for.
                     if (SelectedObject != null)
-                        r.SpriteBatch.DrawRectangle(SelectedObject.WorldBounds, State.Color_ObjBounds);
+                        r.DrawRectangle(SelectedObject.WorldBounds, State.Color_ObjBounds);
                     if (HoverObject != null && !IsDraggingObject && !IsDraggingLink)
-                        r.SpriteBatch.DrawRectangle(HoverObject.WorldBounds, State.Color_ObjBounds);
+                        r.DrawRectangle(HoverObject.WorldBounds, State.Color_ObjBounds);
                     else if (SelectedLinkObject != null)
-                        r.SpriteBatch.DrawRectangle(SelectedLinkObject.WorldBounds, State.Color_ObjBounds);
+                        r.DrawRectangle(SelectedLinkObject.WorldBounds, State.Color_ObjBounds);
                 }
 
                 if (ShowObjectOffsets)

@@ -211,8 +211,8 @@ namespace RayCarrot.Ray1Editor
             {
                 var color = LinkGroup == 0 ? EditorState.Color_ObjLinksDisabled : EditorState.Color_ObjLinksEnabled;
 
-                r.SpriteBatch.DrawLine(new Vector2(Position.X + Center.X, Position.Y + Center.Y), LinkGripBounds.Center.ToVector2(), color, LinkLineThickness);
-                r.SpriteBatch.DrawFilledRectangle(LinkGripBounds, color);
+                r.DrawLine(new Vector2(Position.X + Center.X, Position.Y + Center.Y), LinkGripBounds.Center.ToVector2(), color, LinkLineThickness);
+                r.DrawFilledRectangle(LinkGripBounds, color);
             }
         }
         public virtual void DrawOffsets(Renderer r)
@@ -225,8 +225,8 @@ namespace RayCarrot.Ray1Editor
         public virtual void DrawOffset(Renderer r, Point pos, Color c)
         {
             var halfSize = OffsetSize / 2;
-            r.SpriteBatch.DrawLine(new Vector2(pos.X - halfSize, pos.Y), new Vector2(pos.X + halfSize, pos.Y), c, 1);
-            r.SpriteBatch.DrawLine(new Vector2(pos.X, pos.Y - halfSize), new Vector2(pos.X, pos.Y + halfSize), c, 1);
+            r.DrawLine(new Vector2(pos.X - halfSize, pos.Y), new Vector2(pos.X + halfSize, pos.Y), c, 1);
+            r.DrawLine(new Vector2(pos.X, pos.Y - halfSize), new Vector2(pos.X, pos.Y + halfSize), c, 1);
         }
 
         // Data types
