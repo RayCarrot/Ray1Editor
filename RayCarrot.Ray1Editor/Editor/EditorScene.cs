@@ -288,7 +288,28 @@ namespace RayCarrot.Ray1Editor
 
             // Get the object we're hovering over
             if (CanHoverOverObject && fullScreenLayer == null && ShowObjects)
-                HoverObject = GameData.Objects.LastOrDefault(x => x.WorldBounds.Contains(EditorUpdateData.MousePosition));
+            {
+                var foundHoverObj = false;
+
+                for (int i = GameManager.MaxDisplayPrio; i >= 0; i--)
+                {
+                    for (int j = GameData.Objects.Count - 1; j >= 0; j--)
+                    {
+                        if (GameData.Objects[j].DisplayPrio == i && GameData.Objects[j].WorldBounds.Contains(EditorUpdateData.MousePosition))
+                        {
+                            HoverObject = GameData.Objects[j];
+                            foundHoverObj = true;
+                            break;
+                        }
+                    }
+
+                    if (foundHoverObj)
+                        break;
+                }
+
+                if (!foundHoverObj)
+                    HoverObject = null;
+            }
 
             switch (Mode)
             {
