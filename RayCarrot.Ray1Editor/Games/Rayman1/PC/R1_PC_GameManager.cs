@@ -4,9 +4,7 @@ using BinarySerializer.Ray1;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using Newtonsoft.Json;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -83,9 +81,11 @@ namespace RayCarrot.Ray1Editor
             // Load objects
             LoadObjects(data, lev);
 
+            // Load the wld objects (object templates)
+            LoadWldObj(data, fix);
+
             // Load Rayman
             LoadRayman(data);
-            LoadObject(data, lev, data.Rayman, -1);
 
             return data;
         }
@@ -112,11 +112,11 @@ namespace RayCarrot.Ray1Editor
 
             foreach (var obj in objData.Objects)
             {
-                obj.PC_AnimationsIndex = (uint)data.PC_LoadedAnimations.FindItemIndex(x => x == obj.Animations);
-                obj.AnimationsCount = (byte)obj.Animations.Length;
+                obj.PC_AnimationsIndex = (uint)data.PC_LoadedAnimations.FindItemIndex(x => x == obj.AnimationCollection);
+                obj.AnimationsCount = (byte)obj.AnimationCollection.Animations.Length;
                 obj.PC_ImageBufferIndex = (uint)data.PC_DES.FindItemIndex(x => x?.ImageData == obj.ImageBuffer);
-                obj.PC_SpritesIndex = (uint)data.PC_DES.FindItemIndex(x => x?.Sprites == obj.Sprites);
-                obj.SpritesCount = (byte)obj.Sprites.Length;
+                obj.PC_SpritesIndex = (uint)data.PC_DES.FindItemIndex(x => x?.SpriteCollection == obj.SpriteCollection);
+                obj.SpritesCount = (byte)obj.SpriteCollection.Sprites.Length;
                 obj.PC_ETAIndex = (uint)data.ETA.FindLastIndex(x => x.ETA == obj.ETA);
 
                 var cmds = obj.Commands ?? new CommandCollection()
@@ -211,7 +211,7 @@ namespace RayCarrot.Ray1Editor
                 null
             }.Concat(fix.DesItems).Concat(wld.DesItems).ToArray();
 
-            data.PC_LoadedAnimations = new Animation[data.PC_DES.Length][];
+            data.PC_LoadedAnimations = new AnimationCollection[data.PC_DES.Length];
 
             for (int i = 1; i < data.PC_DES.Length; i++)
             {
@@ -219,7 +219,7 @@ namespace RayCarrot.Ray1Editor
 
                 var processedImageData = des.RequiresBackgroundClearing ? PC_DES.ProcessImageData(des.ImageData) : des.ImageData;
 
-                var spriteSheet = new PalettedTextureSheet(textureManager, des.Sprites.Select(x => x.IsDummySprite() ? (Point?)null : new Point(x.Width, x.Height)).ToArray());
+                var spriteSheet = new PalettedTextureSheet(textureManager, des.SpriteCollection.Sprites.Select(x => x.IsDummySprite() ? (Point?)null : new Point(x.Width, x.Height)).ToArray());
 
                 for (int j = 0; j < des.SpritesCount; j++)
                 {
@@ -228,7 +228,7 @@ namespace RayCarrot.Ray1Editor
                     if (spriteSheetEntry == null)
                         continue;
 
-                    var sprite = des.Sprites[j];
+                    var sprite = des.SpriteCollection.Sprites[j];
 
                     spriteSheet.InitEntry(j, data.PC_Palettes[0], processedImageData, imgDataStartIndex: (int)sprite.ImageBufferOffset, imgDataLength: sprite.Width * sprite.Height);
                 }
@@ -240,8 +240,13 @@ namespace RayCarrot.Ray1Editor
                     Layers = x.Layers,
                     Frames = x.Frames
                 }).ToArray();
-                data.PC_LoadedAnimations[i] = loadedAnim;
-                data.AddDES(new R1_GameData.DESData(des.Sprites, spriteSheet, loadedAnim, loadedAnim.Select(x => ToCommonAnimation(x)).ToArray(), des.ImageData)
+                var animCollection = new AnimationCollection()
+                {
+                    Pre_AnimationsCount = loadedAnim.Length,
+                    Animations = loadedAnim,
+                };
+                data.PC_LoadedAnimations[i] = animCollection;
+                data.AddDES(new R1_GameData.DESData(des.SpriteCollection, spriteSheet, animCollection, loadedAnim.Select(x => ToCommonAnimation(x)).ToArray(), des.ImageData)
                 {
                     Name = names[i]
                 });
@@ -286,15 +291,37 @@ namespace RayCarrot.Ray1Editor
 
         public void LoadObject(R1_PC_GameData data, PC_LevFile lev, ObjData obj, int index)
         {
-            obj.Animations = data.PC_LoadedAnimations[(int)obj.PC_AnimationsIndex];
+            obj.AnimationCollection = data.PC_LoadedAnimations[(int)obj.PC_AnimationsIndex];
             obj.ImageBuffer = data.PC_DES[obj.PC_SpritesIndex].ImageData;
-            obj.Sprites = data.PC_DES[obj.PC_SpritesIndex].Sprites;
+            obj.SpriteCollection = data.PC_DES[obj.PC_SpritesIndex].SpriteCollection;
             obj.ETA = data.ETA[(int)obj.PC_ETAIndex].ETA;
 
             if (index != -1)
             {
                 obj.Commands = lev.ObjData.ObjCommands[index].Commands;
                 obj.LabelOffsets = lev.ObjData.ObjCommands[index].LabelOffsetTable;
+            }
+        }
+
+        public void LoadWldObj(R1_PC_GameData data, PC_AllfixFile fix)
+        {
+            loadObj(R1_GameData.WldObjType.Ray, fix.DESIndex_Ray);
+            loadObj(R1_GameData.WldObjType.RayLittle, fix.DESIndex_RayLittle);
+            loadObj(R1_GameData.WldObjType.MapObj, fix.DESIndex_MapObj);
+            loadObj(R1_GameData.WldObjType.ClockObj, fix.DESIndex_ClockObj);
+            loadObj(R1_GameData.WldObjType.DivObj, fix.DESIndex_DivObj);
+
+            void loadObj(R1_GameData.WldObjType type, uint desIndex)
+            {
+                data.ObjTemplates[type] = new ObjData()
+                {
+                    PC_SpritesIndex = desIndex,
+                    PC_ImageBufferIndex = desIndex,
+                    PC_AnimationsIndex = desIndex,
+                    PC_ETAIndex = fix.DesItems[desIndex - 1].WldETAIndex
+                };
+
+                LoadObject(data, null, data.ObjTemplates[type], -1);
             }
         }
 

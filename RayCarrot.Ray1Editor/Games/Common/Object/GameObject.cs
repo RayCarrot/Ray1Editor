@@ -60,6 +60,7 @@ namespace RayCarrot.Ray1Editor
                 OnFinishedAnimation();
         }
         protected virtual bool ShouldUpdateFrame() => true;
+        protected virtual bool HalfAnimFramePos => false;
         protected virtual void OnFinishedAnimation() { }
         public virtual void ResetFrame()
         {
@@ -135,6 +136,12 @@ namespace RayCarrot.Ray1Editor
 
                 var x = layer.Position.X;
                 var y = layer.Position.Y;
+
+                if (HalfAnimFramePos)
+                {
+                    x /= 2;
+                    y /= 2;
+                }
 
                 var pos = new Point(
                     (int)((x - Pivot.X) * (flipX ? -1f : 1f) * Scale + Pivot.X - (flipX ? spriteEntry.Source.Width : 0)),

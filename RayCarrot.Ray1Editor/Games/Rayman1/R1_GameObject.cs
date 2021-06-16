@@ -112,7 +112,7 @@ namespace RayCarrot.Ray1Editor
 
         // Animations
         public override ObjAnimation_HitBoxLayer[] HitBoxLayers => null; // TODO: Implement from ZDC
-        public override ObjAnimation CurrentAnimation => Data.GetAnimations(ObjData.Animations)?.ElementAtOrDefault(CurrentState?.AnimationIndex ?? -1);
+        public override ObjAnimation CurrentAnimation => Data.GetAnimations(ObjData.AnimationCollection)?.ElementAtOrDefault(CurrentState?.AnimationIndex ?? -1);
         public override int AnimationFrame
         {
             get => ObjData.CurrentAnimationFrame;
@@ -120,7 +120,7 @@ namespace RayCarrot.Ray1Editor
         }
         public byte ForceFrame { get; set; }
         public override int AnimSpeed => (ObjData.Type.IsHPFrame() ? 0 : CurrentState?.AnimationSpeed ?? 0);
-        public override TextureSheet SpriteSheet => Data.GetSprites(ObjData.Sprites);
+        public override TextureSheet SpriteSheet => Data.GetSprites(ObjData.SpriteCollection);
         public override Point Pivot => new Point(ObjData.OffsetBX, ObjData.OffsetBY);
         protected override bool ShouldUpdateFrame()
         {
@@ -147,6 +147,7 @@ namespace RayCarrot.Ray1Editor
                 return true;
             }
         }
+        protected override bool HalfAnimFramePos => ObjData.Type == ObjType.TYPE_DEMI_RAYMAN;
         protected override void OnFinishedAnimation()
         {
             // TODO: Implement state link looping

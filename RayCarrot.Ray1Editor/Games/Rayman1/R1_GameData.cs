@@ -1,7 +1,6 @@
 ﻿using BinarySerializer;
 using BinarySerializer.Ray1;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -10,52 +9,45 @@ namespace RayCarrot.Ray1Editor
     /// </summary>
     public class R1_GameData : GameData
     {
+        #region Constructor
+
         public R1_GameData(Context context, TextureManager textureManager) : base(context, textureManager)
         {
-            Sprites = new Dictionary<Sprite, PalettedTextureSheet>();
-            Animations = new Dictionary<Animation, ObjAnimation[]>();
+            ObjTemplates = new Dictionary<WldObjType, ObjData>();
+            Sprites = new Dictionary<SpriteCollection, PalettedTextureSheet>();
+            Animations = new Dictionary<AnimationCollection, ObjAnimation[]>();
             DES = new List<DESData>();
             ETA = new List<ETAData>();
         }
 
+        #endregion
+
+        #region Public Properties
+
+        // Random number generation
         public ushort[] RandomArray { get; set; }
         public byte RandomIndex { get; set; }
 
-        /// <summary>
-        /// The loaded link table
-        /// </summary>
+        // Objects
         public ushort[] LinkTable { get; set; }
-
+        public Dictionary<WldObjType, ObjData> ObjTemplates { get; }
         public ObjData Rayman { get; set; }
-
-        /// <summary>
-        /// The available event definitions
-        /// </summary>
         public R1_EventDefinition[] EventDefinitions { get; set; }
 
-        /// <summary>
-        /// The loaded DES
-        /// </summary>
+        // DES
         public List<DESData> DES { get; }
+        public Dictionary<SpriteCollection, PalettedTextureSheet> Sprites { get; }
+        public Dictionary<AnimationCollection, ObjAnimation[]> Animations { get; }
 
-        /// <summary>
-        /// The loaded sprite sheets for each sprite array
-        /// </summary>
-        public Dictionary<Sprite, PalettedTextureSheet> Sprites { get; }
-
-        /// <summary>
-        /// The loaded editor animations for each animation array
-        /// </summary>
-        public Dictionary<Animation, ObjAnimation[]> Animations { get; }
-        
-        /// <summary>
-        /// The loaded ETA
-        /// </summary>
+        // ETA
         public List<ETAData> ETA { get; }
 
-        // TODO: Find better way of handling this. Right now we use the first entry in the sprites/animations array as the key. We can't use the array as the array instances can be different (PS1 for example where it's parsed per object - arrays are not cached, only objects).
-        public PalettedTextureSheet GetSprites(Sprite[] sprites) => Sprites.TryGetValue(sprites.First());
-        public ObjAnimation[] GetAnimations(Animation[] anims) => Animations.TryGetValue(anims.First());
+        #endregion
+
+        #region Public Methods
+
+        public PalettedTextureSheet GetSprites(SpriteCollection sprites) => Sprites.TryGetValue(sprites);
+        public ObjAnimation[] GetAnimations(AnimationCollection anims) => Animations.TryGetValue(anims);
 
         public ushort GetNextRandom(int max)
         {
@@ -70,15 +62,17 @@ namespace RayCarrot.Ray1Editor
             if (des == null)
                 return;
 
-            if (des.SpritesData.Any())
-                Sprites[des.SpritesData.First()] = des.Sprites;
-            if (des.AnimationsData.Any())
-                Animations[des.AnimationsData.First()] = des.Animations;
+            Sprites[des.SpritesData] = des.Sprites;
+            Animations[des.AnimationsData] = des.Animations;
         }
+
+        #endregion
+
+        #region Data Types
 
         public class DESData
         {
-            public DESData(Sprite[] spritesData, PalettedTextureSheet sprites, Animation[] animationsData, ObjAnimation[] animations, byte[] imageBuffer)
+            public DESData(SpriteCollection spritesData, PalettedTextureSheet sprites, AnimationCollection animationsData, ObjAnimation[] animations, byte[] imageBuffer)
             {
                 SpritesData = spritesData;
                 Sprites = sprites;
@@ -87,9 +81,9 @@ namespace RayCarrot.Ray1Editor
                 ImageBuffer = imageBuffer;
             }
 
-            public Sprite[] SpritesData { get; }
+            public SpriteCollection SpritesData { get; }
             public PalettedTextureSheet Sprites { get; }
-            public Animation[] AnimationsData { get; }
+            public AnimationCollection AnimationsData { get; }
             public ObjAnimation[] Animations { get; }
             public byte[] ImageBuffer { get; }
             public string Name { get; init; }
@@ -105,5 +99,16 @@ namespace RayCarrot.Ray1Editor
             public ETA ETA { get; }
             public string Name { get; init; }
         }
+
+        public enum WldObjType
+        {
+            Ray, // Template for Rayman
+            RayLittle, // Template for small Rayman
+            ClockObj, // The game over clock
+            DivObj, // ?
+            MapObj, // 24 map objects
+        }
+
+        #endregion
     }
 }

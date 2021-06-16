@@ -8,7 +8,7 @@ namespace RayCarrot.Ray1Editor
         public R1_PC_GameData(Context context, TextureManager textureManager) : base(context, textureManager) { }
 
         public PC_DES[] PC_DES { get; set; }
-        public Animation[][] PC_LoadedAnimations { get; set; }
+        public AnimationCollection[] PC_LoadedAnimations { get; set; }
         public Palette[] PC_Palettes { get; set; }
     }
 }

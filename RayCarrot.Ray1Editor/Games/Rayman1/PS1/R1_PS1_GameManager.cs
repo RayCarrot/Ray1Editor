@@ -98,6 +98,9 @@ namespace RayCarrot.Ray1Editor
             // Load objects
             LoadObjects(data, lev.ObjData);
 
+            // Load the wld objects (object templates)
+            LoadWldObj(data, fix.AllfixData);
+
             // Load Rayman
             LoadRayman(data);
 
@@ -157,25 +160,25 @@ namespace RayCarrot.Ray1Editor
         {
             foreach (var des in GetLevelDES(data.Context, objData.Objects, nameTable))
             {
-                if (des.SpritesPointer != null && data.DES.All(x => x.SpritesData[0].Offset != des.SpritesPointer))
+                if (des.SpritesPointer != null && data.DES.All(x => x.SpritesData.Offset != des.SpritesPointer))
                 {
                     // Read or get the data
                     var s = data.Context.Deserializer;
-                    var sprites = des.EventData?.Sprites ?? s.DoAt(des.SpritesPointer, () => s.SerializeObjectArray<Sprite>(default, des.ImageDescriptorCount, name: $"ImageDescriptors"));
-                    var animations = des.EventData?.Animations ?? s.DoAt(des.AnimationsPointer, () => s.SerializeObjectArray<Animation>(default, des.AnimationsCount, name: $"AnimationDescriptors"));
+                    var sprites = des.EventData?.SpriteCollection ?? s.DoAt(des.SpritesPointer, () => s.SerializeObject<SpriteCollection>(default, x => x.Pre_SpritesCount = des.ImageDescriptorCount, name: $"Sprites"));
+                    var animations = des.EventData?.AnimationCollection ?? s.DoAt(des.AnimationsPointer, () => s.SerializeObject<AnimationCollection>(default, x => x.Pre_AnimationsCount = des.AnimationsCount, name: $"Animations"));
                     var imgBuffer = des.EventData?.ImageBuffer ?? s.DoAt(des.ImageBufferPointer, () => s.SerializeArray<byte>(default, des.ImageBufferLength ?? 0, name: $"ImageBuffer"));
 
                     // Create the sprite sheet
-                    var spriteSheet = new PalettedTextureSheet(textureManager, sprites.Select(x => x.IsDummySprite() ? (Point?)null : new Point(x.Width, x.Height)).ToArray());
+                    var spriteSheet = new PalettedTextureSheet(textureManager, sprites.Sprites.Select(x => x.IsDummySprite() ? (Point?)null : new Point(x.Width, x.Height)).ToArray());
 
                     // Initialize the sprites
-                    for (var i = 0; i < sprites.Length; i++)
+                    for (var i = 0; i < sprites.Sprites.Length; i++)
                     {
                         // Ignore dummy sprites
                         if (spriteSheet.Entries[i] == null)
                             continue;
 
-                        InitializeSprite(data, vram, sprites[i], spriteSheet, i);
+                        InitializeSprite(data, vram, sprites.Sprites[i], spriteSheet, i);
                     }
 
                     // Get the DES name
@@ -184,7 +187,7 @@ namespace RayCarrot.Ray1Editor
                         x.Value.AnimationDescriptors == des.AnimationsPointer?.AbsoluteOffset &&
                         (!x.Value.ImageBuffer.HasValue || x.Value.ImageBuffer == des.ImageBufferPointer?.AbsoluteOffset)).Key;
 
-                    data.AddDES(new R1_GameData.DESData(sprites, spriteSheet, animations, animations.Select(x => ToCommonAnimation(x)).ToArray(), imgBuffer)
+                    data.AddDES(new R1_GameData.DESData(sprites, spriteSheet, animations, animations.Animations.Select(x => ToCommonAnimation(x)).ToArray(), imgBuffer)
                     {
                         Name = desName
                     });
@@ -218,7 +221,6 @@ namespace RayCarrot.Ray1Editor
             int pageY = sprite.TexturePageInfo.TY;
 
             var is4Bit = sprite.TexturePageInfo.TP == PS1_TexturePageInfo.TexturePageTP.CLUT_4Bit;
-            var w = is4Bit ? (int)Math.Ceiling(sprite.Width / 2f) : sprite.Width;
             var length = sprite.Width * sprite.Height;
 
             if (is4Bit)
@@ -327,6 +329,17 @@ namespace RayCarrot.Ray1Editor
 
             data.LinkTable = objBlock.ObjectLinkingTable.Select(x => (ushort)x).ToArray();
             InitLinkGroups(data.Objects, data.LinkTable);
+        }
+
+        public void LoadWldObj(R1_GameData data, PS1_AllfixBlock fix)
+        {
+            var wldObj = fix.WldObj;
+
+            data.ObjTemplates[R1_GameData.WldObjType.Ray] = wldObj[0];
+            data.ObjTemplates[R1_GameData.WldObjType.RayLittle] = wldObj[1];
+            data.ObjTemplates[R1_GameData.WldObjType.ClockObj] = wldObj[2];
+            data.ObjTemplates[R1_GameData.WldObjType.DivObj] = wldObj[3];
+            data.ObjTemplates[R1_GameData.WldObjType.MapObj] = wldObj[4];
         }
 
         public void LoadMap(R1_PS1_GameData data, PS1_WorldFile wld, MapData map, TextureManager textureManager)

@@ -55,7 +55,7 @@ namespace RayCarrot.Ray1Editor
             var dropDownLookup_type = dropDownItems_type.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data, x => x.i);
 
             var dropDownItems_des = data.DES.Select((x, i) => new EditorDropDownFieldViewModel.DropDownItem<R1_GameData.DESData>($"DES {i + 1}{(x.Name != null ? $" ({x.Name})" : "")}", x)).ToArray();
-            var dropDownLookup_des = dropDownItems_des.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data.SpritesData.First(), x => x.i);
+            var dropDownLookup_des = dropDownItems_des.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data.SpritesData, x => x.i);
 
             var dropDownItems_eta = data.ETA.Select((x, i) => new EditorDropDownFieldViewModel.DropDownItem<ETA>($"ETA {i}{(x.Name != null ? $" ({x.Name})" : "")}", x.ETA)).ToArray();
             var dropDownLookup_eta = dropDownItems_eta.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Data, x => x.i);
@@ -73,11 +73,11 @@ namespace RayCarrot.Ray1Editor
             yield return new EditorDropDownFieldViewModel(
                 header: "DES",
                 info: "The group of sprites and animations to use.",
-                getValueAction: () => dropDownLookup_des[getObjData().Sprites.First()],
+                getValueAction: () => dropDownLookup_des[getObjData().SpriteCollection],
                 setValueAction: x =>
                 {
-                    getObjData().Sprites = dropDownItems_des[x].Data.SpritesData;
-                    getObjData().Animations = dropDownItems_des[x].Data.AnimationsData;
+                    getObjData().SpriteCollection = dropDownItems_des[x].Data.SpritesData;
+                    getObjData().AnimationCollection = dropDownItems_des[x].Data.AnimationsData;
                     getObjData().ImageBuffer = dropDownItems_des[x].Data.ImageBuffer;
                 },
                 getItemsAction: () => dropDownItems_des);
@@ -162,42 +162,30 @@ namespace RayCarrot.Ray1Editor
         {
             var data = (R1_GameData)gameData;
 
-            // Hard-code event animations for the different Rayman types
-            Animation[] rayAnim = null;
+            // Hard-code event animations for the different Rayman types. By default they have 0 animations in the files.
+            AnimationCollection rayAnim = null;
 
-            var ray = data.Rayman ?? data.Objects.OfType<R1_GameObject>().FirstOrDefault(x => x.ObjData.Type == ObjType.TYPE_RAY_POS)?.ObjData;
+            // Try and get the Rayman template
+            var ray = data.ObjTemplates.TryGetValue(R1_GameData.WldObjType.Ray);
 
+            // Get Rayman's animations
             if (ray != null)
-                rayAnim = ray.Animations;
+                rayAnim = ray.AnimationCollection;
 
             if (rayAnim != null)
             {
-                var miniRay = data.Objects.OfType<R1_GameObject>().FirstOrDefault(x => x.ObjData.Type == ObjType.TYPE_DEMI_RAYMAN);
+                // Try and get the small Rayman template
+                var miniRay = data.ObjTemplates.TryGetValue(R1_GameData.WldObjType.RayLittle);
 
-                // TODO: If not found in map use template
+                // If found we replace the empty animation array with Rayman's (on PS1 it already uses Rayman's animations, but not on PC)
                 if (miniRay != null)
-                {
-                    miniRay.ObjData.Animations = rayAnim.Select(x => new Animation
-                    {
-                        LayersPerFrameSerialized = x.LayersPerFrameSerialized,
-                        FrameCountSerialized = x.FrameCountSerialized,
-                        Layers = x.Layers.Select(l => new AnimationLayer
-                        {
-                            IsFlippedHorizontally = l.IsFlippedHorizontally,
-                            IsFlippedVertically = l.IsFlippedVertically,
-                            XPosition = (byte)(l.XPosition / 2),
-                            YPosition = (byte)(l.YPosition / 2),
-                            SpriteIndex = l.SpriteIndex
-                        }).ToArray(),
-                    }).ToArray();
-                    data.Animations[miniRay.ObjData.Animations.First()] = miniRay.ObjData.Animations.Select(x => ToCommonAnimation(x)).ToArray();
-                }
+                    data.Animations[miniRay.AnimationCollection] = data.Animations[rayAnim];
 
+                // Bad Rayman has no template due to being world specific, so we just try and find him in the map. This won't work if he wasn't in the map initially.
                 var badRay = data.Objects.OfType<R1_GameObject>().FirstOrDefault(x => x.ObjData.Type == ObjType.TYPE_BLACK_RAY);
 
-                // TODO: If not found in map use template
                 if (badRay != null)
-                    badRay.ObjData.Animations = rayAnim;
+                    data.Animations[badRay.ObjData.AnimationCollection] = data.Animations[rayAnim];
             }
 
             // Set frames for linked events
@@ -279,9 +267,9 @@ namespace RayCarrot.Ray1Editor
             obj.ObjData.HitSprite = def.HitSprite;
             obj.ObjData.Commands = cmds;
             obj.ObjData.LabelOffsets = labelOffsets;
-            obj.ObjData.Animations = des.AnimationsData;
+            obj.ObjData.AnimationCollection = des.AnimationsData;
             obj.ObjData.ImageBuffer = des.ImageBuffer;
-            obj.ObjData.Sprites = des.SpritesData;
+            obj.ObjData.SpriteCollection = des.SpritesData;
             obj.ObjData.ETA = eta.ETA;
             obj.ObjData.SetFollowEnabled(data.Context.GetSettings<Ray1Settings>(), def.FollowEnabled);
             obj.ObjData.ActualHitPoints = def.HitPoints;
@@ -490,8 +478,16 @@ namespace RayCarrot.Ray1Editor
 
         public void LoadRayman(R1_GameData data)
         {
-            // TODO: Get Rayman from template
-            data.Rayman = ObjData.GetRayman(data.Context, data.Objects.OfType<R1_GameObject>().FirstOrDefault(x => x.ObjData.Type == ObjType.TYPE_RAY_POS)?.ObjData);
+            if (!data.ObjTemplates.ContainsKey(R1_GameData.WldObjType.Ray))
+                return;
+
+            // TODO: Instead of using Rayman from th template we should copy his properties to a new object. This is to ensure no values have been modified in the template when writing. This isn't currently an issue since we don't use the template for much, but if memory loading is introduced then it is required.
+
+            var obj = data.ObjTemplates[R1_GameData.WldObjType.Ray];
+
+            obj.InitRayman(data.Context, data.Objects.OfType<R1_GameObject>().FirstOrDefault(x => x.ObjData.Type == ObjType.TYPE_RAY_POS)?.ObjData);
+
+            data.Rayman = obj;
         }
 
         public void LoadEditorEventDefinitions(R1_GameData data)
