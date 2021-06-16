@@ -33,7 +33,8 @@
                             </Grid.ColumnDefinitions>
 
                             <RadioButton Grid.Column="0"
-                                         GroupName="PaletteToggle"
+                                         Visibility="{Binding Path=SelectionGroup, Converter={local:InvertedObjectNullToVisibilityConverter}, Mode=OneTime}"
+                                         GroupName="{Binding Path=SelectionGroup, Mode=OneTime}"
                                          IsChecked="{Binding Path=IsSelected}" />
 
                             <StackPanel Grid.Column="1"

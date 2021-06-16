@@ -18,13 +18,14 @@ namespace RayCarrot.Ray1Editor
         public Action<Palette> OnSelectedAction { get; }
         public string Header => Palette.Name;
         public string Offset => Palette.Pointer?.ToString();
+        public string SelectionGroup => Palette.SelectionGroup;
 
         public bool IsSelected
         {
             get => _isSelected;
             set
             {
-                if (_isSelected == value)
+                if (_isSelected == value || SelectionGroup == null)
                     return;
 
                 _isSelected = value;

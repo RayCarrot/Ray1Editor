@@ -197,7 +197,8 @@ namespace RayCarrot.Ray1Editor
             data.PC_Palettes = lev.MapData.ColorPalettes.Select((x, i) => new Palette(x, $"Palette {i + 1}")
             {
                 CanEditAlpha = false,
-                IsFirstTransparent = true
+                IsFirstTransparent = true,
+                SelectionGroup = lev.MapData.ColorPalettes.Length > 1 ? "R1_PC_Palette" : null // Name doesn't matter as long as it's the same for all palettes
             }).ToArray();
 
             foreach (var pal in data.PC_Palettes)

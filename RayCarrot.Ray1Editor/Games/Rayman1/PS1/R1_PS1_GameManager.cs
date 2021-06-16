@@ -150,7 +150,7 @@ namespace RayCarrot.Ray1Editor
                 data.TextureManager.AddPalette(pal);
 
             // Add sprite palettes
-            data.PS1_SpritePalettes = vram.Palettes.Select(x => new R1_PS1_GameData.LoadedPalette(x.Colors, new Palette(x.Colors, $"Sprite Palette {x.Y}"))).ToArray();
+            data.PS1_SpritePalettes = vram.Palettes.Select(x => new R1_PS1_GameData.LoadedPalette(x.Colors, new Palette(x.Colors, $"Sprite Palette ({x.X}, {x.Y})"))).ToArray();
 
             foreach (var pal in data.PS1_SpritePalettes)
                 data.TextureManager.AddPalette(pal.Palette);
