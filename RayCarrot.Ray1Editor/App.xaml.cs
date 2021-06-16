@@ -11,6 +11,11 @@ namespace RayCarrot.Ray1Editor
     /// </summary>
     public partial class App : Application
     {
+        /// <summary>
+        /// The application base path to use for WPF related operations
+        /// </summary>
+        public const string WPFAppBasePath = "pack://application:,,,/RayCarrot.Ray1Editor;component/";
+
         public const string EditorIntFieldTemplateKey = "EditorIntFieldTemplate";
         public const string EditorBoolFieldTemplateKey = "EditorBoolFieldTemplate";
         public const string EditorDropDownFieldTemplateKey = "EditorDropDownFieldTemplate";

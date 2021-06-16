@@ -16,7 +16,7 @@ namespace RayCarrot.Ray1Editor
 {
     public class AppViewModel : BaseViewModel
     {
-        #region Singelton
+        #region Singleton
 
         public static AppViewModel Instance { get; } = new();
 
@@ -30,6 +30,8 @@ namespace RayCarrot.Ray1Editor
             Path_AppUserDataFile = Path.Combine(Path_AppDataDir, $"Settings.json");
             Path_LogFile = Path.Combine(Path_AppDataDir, $"Log.txt");
             Path_SerializerLogFile = Path.Combine(Path_AppDataDir, $"SerializerLog.txt");
+
+            UI = new AppUIManager();
         }
 
         #endregion
@@ -70,6 +72,11 @@ namespace RayCarrot.Ray1Editor
         /// THe view model for the current app view
         /// </summary>
         public AppViewBaseViewModel CurrentAppViewViewModel { get; protected set; }
+
+        /// <summary>
+        /// The current UI manager
+        /// </summary>
+        public AppUIManager UI { get; }
 
         /// <summary>
         /// The current application title

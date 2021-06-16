@@ -134,7 +134,7 @@
     </Page>
   </ItemGroup>
 
-  <!-- Resources -->
+  <!-- Embedded resources -->
   <ItemGroup>
     <Content Remove="Assets\Collision\R1_TypeCollision.png" />
     <Content Remove="Assets\Rayman1\Events\edu_des.json" />
@@ -158,6 +158,22 @@
     <EmbeddedResource Include="Assets\Object\object.png" />
     <EmbeddedResource Include="Assets\Object\trigger.png" />
     <EmbeddedResource Include="Assets\Object\waypoint.png" />
+  </ItemGroup>
+
+  <!-- Resources -->
+  <ItemGroup>
+    <None Remove="UI\Img\Error.png" />
+    <None Remove="UI\Img\Information.png" />
+    <None Remove="UI\Img\Question.png" />
+    <None Remove="UI\Img\Success.png" />
+    <None Remove="UI\Img\Warning.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="UI\Img\Error.png" />
+    <Resource Include="UI\Img\Information.png" />
+    <Resource Include="UI\Img\Question.png" />
+    <Resource Include="UI\Img\Success.png" />
+    <Resource Include="UI\Img\Warning.png" />
   </ItemGroup>
 
 </Project>

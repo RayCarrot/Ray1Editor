@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows.Media;
 using BinarySerializer;
 using BinarySerializer.Ray1;
 using Microsoft.Xna.Framework;
@@ -65,5 +68,27 @@ namespace RayCarrot.Ray1Editor
         {
             R = (byte)x
         }), "Design-time palette");
+
+        public static DialogMessageViewModel DialogMessageViewModel => new DialogMessageViewModel()
+        {
+            MessageText = "Message text",
+            Title = "Header text",
+            MessageType = DialogMessageType.Information,
+            DialogImageSource = new ImageSourceConverter().ConvertFromString($"{App.WPFAppBasePath}UI/Img/{DialogMessageType.Information}.png") as ImageSource,
+            DialogActions = new ObservableCollection<DialogMessageActionViewModel>()
+            {
+                new DialogMessageActionViewModel
+                {
+                    DisplayText = "Ok",
+                    DisplayDescription = "Ok",
+                    ActionResult = false,
+                    IsDefault = true,
+                    IsCancel = false,
+                    ShouldCloseDialog = true,
+                    OnHandled = null
+                }
+            },
+            DefaultActionResult = false
+        };
     }
 }
