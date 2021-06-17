@@ -7,7 +7,7 @@
                   mc:Ignorable="d"
                   Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}"
                   Background="{DynamicResource MahApps.Brushes.ThemeBackground}"
-                  Title="DialogWindow"
+                  Title="{Binding Path=Title, Mode=OneTime}"
                   ResizeMode="NoResize"
                   SizeToContent="WidthAndHeight" 
                   MinHeight = "200" MinWidth="250"
