@@ -12,6 +12,7 @@ namespace RayCarrot.Ray1Editor
         public LoadMapView()
         {
             InitializeComponent();
+            Loaded += (_, _) => GongSolutions.Wpf.DragDrop.DragDrop.SetDropHandler(GamesListBox, new LoadMapGamesListDropTarget());
         }
 
         public LoadMapViewModel VM => (LoadMapViewModel)DataContext;

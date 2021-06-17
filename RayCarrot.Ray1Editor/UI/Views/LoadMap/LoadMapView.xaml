@@ -5,6 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:local="clr-namespace:RayCarrot.Ray1Editor"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:dd="urn:gong-wpf-dragdrop"
              mc:Ignorable="d"
              d:Height="600" d:Width="1024" 
              Background="{DynamicResource MahApps.Brushes.ThemeBackground}"
@@ -59,9 +60,11 @@
 
             <!-- Games Selection -->
 
-            <!-- TODO: Allow reordering -->
-            <ListBox Grid.Column="1"
+            <ListBox x:Name="GamesListBox"
+                     Grid.Column="1"
                      Grid.Row="2"
+                     dd:DragDrop.IsDragSource="True"
+                     dd:DragDrop.IsDropTarget="True"
                      Style="{StaticResource BorderedListBox}"
                      ItemsSource="{Binding Path=Games, Mode=OneTime}"
                      SelectedItem="{Binding Path=SelectedGame}">
