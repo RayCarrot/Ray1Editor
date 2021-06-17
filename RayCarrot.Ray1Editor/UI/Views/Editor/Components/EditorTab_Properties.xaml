@@ -36,17 +36,23 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel Grid.Column="0"
-                                Orientation="Horizontal">
+                    <Grid Grid.Column="0" HorizontalAlignment="Left">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
                         <TextBlock Text="{Binding Path=SelectedObjectName}"
+                                   TextWrapping="Wrap"
                                    FontSize="22" />
 
-                        <iconPacks:PackIconMaterial Style="{StaticResource PointerInfoIcon}"
+                        <iconPacks:PackIconMaterial Grid.Column="1"
+                                                    Style="{StaticResource PointerInfoIcon}"
                                                     Visibility="Visible"
+                                                    Margin="7 0"
                                                     ToolTip="{Binding Path=SelectedObjectOffset}" />
 
-                    </StackPanel>
+                    </Grid>
 
                     <Button Grid.Column="1"
                             VerticalAlignment="Center"
