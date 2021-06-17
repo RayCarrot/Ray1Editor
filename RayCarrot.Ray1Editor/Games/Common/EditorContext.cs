@@ -31,6 +31,7 @@ namespace RayCarrot.Ray1Editor
 
         public class EditorSerializerLog : ISerializerLog
         {
+            private static bool _hasBeenCreated;
             public bool IsEnabled => AppViewModel.Instance.UserData.Serializer_EnableLog;
 
             private StreamWriter _logWriter;
@@ -42,7 +43,9 @@ namespace RayCarrot.Ray1Editor
 
             public StreamWriter GetFile()
             {
-                return new StreamWriter(File.Open(LogFile, FileMode.Create, FileAccess.Write, FileShare.ReadWrite), Encoding.UTF8);
+                var w = new StreamWriter(File.Open(LogFile, _hasBeenCreated ? FileMode.Append : FileMode.Create, FileAccess.Write, FileShare.ReadWrite), Encoding.UTF8);
+                _hasBeenCreated = true;
+                return w;
             }
 
             public void Log(object obj)

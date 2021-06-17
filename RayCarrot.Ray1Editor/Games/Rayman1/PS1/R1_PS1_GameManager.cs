@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using BinarySerializer;
+﻿using BinarySerializer;
 using BinarySerializer.PS1;
 using BinarySerializer.Ray1;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Point = Microsoft.Xna.Framework.Point;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -65,7 +66,8 @@ namespace RayCarrot.Ray1Editor
 
             // Add and read level
             LoadFile(context, fileEntrylevel);
-            var lev = FileFactory.Read<PS1_LevFile>(fileEntrylevel.ProcessedFilePath, context);
+            var levFile = FileFactory.Read<SerializableEditorFile<PS1_LevFile>>(fileEntrylevel.ProcessedFilePath, context);
+            var lev = levFile.FileData;
 
             // Initialize the random generation
             InitRandom(data);
@@ -87,10 +89,10 @@ namespace RayCarrot.Ray1Editor
             LoadMap(data, wld, lev.MapData, textureManager);
 
             // Load DES (sprites & animations)
-            LoadDES(data, vram, lev.ObjData, desNames, textureManager);
+            LoadDES(data, vram, lev.ObjData, desNames, textureManager, levFile.RelocatedStructs);
 
             // Load ETA (states)
-            LoadETA(data, lev.ObjData, etaNames);
+            LoadETA(data, lev.ObjData, etaNames, levFile.RelocatedStructs);
 
             // Load the editor event definitions
             LoadEditorEventDefinitions(data);
@@ -109,7 +111,49 @@ namespace RayCarrot.Ray1Editor
 
         public override void Save(Context context, GameData gameData)
         {
-            throw new NotImplementedException();
+            // Get settings
+            var settings = context.GetSettings<Ray1Settings>();
+
+            var data = (R1_PS1_GameData)gameData;
+
+            var worldIndex = (int)settings.World - 1;
+            var lvlIndex = settings.Level - 1;
+
+            // Get the exe
+            var exe = context.GetMainFileObject<PS1_Executable>(Path_ExeFile);
+
+            // Get file entries
+            var fileEntryFix = exe.PS1_FileTable[exe.GetFileTypeIndex(exe.Pre_PS1_Config, PS1_FileType.filefxs)];
+            var fileEntryworld = exe.PS1_FileTable[exe.GetFileTypeIndex(exe.Pre_PS1_Config, PS1_FileType.wld_file) + worldIndex];
+            var fileEntrylevel = exe.PS1_FileTable[exe.GetFileTypeIndex(exe.Pre_PS1_Config, PS1_FileType.map_file) + (worldIndex * 21 + lvlIndex)];
+
+            // Get the file datas
+            var fix = context.GetMainFileObject<PS1_AllfixFile>(fileEntryFix.ProcessedFilePath);
+            var wld = context.GetMainFileObject<PS1_WorldFile>(fileEntryworld.ProcessedFilePath);
+            var lev = context.GetMainFileObject<SerializableEditorFile<PS1_LevFile>>(fileEntrylevel.ProcessedFilePath);
+
+            // Save palettes
+            SavePalettes(data, wld);
+
+            // Save objects
+            var objData = lev.FileData.ObjData;
+            SaveObjects(data, objData);
+
+            // Save the map
+            SaveMap(data, lev.FileData.MapData);
+
+            // Save background
+            exe.PS1_LevelBackgroundIndexTable[(int)settings.World - 1][settings.Level - 1] = (byte)data.Layers.OfType<BackgroundLayer>().First().SelectedBackgroundIndex;
+
+            // Relocate level data
+            RelocateLevelData(data, lev, exe);
+
+            // Save the level file
+            FileFactory.Write<SerializableEditorFile<PS1_LevFile>>(fileEntrylevel.ProcessedFilePath, context);
+            
+            // TODO: Write wld (due to changed palettes)
+            // TODO: Write fix (due to changed palettes)
+            // TODO: Write exe (due to changed bg index)
         }
 
         #endregion
@@ -124,6 +168,18 @@ namespace RayCarrot.Ray1Editor
             {
                 RecreateOnWrite = false
             });
+        }
+
+        public Pointer GetPointer(Pointer pointer, RelocatedStruct[] relocatedStructs)
+        {
+            if (relocatedStructs == null)
+                return pointer;
+
+            if (pointer == null)
+                return null;
+
+            var reloc = relocatedStructs.FirstOrDefault(x => x.OriginalPointer == pointer);
+            return reloc?.NewPointer ?? pointer;
         }
 
         protected virtual Dictionary<string, Dictionary<string, DESPointers>> LoadNameTable_DES(R1_GameData data, Games.R1_Game game)
@@ -156,9 +212,9 @@ namespace RayCarrot.Ray1Editor
                 data.TextureManager.AddPalette(pal.Palette);
         }
 
-        public void LoadDES(R1_PS1_GameData data, PS1_VRAM vram, PS1_ObjBlock objData, Dictionary<string, Dictionary<string, DESPointers>> nameTable, TextureManager textureManager)
+        public void LoadDES(R1_PS1_GameData data, PS1_VRAM vram, PS1_ObjBlock objData, Dictionary<string, Dictionary<string, DESPointers>> nameTable, TextureManager textureManager, RelocatedStruct[] relocatedStructs)
         {
-            foreach (var des in GetLevelDES(data.Context, objData.Objects, nameTable))
+            foreach (var des in GetLevelDES(data.Context, objData.Objects, nameTable, relocatedStructs))
             {
                 if (des.SpritesPointer != null && data.DES.All(x => x.SpritesData.Offset != des.SpritesPointer))
                 {
@@ -261,9 +317,9 @@ namespace RayCarrot.Ray1Editor
             sheet.InitEntry(index, pal, imgData, format: format, paletteOffset: palOffset);
         }
 
-        protected IEnumerable<DES> GetLevelDES(Context context, IEnumerable<ObjData> events, Dictionary<string, Dictionary<string, DESPointers>> nameTable_R1PS1DES)
+        protected IEnumerable<DES> GetLevelDES(Context context, IEnumerable<ObjData> objects, Dictionary<string, Dictionary<string, DESPointers>> nameTable_R1PS1DES, RelocatedStruct[] relocatedStructs)
         {
-            return events.Select(x => new DES
+            return objects.Select(x => new DES
             {
                 SpritesPointer = x.SpritesPointer,
                 AnimationsPointer = x.AnimationsPointer,
@@ -275,9 +331,9 @@ namespace RayCarrot.Ray1Editor
                 EventData = x
             }).Concat(nameTable_R1PS1DES?.Where(d => context.FileExists(d.Key)).SelectMany(d => d.Value.Select(des => new DES
             {
-                SpritesPointer = des.Value.ImageDescriptors != null ? new Pointer(des.Value.ImageDescriptors.Value, context.GetFile(d.Key)) : null,
-                AnimationsPointer = des.Value.AnimationDescriptors != null ? new Pointer(des.Value.AnimationDescriptors.Value, context.GetFile(d.Key)) : null,
-                ImageBufferPointer = des.Value.ImageBuffer != null ? new Pointer(des.Value.ImageBuffer.Value, context.GetFile(d.Key)) : null,
+                SpritesPointer = GetPointer(des.Value.ImageDescriptors != null ? new Pointer(des.Value.ImageDescriptors.Value, context.GetFile(d.Key)) : null, relocatedStructs),
+                AnimationsPointer = GetPointer(des.Value.AnimationDescriptors != null ? new Pointer(des.Value.AnimationDescriptors.Value, context.GetFile(d.Key)) : null, relocatedStructs),
+                ImageBufferPointer = GetPointer(des.Value.ImageBuffer != null ? new Pointer(des.Value.ImageBuffer.Value, context.GetFile(d.Key)) : null, relocatedStructs),
                 ImageDescriptorCount = des.Value.ImageDescriptorsCount,
                 AnimationsCount = des.Value.AnimationDescriptorsCount,
                 ImageBufferLength = des.Value.ImageBufferLength,
@@ -286,9 +342,9 @@ namespace RayCarrot.Ray1Editor
             })) ?? new DES[0]);
         }
 
-        public void LoadETA(R1_GameData data, PS1_ObjBlock objBlock, Dictionary<string, Dictionary<string, uint>> nameTable)
+        public void LoadETA(R1_GameData data, PS1_ObjBlock objBlock, Dictionary<string, Dictionary<string, uint>> nameTable, RelocatedStruct[] relocatedStructs)
         {
-            foreach (var eta in GetLevelETA(data.Context, objBlock.Objects, nameTable))
+            foreach (var eta in GetLevelETA(data.Context, objBlock.Objects, nameTable, relocatedStructs))
             {
                 // Add if not found
                 if (eta.ETAPointer != null && data.ETA.All(x => x.ETA.Offset != eta.ETAPointer))
@@ -308,16 +364,16 @@ namespace RayCarrot.Ray1Editor
             }
         }
 
-        protected IEnumerable<ETA> GetLevelETA(Context context, IEnumerable<ObjData> events, Dictionary<string, Dictionary<string, uint>> nameTable_R1PS1ETA)
+        protected IEnumerable<ETA> GetLevelETA(Context context, IEnumerable<ObjData> objects, Dictionary<string, Dictionary<string, uint>> nameTable_R1PS1ETA, RelocatedStruct[] relocatedStructs)
         {
-            return events.Select(x => new ETA
+            return objects.Select(x => new ETA
             {
                 ETAPointer = x.ETAPointer,
                 Name = null,
                 EventData = x
             }).Concat(nameTable_R1PS1ETA?.Where(d => context.FileExists(d.Key)).SelectMany(d => d.Value.Select(des => new ETA
             {
-                ETAPointer = new Pointer(des.Value, context.GetFile(d.Key)),
+                ETAPointer = GetPointer(new Pointer(des.Value, context.GetFile(d.Key)), relocatedStructs),
                 Name = des.Key,
                 EventData = null
             })) ?? new ETA[0]);
@@ -469,6 +525,269 @@ namespace RayCarrot.Ray1Editor
             texture.SetData(pixels);
 
             return texture;
+        }
+
+        public void SavePalettes(R1_PS1_GameData data, PS1_WorldFile wld)
+        {
+            wld.TilePalettes = data.PS1_TilePalettes.Select(x => x.ToBaseColorArray<RGBA5551Color>()).ToArray();
+            // TODO: Sprite palettes
+        }
+
+        public void SaveObjects(R1_PS1_GameData data, PS1_ObjBlock objData)
+        {
+            objData.ObjectsCount = objData.ObjectLinksCount = (byte)data.Objects.Count;
+            objData.Objects = data.Objects.Cast<R1_GameObject>().Select(x => x.ObjData).ToArray();
+            objData.ObjectLinkingTable = SaveLinkGroups(data.Objects).Select(x => (byte)x).ToArray();
+
+            foreach (var obj in objData.Objects)
+            {
+                obj.AnimationsPointer = obj.AnimationCollection.Offset;
+                obj.AnimationsCount = (byte)obj.AnimationCollection.Animations.Length;
+                obj.ImageBufferPointer = null; // TODO: Support saving image buffer pointer for games which use it
+                obj.SpritesPointer = obj.SpriteCollection.Offset;
+                obj.SpritesCount = (byte)obj.SpriteCollection.Sprites.Length;
+                obj.ETAPointer = obj.ETA.Offset;
+                // No need to update commands/labels pointers since they can't be changed in the editor
+            }
+        }
+
+        public void SaveMap(R1_PS1_GameData data, MapData mapData)
+        {
+            var mapLayer = data.Layers.OfType<R1_TileMapLayer>().First();
+
+            mapData.Width = (ushort)mapLayer.MapSize.X;
+            mapData.Height = (ushort)mapLayer.MapSize.Y;
+
+            mapData.Tiles = mapLayer.TileMap;
+        }
+
+        public void RelocateLevelData(R1_PS1_GameData data, SerializableEditorFile<PS1_LevFile> lev, PS1_Executable exe)
+        {
+            var objData = lev.FileData.ObjData;
+
+            lev.AdditionalSerializationActions.Clear();
+
+            // Now for the complicated part. We need to repack the level file. It is split into 4 blocks: background, obj, map and vram.
+            // The background block we can ignore for now. The object block starts with an object array and ends with all the referenced data,
+            // commands -> animations -> sprites -> states -> (animation layers -> animation frames)
+            // The map block is just an array of the tiles and the vram block we leave as is. So what we need is to:
+            // 1. Relocate all the referenced data
+            // 2. Resize the object and map blocks
+            // 3. Modify the block pointers
+            // One issue with relocating the sprites is that the defined pointers in the name tables (the .json files used in the editor)
+            // will no longer be accurate. We can solve this by appending a footer (using SerializableEditorFile) containing a
+            // table with all the relocated data. That way we can match original pointers with their new ones.
+            // Only other issue is the memory limit. We don't want to increase the level size too much or it will overlap other files (oh no!).
+            // It appears the next mapped file is the exe. The game maps the files like this: FIX -> WLD -> FND -> LEV (where are sounds?)
+
+            var relocatedStructs = new List<RelocatedStruct>();
+
+            // Get the size of the objects (all have the same size)
+            long objSize = 0;
+            var firstObj = objData.Objects.FirstOrDefault();
+
+            if (firstObj != null)
+            {
+                firstObj.RecalculateSize<ObjData>();
+                objSize = firstObj.Size;
+            }
+
+            // Correct the object pointers
+            objData.ObjectsPointer = new Pointer(lev.FileData.ObjectBlockPointer.AbsoluteOffset + 16, lev.Offset.File);
+            objData.ObjectLinksPointer = objData.ObjectsPointer + (objSize * objData.ObjectsCount);
+
+            // Get the offset to start allocating the referenced data (right after the link table)
+            var objDataOffset = objData.ObjectLinksPointer + objData.ObjectsCount;
+
+            Pointer getNextPointer(long length, bool relativeToFile = false)
+            {
+                // Align by 4
+                if (objDataOffset.AbsoluteOffset % 4 != 0)
+                    objDataOffset += 4 - objDataOffset.AbsoluteOffset % 4;
+
+                var offset = objDataOffset;
+
+                // Increase the pointer
+                objDataOffset += length;
+
+                if (relativeToFile)
+                    offset = new Pointer(offset.FileOffset, offset.File, offset.File.StartPointer);
+
+                return offset;
+            }
+
+            var relocatedData = new HashSet<BinarySerializable>();
+
+            foreach (var obj in objData.Objects)
+            {
+                if (obj.Commands != null && obj.Commands.Commands.Length > 0)
+                {
+                    obj.Commands.RecalculateSize<CommandCollection>();
+                    obj.CommandsPointer = getNextPointer(obj.Commands.Size);
+                }
+                else
+                {
+                    obj.CommandsPointer = null;
+                }
+
+                if (obj.LabelOffsets != null && obj.LabelOffsets.Length > 0)
+                    obj.LabelOffsetsPointer = getNextPointer(obj.LabelOffsets.Length * 2);
+                else
+                    obj.LabelOffsetsPointer = null;
+
+                var hasRelocatedETA = relocatedData.Contains(obj.ETA);
+                var hasRelocatedAnims = relocatedData.Contains(obj.AnimationCollection);
+
+                // Relocate animations, sprites and states
+                // TODO: For bad Rayman the animation pointer is null, for small Rayman it's the same as for Rayman but with a count of 0
+                obj.AnimationsPointer = relocateData(obj.AnimationsPointer, obj.AnimationCollection);
+                obj.SpritesPointer = relocateData(obj.SpritesPointer, obj.SpriteCollection);
+                obj.ETAPointer = relocateData(obj.ETAPointer, obj.ETA);
+
+                // Relocate states
+                // TODO: This will write too much ETA since we're reading it wrong! Correct ETA reading first.
+                if (!hasRelocatedETA && obj.ETAPointer.File == lev.Offset.File)
+                {
+                    for (var i = 0; i < obj.ETA.States.Length; i++)
+                        obj.ETA.EtatPointers[i] = getNextPointer(8 * obj.ETA.States[i].Length);
+                }
+
+                // Relocate animation layers and frames
+                if (!hasRelocatedAnims && obj.AnimationsPointer.File == lev.Offset.File)
+                {
+                    foreach (var anim in obj.AnimationCollection.Animations)
+                    {
+                        anim.LayersPointer = getNextPointer(anim.LayersPerFrame * anim.FrameCount * 4);
+
+                        // Not all animations have frames defined
+                        if (anim.Frames?.Length > 0)
+                            anim.FramesPointer = getNextPointer(anim.FrameCount * 4);
+                        else
+                            anim.FramesPointer = null;
+                    }
+                }
+
+                Pointer relocateData<T>(Pointer currentPointer, T refData)
+                    where T : BinarySerializable, new()
+                {
+                    // Only relocate data in the level file
+                    if (currentPointer.File != lev.Offset.File)
+                        return currentPointer;
+
+                    // If we've already relocated the data we use the relocated pointer
+                    if (relocatedData.Contains(refData))
+                        return refData.Offset;
+
+                    // We need the find the original pointer for the data. If the file has been repacked before it will be in the relocation table
+                    Pointer originalPointer = lev.RelocatedStructs?.FirstOrDefault(x => x.NewPointer == currentPointer)?.OriginalPointer;
+
+                    // If we didn't find it we assume the current pointer is the original one
+                    originalPointer ??= currentPointer;
+
+                    // Next we get the size of the data to relocate
+                    refData.RecalculateSize<T>();
+                    var size = refData.Size;
+
+                    // Get the new pointer
+                    var newPointer = getNextPointer(size);
+
+                    // Add pointer to table
+                    relocatedStructs.Add(new RelocatedStruct
+                    {
+                        OriginalPointer = originalPointer,
+                        NewPointer = newPointer,
+                        DataSize = (uint)size
+                    });
+
+                    // Re-initialize the data at the new offset
+                    refData.Init(newPointer);
+
+                    relocatedData.Add(refData);
+
+                    // Return the new pointer
+                    return newPointer;
+                }
+            }
+
+            // Relocated unreferenced DES/ETA in the level file so they don't get lost
+            foreach (var des in data.DES)
+            {
+                var handledAnims = addUnreferencedData(des.AnimationsData);
+                addUnreferencedData(des.SpritesData);
+
+                if (handledAnims)
+                {
+                    foreach (var anim in des.AnimationsData.Animations)
+                    {
+                        anim.LayersPointer = getNextPointer(anim.LayersPerFrame * anim.FrameCount * 4);
+
+                        // Not all animations have frames defined
+                        if (anim.Frames?.Length > 0)
+                            anim.FramesPointer = getNextPointer(anim.FrameCount * 4);
+                        else
+                            anim.FramesPointer = null;
+                    }
+                }
+            }
+
+            foreach (var eta in data.ETA)
+            {
+                if (addUnreferencedData(eta.ETA))
+                {
+                    for (var i = 0; i < eta.ETA.States.Length; i++)
+                        eta.ETA.EtatPointers[i] = getNextPointer(8 * eta.ETA.States[i].Length);
+                }
+            }
+
+            bool addUnreferencedData<T>(T unrefData)
+                where T : BinarySerializable, new()
+            {
+                // Skip data not in the level file, they won't be relocated
+                if (unrefData.Offset.File != lev.Offset.File)
+                    return false;
+
+                // Skip already relocated data, that is already referenced
+                if (relocatedData.Contains(unrefData))
+                    return false;
+
+                // We need the find the original pointer for the data. If the file has been repacked before it will be in the relocation table
+                Pointer originalPointer = lev.RelocatedStructs?.FirstOrDefault(x => x.NewPointer == unrefData.Offset)?.OriginalPointer;
+
+                // If we didn't find it we assume the current pointer is the original one
+                originalPointer ??= unrefData.Offset;
+
+                // Next we get the size of the data
+                unrefData.RecalculateSize<T>();
+                var size = unrefData.Size;
+
+                var newPointer = getNextPointer(size);
+
+                // Add pointer to table
+                relocatedStructs.Add(new RelocatedStruct
+                {
+                    OriginalPointer = originalPointer,
+                    NewPointer = newPointer,
+                    DataSize = (uint)size
+                });
+
+                // Add data to be serialized
+                lev.AdditionalSerializationActions.Add(newPointer, s => s.SerializeObject<T>(unrefData, name: $"UnreferencedData"));
+
+                return true;
+            }
+
+            // Move the map and vram block pointers due to the object block being resized
+            lev.FileData.BlockPointers[2] = getNextPointer(lev.FileData.MapData.Width * lev.FileData.MapData.Height * 2 + 4, true);
+            lev.FileData.BlockPointers[3] = getNextPointer(lev.FileData.TextureBlock.Length, true);
+            var fileEndOffset = getNextPointer(0);
+            lev.FileData.FileSize = (uint)fileEndOffset.FileOffset;
+
+            lev.RelocatedStructs = relocatedStructs.ToArray();
+            lev.RelocatedStructsCount = relocatedStructs.Count;
+
+            // Make sure the level file isn't too big and overlaps with the exe
+            if (fileEndOffset.AbsoluteOffset >= exe.Offset.AbsoluteOffset)
+                throw new Exception($"The level data is too big! End offset: 0x{fileEndOffset.AbsoluteOffset:X8} overlaps with exe offset at 0x{exe.Offset.AbsoluteOffset:X8}.");
         }
 
         #endregion
