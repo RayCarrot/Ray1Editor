@@ -1,4 +1,5 @@
-﻿using BinarySerializer;
+﻿using System.Collections.Generic;
+using BinarySerializer;
 using BinarySerializer.Ray1;
 
 namespace RayCarrot.Ray1Editor
@@ -9,6 +10,6 @@ namespace RayCarrot.Ray1Editor
 
         public PC_DES[] PC_DES { get; set; }
         public AnimationCollection[] PC_LoadedAnimations { get; set; }
-        public Palette[] PC_Palettes { get; set; }
+        public IReadOnlyList<Palette> PC_Palettes { get; set; }
     }
 }

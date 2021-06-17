@@ -100,9 +100,6 @@ namespace RayCarrot.Ray1Editor
             // Get the level data
             var lvlData = context.GetMainFileObject<SerializableEditorFile<PC_LevFile>>(Path_LevelFile(ray1Settings)).FileData;
 
-            // Save the palettes
-            lvlData.MapData.ColorPalettes = data.PC_Palettes.Select(x => x.ToBaseColorArray<RGB666Color>()).ToArray();
-
             // Save the objects
             var objData = lvlData.ObjData;
             objData.ObjCount = (ushort)gameData.Objects.Count;
@@ -194,7 +191,7 @@ namespace RayCarrot.Ray1Editor
 
         public void LoadPalettes(R1_PC_GameData data, PC_LevFile lev)
         {
-            data.PC_Palettes = lev.MapData.ColorPalettes.Select((x, i) => new Palette(x, $"Palette {i + 1}")
+            data.PC_Palettes = lev.MapData.ColorPalettes.Select((x, i) => new SerializablePalette<RGB666Color>(x, $"Palette {i + 1}")
             {
                 CanEditAlpha = false,
                 IsFirstTransparent = true,

@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Windows.Media;
-using BinarySerializer;
+﻿using BinarySerializer;
 using BinarySerializer.Ray1;
 using Microsoft.Xna.Framework;
 using RayCarrot.UI;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows.Media;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -64,10 +63,10 @@ namespace RayCarrot.Ray1Editor
 
         public static EditPaletteViewModel EditPaletteViewModel => new EditPaletteViewModel(DummyPalette);
 
-        private static Palette DummyPalette => new Palette(Enumerable.Range(0, 256).Select(x => new BGR888Color()
+        private static Palette DummyPalette => new SerializablePalette<BGR888Color>(Enumerable.Range(0, 256).Select(x => new BGR888Color()
         {
             R = (byte)x
-        }), "Design-time palette");
+        }).ToArray(), "Design-time palette");
 
         public static DialogMessageViewModel DialogMessageViewModel => new DialogMessageViewModel()
         {

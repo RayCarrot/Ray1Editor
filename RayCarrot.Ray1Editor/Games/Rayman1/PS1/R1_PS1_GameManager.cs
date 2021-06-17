@@ -198,13 +198,8 @@ namespace RayCarrot.Ray1Editor
             var fileEntryworld = exe.PS1_FileTable[exe.GetFileTypeIndex(exe.Pre_PS1_Config, PS1_FileType.wld_file) + worldIndex];
             var fileEntrylevel = exe.PS1_FileTable[exe.GetFileTypeIndex(exe.Pre_PS1_Config, PS1_FileType.map_file) + (worldIndex * 21 + lvlIndex)];
 
-            // Get the file datas
-            var fix = context.GetMainFileObject<PS1_AllfixFile>(fileEntryFix.ProcessedFilePath);
-            var wld = context.GetMainFileObject<PS1_WorldFile>(fileEntryworld.ProcessedFilePath);
+            // Get the level data
             var lev = context.GetMainFileObject<SerializableEditorFile<PS1_LevFile>>(fileEntrylevel.ProcessedFilePath);
-
-            // Save palettes
-            SavePalettes(data, wld);
 
             // Save objects
             var objData = lev.FileData.ObjData;
@@ -281,13 +276,13 @@ namespace RayCarrot.Ray1Editor
         public void LoadPalettes(R1_PS1_GameData data, PS1_WorldFile wld)
         {
             // Add tile palettes
-            data.PS1_TilePalettes = wld.TilePalettes.Select((x, i) => new Palette(x, $"Tile Palette {i}")).ToArray();
+            data.PS1_TilePalettes = wld.TilePalettes.Select((x, i) => new SerializablePalette<RGBA5551Color>(x, $"Tile Palette {i}")).ToArray();
 
             foreach (var pal in data.PS1_TilePalettes)
                 data.TextureManager.AddPalette(pal);
 
             // Add sprite palettes
-            data.PS1_SpritePalettes = data.Vram.Palettes.Select(x => new R1_PS1_GameData.LoadedPalette(x.Colors, new Palette(x.Colors, $"Sprite Palette ({x.X}, {x.Y})"))).ToArray();
+            data.PS1_SpritePalettes = data.Vram.Palettes.Select(x => new R1_PS1_GameData.LoadedPalette(x.Colors, new SerializablePalette<RGBA5551Color>(x.Colors, $"Sprite Palette ({x.X}, {x.Y})"))).ToArray();
 
             foreach (var pal in data.PS1_SpritePalettes)
                 data.TextureManager.AddPalette(pal.Palette);
@@ -604,12 +599,6 @@ namespace RayCarrot.Ray1Editor
             texture.SetData(pixels);
 
             return texture;
-        }
-
-        public void SavePalettes(R1_PS1_GameData data, PS1_WorldFile wld)
-        {
-            wld.TilePalettes = data.PS1_TilePalettes.Select(x => x.ToBaseColorArray<RGBA5551Color>()).ToArray();
-            // TODO: Sprite palettes
         }
 
         public void SaveObjects(R1_PS1_GameData data, PS1_ObjBlock objData)

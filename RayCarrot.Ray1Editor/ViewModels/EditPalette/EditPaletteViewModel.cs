@@ -47,6 +47,8 @@ namespace RayCarrot.Ray1Editor
                 Palette.Colors[i] = new Microsoft.Xna.Framework.Color(c.R, c.G, c.B, c.A);
             }
 
+            Palette.Update();
+
             Logger.Log(LogLevel.Trace, "Updated modified palette");
         }
 

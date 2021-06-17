@@ -1,4 +1,5 @@
-﻿using BinarySerializer;
+﻿using System.Collections.Generic;
+using BinarySerializer;
 using BinarySerializer.PS1;
 
 namespace RayCarrot.Ray1Editor
@@ -7,7 +8,7 @@ namespace RayCarrot.Ray1Editor
     {
         public R1_PS1_GameData(Context context, TextureManager textureManager) : base(context, textureManager) { }
 
-        public Palette[] PS1_TilePalettes { get; set; }
+        public IReadOnlyList<Palette> PS1_TilePalettes { get; set; }
         public LoadedPalette[] PS1_SpritePalettes { get; set; }
         public PS1_VRAM Vram { get; set; }
 
