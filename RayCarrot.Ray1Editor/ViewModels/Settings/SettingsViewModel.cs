@@ -1,4 +1,6 @@
-﻿using RayCarrot.UI;
+﻿using System.Windows.Input;
+using Microsoft.Win32;
+using RayCarrot.UI;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -7,7 +9,10 @@ namespace RayCarrot.Ray1Editor
         public SettingsViewModel()
         {
             Data = AppViewModel.Instance.UserData;
+            BrowsemkpsxisoCommand = new RelayCommand(Browsemkpsxiso);
         }
+
+        public ICommand BrowsemkpsxisoCommand { get; }
 
         public AppUserData Data { get; }
 
@@ -47,6 +52,27 @@ namespace RayCarrot.Ray1Editor
         {
             get => Data.Serializer_CreateBackupOnWrite;
             set => Data.Serializer_CreateBackupOnWrite = value;
+        }
+
+        public string PS1_mkpsxisoPath
+        {
+            get => Data.PS1_mkpsxisoPath;
+            set => Data.PS1_mkpsxisoPath = value;
+        }
+
+        public void Browsemkpsxiso()
+        {
+            // Create the dialog
+            OpenFileDialog openFileDialog = new OpenFileDialog()
+            {
+                Title = "Select the file path",
+                FileName = PS1_mkpsxisoPath,
+                CheckFileExists = true,
+            };
+
+            // Show the dialog and get the result
+            if (openFileDialog.ShowDialog() == true)
+                PS1_mkpsxisoPath = openFileDialog.FileName;
         }
     }
 }

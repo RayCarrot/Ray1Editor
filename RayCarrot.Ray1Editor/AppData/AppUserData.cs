@@ -24,6 +24,7 @@ namespace RayCarrot.Ray1Editor
             Serializer_CreateBackupOnWrite = true;
             Theme_Dark = true;
             Theme_Sync = false;
+            PS1_mkpsxisoPath = null;
         }
 
         /// <summary>
@@ -66,5 +67,7 @@ namespace RayCarrot.Ray1Editor
 
         public bool Theme_Dark { get; set; }
         public bool Theme_Sync { get; set; }
+
+        public string PS1_mkpsxisoPath { get; set; }
     }
 }

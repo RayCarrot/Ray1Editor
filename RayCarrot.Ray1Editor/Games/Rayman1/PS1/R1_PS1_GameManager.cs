@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using NLog;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Point = Microsoft.Xna.Framework.Point;
 
@@ -22,6 +23,7 @@ namespace RayCarrot.Ray1Editor
         #region Paths
 
         public string Path_ExeFile => "SLUS-000.05"; // TODO: Different for each release!
+        public string Path_DiscXMLFile => "disc.xml";
 
         #endregion
 
@@ -31,6 +33,18 @@ namespace RayCarrot.Ray1Editor
 
         public override GameData Load(Context context, object settings, TextureManager textureManager)
         {
+            // Make sure valid files are specified for saving
+            var userData = AppViewModel.Instance.UserData;
+
+            if (!File.Exists(userData.PS1_mkpsxisoPath) || !File.Exists(context.BasePath + Path_DiscXMLFile))
+                AppViewModel.Instance.UI.DisplayMessage("To be able to save changes made to the PS1 versions of Rayman 1 you will need " +
+                                                        "to specify a file path for the mkpsxiso program. This can be done " +
+                                                        $"in the settings window (Tools > Settings).{Environment.NewLine}" +
+                                                        "In order for this to work the game folder for the game must contain every file " +
+                                                        "from the disc, including the .str and .raw files (which can't be copied normally). " +
+                                                        $"It must also contain a {Path_DiscXMLFile} file for the game files and the " +
+                                                        $"license to use.", "Notice about PS1 saving", DialogMessageType.Information);
+
             // Get settings
             var ray1Settings = (Ray1Settings)settings;
             var game = (Games.R1_Game)context.GetSettings<Games.Game>();
@@ -120,6 +134,14 @@ namespace RayCarrot.Ray1Editor
         {
             Logger.Log(LogLevel.Info, "Saving R1 PS1");
 
+            var userData = AppViewModel.Instance.UserData;
+
+            if (!File.Exists(userData.PS1_mkpsxisoPath))
+                throw new Exception("The specified file path for mkpsxiso is not valid");
+
+            if (!File.Exists(context.BasePath + Path_DiscXMLFile))
+                throw new Exception("The disc.xml file does not exist");
+
             // Get settings
             var settings = context.GetSettings<Ray1Settings>();
 
@@ -165,7 +187,15 @@ namespace RayCarrot.Ray1Editor
             FileFactory.Write<PS1_AllfixFile>(fileEntryFix.ProcessedFilePath, context);
             FileFactory.Write<PS1_WorldFile>(fileEntryworld.ProcessedFilePath, context);
             FileFactory.Write<SerializableEditorFile<PS1_LevFile>>(fileEntrylevel.ProcessedFilePath, context);
+
+            // Update the file table
+            UpdateFileTable(context, exe, userData.PS1_mkpsxisoPath, Path_DiscXMLFile);
+
+            // Save the exe
             FileFactory.Write<PS1_Executable>(Path_ExeFile, context);
+
+            // Create an ISO with the modified files
+            CreateISO(context, userData.PS1_mkpsxisoPath, Path_DiscXMLFile);
 
             Logger.Log(LogLevel.Info, "Saved R1 PS1");
         }
@@ -808,6 +838,90 @@ namespace RayCarrot.Ray1Editor
                 throw new Exception($"The level data is too big! End offset: 0x{fileEndOffset.AbsoluteOffset:X8} overlaps with exe offset at 0x{exe.Offset.AbsoluteOffset:X8}.");
         }
 
+        protected void UpdateFileTable(Context context, PS1_Executable exe, string mkpsxisoFilePath, string xmlFilePath)
+        {
+            // Close the context so the files can be accessed by other processes
+            context.Close();
+
+            // Create a temporary file for the LBA log
+            using var lbaLogFile = new TempFile();
+
+            // Recalculate the LBA for the files on the disc
+            ProcessHelpers.RunProcess(mkpsxisoFilePath, new string[]
+            {
+                "-lba", ProcessHelpers.GetStringAsPathArg(lbaLogFile.TempPath), // Specify LBA log path
+                "-noisogen", // Don't generate an ISO now
+                xmlFilePath // The xml path
+            }, workingDir: context.BasePath);
+
+            // Read the LBA log
+            using var lbaLogStream = lbaLogFile.OpenRead();
+            using var reader = new StreamReader(lbaLogStream);
+
+            // Skip initial lines
+            for (int i = 0; i < 8; i++)
+                reader.ReadLine();
+
+            var logEntries = new List<LBALogEntry>();
+            var currentDirs = new List<string>();
+
+            // Read all log entries
+            while (!reader.EndOfStream)
+            {
+                var line = reader.ReadLine();
+
+                if (line == null)
+                    break;
+
+                var words = line.Split(' ').Where(x => !String.IsNullOrWhiteSpace(x)).ToArray();
+
+                if (!words.Any())
+                    continue;
+
+                var entry = new LBALogEntry(words, currentDirs);
+
+                logEntries.Add(entry);
+
+                if (entry.EntryType == LBALogEntry.Type.Dir)
+                    currentDirs.Add(entry.Name);
+
+                if (entry.EntryType == LBALogEntry.Type.End)
+                    currentDirs.RemoveAt(currentDirs.Count - 1);
+            }
+
+            // Update every file path in the file table
+            foreach (var fileEntry in exe.PS1_FileTable)
+            {
+                // Get the matching entry
+                var entry = logEntries.FirstOrDefault(x => x.FullPath == fileEntry.FilePath);
+
+                if (entry == null)
+                {
+                    if (!String.IsNullOrWhiteSpace(fileEntry.FilePath))
+                        Logger.Log(LogLevel.Warn, $"LBA not updated for {fileEntry.FilePath}");
+
+                    continue;
+                }
+
+                // Update the LBA and size
+                fileEntry.LBA = entry.LBA;
+                fileEntry.FileSize = (uint)entry.Bytes;
+            }
+        }
+
+        protected void CreateISO(Context context, string mkpsxisoFilePath, string xmlFilePath)
+        {
+            // Close context so the exe can be accessed
+            context.Close();
+
+            // Create a new ISO
+            ProcessHelpers.RunProcess(mkpsxisoFilePath, new string[]
+            {
+                "-y", // Set to always overwrite
+                xmlFilePath // The xml path
+            }, workingDir: context.BasePath, logInfo: false);
+        }
+
         #endregion
 
         #region Data Types
@@ -838,6 +952,48 @@ namespace RayCarrot.Ray1Editor
             public Pointer ETAPointer { get; set; }
             public string Name { get; set; }
             public ObjData EventData { get; set; }
+        }
+
+        private class LBALogEntry
+        {
+            public LBALogEntry(IReadOnlyList<string> words, IReadOnlyList<string> dirs)
+            {
+                EntryType = (Type)Enum.Parse(typeof(Type), words[0], true);
+                Name = words[1];
+
+                if (EntryType == Type.End)
+                    return;
+
+                Length = Int32.Parse(words[2]);
+                LBA = Int32.Parse(words[3]);
+                TimeCode = words[4];
+                Bytes = Int32.Parse(words[5]);
+
+                if (EntryType != Type.Dir)
+                    SourceFile = words[6];
+
+                FullPath = $"\\{String.Join("\\", dirs.Append(Name))}";
+            }
+
+            public Type EntryType { get; }
+            public string Name { get; }
+            public int Length { get; }
+            public int LBA { get; }
+            public string TimeCode { get; }
+            public int Bytes { get; }
+            public string SourceFile { get; }
+
+            public string FullPath { get; }
+
+            public enum Type
+            {
+                File,
+                STR,
+                XA,
+                CDDA,
+                Dir,
+                End
+            }
         }
 
         #endregion
