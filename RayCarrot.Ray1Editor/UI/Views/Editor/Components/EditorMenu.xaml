@@ -20,7 +20,8 @@
         <MenuItem Header="Save"
                   Icon="{iconPacks:Material ContentSaveOutline}"
                   InputGestureText="Ctrl+S"
-                  Command="{Binding Path=SaveCommand, Mode=OneTime}" />
+                  Command="{Binding Path=SaveCommand, Mode=OneTime}"
+                  IsEnabled="{Binding Path=IsEnabled}" />
         <Separator />
         <MenuItem Header="Exit"
                   Icon="{iconPacks:Material CloseOutline}"
@@ -30,7 +31,7 @@
 
     <!-- Edit -->
 
-    <MenuItem Header="Edit">
+    <MenuItem Header="Edit" IsEnabled="{Binding Path=IsEnabled}">
         <MenuItem Header="Undo"
                   Icon="{iconPacks:Material Undo}"
                   InputGestureText="Ctrl+Z"
@@ -43,7 +44,7 @@
 
     <!-- View -->
 
-    <MenuItem Header="View">
+    <MenuItem Header="View" IsEnabled="{Binding Path=IsEnabled}">
         <MenuItem Header="Pause Editor Scene"
                   IsCheckable="True"
                   IsChecked="{Binding Path=IsPaused}" />
@@ -72,7 +73,7 @@
 
     <!-- Tools -->
 
-    <MenuItem Header="Tools">
+    <MenuItem Header="Tools" IsEnabled="{Binding Path=IsEnabled}">
         <MenuItem Header="Sprites"
                   IsEnabled="False" />
         <MenuItem Header="Animations"

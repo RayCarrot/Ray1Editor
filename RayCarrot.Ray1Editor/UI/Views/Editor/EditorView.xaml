@@ -37,11 +37,12 @@
 
         <!-- Toolbar -->
 
-        <local:EditorToolBar Grid.Row="1" />
+        <local:EditorToolBar Grid.Row="1" IsEnabled="{Binding Path=IsEnabled}" />
 
         <!-- Editor -->
 
         <Grid Grid.Row="2"
+              IsEnabled="{Binding Path=IsEnabled}"
               Margin="10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" MinWidth="400" />

@@ -81,6 +81,7 @@ namespace RayCarrot.Ray1Editor
         public object CurrentGameSettings { get; }
 
         // Editor
+        public bool IsEnabled { get; set; }
         public EditorScene EditorScene { get; set; }
         public EditorMode Mode
         {
@@ -156,6 +157,14 @@ namespace RayCarrot.Ray1Editor
 
         public void OnEditorLoaded()
         {
+            if (EditorScene.Stage == EditorScene.EditorStage.Error)
+            {
+                IsEnabled = false;
+                return;
+            }
+
+            IsEnabled = true;
+
             UpdateObjCountInfo();
 
             AvailableObjects.AddRange(CurrentGameManager.GetAvailableObjects(EditorScene.GameData));
@@ -262,6 +271,7 @@ namespace RayCarrot.Ray1Editor
             EditorScene?.Dispose();
 
             // Reset values
+            IsEnabled = false;
             EditorScene = null;
             SelectedObject = null;
             DebugText = null;

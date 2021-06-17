@@ -24,6 +24,7 @@ namespace RayCarrot.Ray1Editor
             Context = context;
             GameSettings = gameSettings;
 
+            Stage = EditorStage.Loading;
             EditorUpdateData = new EditorUpdateData();
             State = new EditorState();
 
@@ -58,6 +59,7 @@ namespace RayCarrot.Ray1Editor
         #region Public Properties
 
         // General
+        public EditorStage Stage { get; protected set; }
         public EditorViewModel VM => (EditorViewModel)DataContext;
         public bool PauseWhenInactive => AppViewModel.Instance.UserData.Editor_PauseWhenInactive;
         public bool IsPaused { get; set; }
@@ -162,46 +164,60 @@ namespace RayCarrot.Ray1Editor
             VM.OnEditorLoaded();
 
             Logger.Log(LogLevel.Info, "Initialized the editor scene");
+
+            if (Stage != EditorStage.Error)
+                Stage = EditorStage.Editing;
         }
 
         protected override void LoadContent()
         {
-            Logger.Log(LogLevel.Info, "Loading the editor content");
+            try
+            {
+                Logger.Log(LogLevel.Info, "Loading the editor content");
 
-            // Load the game data
-            using (Context)
-                GameData = GameManager.Load(Context, GameSettings, new TextureManager(GraphicsDevice));
+                // Load the game data
+                using (Context)
+                    GameData = GameManager.Load(Context, GameSettings, new TextureManager(GraphicsDevice));
 
-            Logger.Log(LogLevel.Trace, "Loading the editor elements");
+                Logger.Log(LogLevel.Trace, "Loading the editor elements");
 
-            // Load elements
-            GameData.LoadElements(this);
+                // Load elements
+                GameData.LoadElements(this);
 
-            // Load editor textures
-            State.EditorTextures = new EditorTextures(GameData.TextureManager);
-            State.EditorTextures.Init();
+                // Load editor textures
+                State.EditorTextures = new EditorTextures(GameData.TextureManager);
+                State.EditorTextures.Init();
 
-            // Post-load
-            GameManager.PostLoad(GameData);
+                // Post-load
+                GameManager.PostLoad(GameData);
 
-            Logger.Log(LogLevel.Trace, "Loading the editor objects");
+                Logger.Log(LogLevel.Trace, "Loading the editor objects");
 
-            // Load objects
-            foreach (var obj in GameData.Objects)
-                obj.Load();
+                // Load objects
+                foreach (var obj in GameData.Objects)
+                    obj.Load();
 
-            Logger.Log(LogLevel.Trace, "Initializing the object links");
+                Logger.Log(LogLevel.Trace, "Initializing the object links");
 
-            // Initialize object links
-            InitializeObjLinks();
+                // Initialize object links
+                InitializeObjLinks();
 
-            Logger.Log(LogLevel.Trace, "Calculating the map size");
+                Logger.Log(LogLevel.Trace, "Calculating the map size");
 
-            // Calculate the map size
-            State.UpdateMapSize(GameData);
+                // Calculate the map size
+                State.UpdateMapSize(GameData);
 
-            // Load base content
-            base.LoadContent();
+                // Load base content
+                base.LoadContent();
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogLevel.Error, ex, "Loading editor");
+
+                AppViewModel.Instance.UI.DisplayMessage($"An error occurred loading the editor. Error message: {ex.Message}", "Error loading editor", DialogMessageType.Error);
+
+                Stage = EditorStage.Error;
+            }
         }
 
         protected void InitializeObjLinks()
@@ -235,15 +251,18 @@ namespace RayCarrot.Ray1Editor
 
             Renderer?.Dispose();
             GameData?.Dispose();
+            Context?.Dispose();
 
             Logger.Log(LogLevel.Info, "Unloaded the editor scene");
+
+            Stage = EditorStage.Closed;
         }
 
         protected bool GetIsEditorPaused() => PauseWhenInactive && !IsActive || IsPaused;
 
         protected override void Update(GameTime gameTime)
         {
-            if (GetIsEditorPaused())
+            if (Stage != EditorStage.Editing || GetIsEditorPaused())
                 return;
 
             // Update base
@@ -521,7 +540,7 @@ namespace RayCarrot.Ray1Editor
 
         protected override void Draw(GameTime gameTime)
         {
-            if (PauseWhenInactive && !IsActive || IsPaused)
+            if (Stage != EditorStage.Editing || PauseWhenInactive && !IsActive || IsPaused)
                 return;
 
             // Base call
@@ -674,10 +693,16 @@ namespace RayCarrot.Ray1Editor
             Logger.Log(LogLevel.Info, "Saved the editor changes");
         }
 
-        protected override void Dispose(bool disposing)
+        #endregion
+
+        #region Data Types
+
+        public enum EditorStage
         {
-            base.Dispose(disposing);
-            Context?.Dispose();
+            Loading,
+            Editing,
+            Closed,
+            Error,
         }
 
         #endregion

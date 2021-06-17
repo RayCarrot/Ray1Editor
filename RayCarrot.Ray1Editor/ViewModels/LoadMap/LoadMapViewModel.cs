@@ -1,4 +1,5 @@
-﻿using NLog;
+﻿using System;
+using NLog;
 using RayCarrot.UI;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -88,7 +89,6 @@ namespace RayCarrot.Ray1Editor
                 return;
             }
 
-            // TODO: Try/catch loading
             App.ChangeView(AppViewModel.AppView.Editor, new EditorViewModel(gameData, SelectedGame.Manager, SelectedLevel.Settings));
 
             // Set the app title
