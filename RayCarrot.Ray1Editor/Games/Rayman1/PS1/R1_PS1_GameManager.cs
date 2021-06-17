@@ -14,7 +14,7 @@ using Point = Microsoft.Xna.Framework.Point;
 
 namespace RayCarrot.Ray1Editor
 {
-    public class R1_PS1_GameManager : R1_GameManager
+    public abstract class R1_PS1_GameManager : R1_GameManager
     {
         #region Logger
 
@@ -22,10 +22,14 @@ namespace RayCarrot.Ray1Editor
 
         #endregion
 
-        #region Paths
+        #region PS1 Properties
 
-        public string Path_ExeFile => "SLUS-000.05"; // TODO: Different for each release!
         public string Path_DiscXMLFile => "disc.xml";
+        public abstract string Path_ExeFile { get; }
+        public abstract long EXEBaseAddress { get; }
+        public abstract PS1_ExecutableConfig EXEConfig { get; }
+        public abstract Dictionary<PS1_DefinedPointer, long> DefinedPointers { get; }
+        public abstract int TileSetWidth { get; }
 
         #endregion
 
@@ -37,20 +41,9 @@ namespace RayCarrot.Ray1Editor
         {
             yield return new ActionViewModel("Export VRAM", () =>
             {
-                var saveFileDialog = new SaveFileDialog
-                {
-                    AddExtension = true,
-                    DefaultExt = ".png",
-                    FileName = "vram.png",
-                    Title = "Export VRAM",
-                    ValidateNames = true,
-                    Filter = "Image Files | *.png",
-                    OverwritePrompt = true
-                };
+                var file = AppViewModel.Instance.UI.GetSaveFilePath("Export VRAM", "vram.png", ".png", "Image Files | *.png");
 
-                var result = saveFileDialog.ShowDialog();
-                
-                if (result != true)
+                if (file == null)
                     return;
 
                 try
@@ -69,7 +62,7 @@ namespace RayCarrot.Ray1Editor
                         }
                     }
 
-                    bitmap.Save(saveFileDialog.FileName);
+                    bitmap.Save(file);
                 }
                 catch (Exception ex)
                 {
@@ -100,16 +93,15 @@ namespace RayCarrot.Ray1Editor
             // Add the settings
             context.AddSettings(ray1Settings);
 
-            var exeAddress = 0x80125000 - 0x800; // TODO: Different for each release!
-            var exeConfig = PS1_ExecutableConfig.PS1_US; // TODO: Different for each release!
+            var exeConfig = EXEConfig;
 
             // Add the exe file
-            context.AddFile(new MemoryMappedFile(context, Path_ExeFile, exeAddress)
+            context.AddFile(new MemoryMappedFile(context, Path_ExeFile, EXEBaseAddress)
             {
                 RecreateOnWrite = false
             });
 
-            context.AddPreDefinedPointers(PS1_DefinedPointers.PS1_US); // TODO: Different for each release!
+            context.AddPreDefinedPointers(DefinedPointers);
 
             // Create the data
             var data = new R1_PS1_GameData(context, textureManager);
@@ -284,10 +276,7 @@ namespace RayCarrot.Ray1Editor
             return LoadEditorNameTable<Dictionary<string, Dictionary<string, uint>>>(game.NameTablesName, EditorNameTableType.ETA);
         }
 
-        public void LoadVRAM(R1_PS1_GameData data, PS1_AllfixFile allfix, PS1_WorldFile world, PS1_LevFile lev)
-        {
-            data.Vram = PS1VramHelpers.PS1_FillVRAM(PS1VramHelpers.VRAMMode.Level, allfix, world, null, lev, null, true); // TODO: Set to not be US version for other versions!
-        }
+        public abstract void LoadVRAM(R1_PS1_GameData data, PS1_AllfixFile allfix, PS1_WorldFile world, PS1_LevFile lev);
 
         public void LoadPalettes(R1_PS1_GameData data, PS1_WorldFile wld)
         {
@@ -492,17 +481,15 @@ namespace RayCarrot.Ray1Editor
 
         public void LoadMap(R1_PS1_GameData data, PS1_WorldFile wld, MapData map, TextureManager textureManager)
         {
-            var tileSetWidth = 16; // TODO: Different for each release!
             var tileSet = LoadTileSet(data, wld, textureManager);
-            LoadMap(data, textureManager, tileSet, map.Tiles, map.Width, map.Height, map.Offset, tileSetWidth);
+            LoadMap(data, textureManager, tileSet, map.Tiles, map.Width, map.Height, map.Offset, TileSetWidth);
         }
 
         public TileSet LoadTileSet(R1_PS1_GameData data, PS1_WorldFile wld, TextureManager textureManager)
         {
-            var tileSetWidth = 16; // TODO: Different for each release!
             var tileSize = new Point(Ray1Settings.CellSize);
 
-            var width = tileSize.X * tileSetWidth;
+            var width = tileSize.X * TileSetWidth;
             var height = (wld.PalettedTiles.Length) / width;
             var texture = new Texture2D(textureManager.GraphicsDevice, width, height);
 
@@ -516,8 +503,8 @@ namespace RayCarrot.Ray1Editor
 
                 var imgData = new byte[tileSet.TileSize.X * tileSet.TileSize.Y];
 
-                var tileSetX = (i % tileSetWidth) * tileSet.TileSize.X;
-                var tileSetY = (i / tileSetWidth) * tileSet.TileSize.Y;
+                var tileSetX = (i % TileSetWidth) * tileSet.TileSize.X;
+                var tileSetY = (i / TileSetWidth) * tileSet.TileSize.Y;
 
                 for (int y = 0; y < tileSet.TileSize.Y; y++)
                 {
@@ -635,7 +622,7 @@ namespace RayCarrot.Ray1Editor
             {
                 obj.AnimationsPointer = obj.AnimationCollection.Offset;
                 obj.AnimationsCount = (byte)obj.AnimationCollection.Animations.Length;
-                obj.ImageBufferPointer = null; // TODO: Support saving image buffer pointer for games which use it
+                obj.ImageBufferPointer = null;
                 obj.SpritesPointer = obj.SpriteCollection.Offset;
                 obj.SpritesCount = (ushort)obj.SpriteCollection.Sprites.Length;
                 obj.ETAPointer = obj.ETA.Offset;

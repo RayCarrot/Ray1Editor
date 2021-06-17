@@ -80,7 +80,6 @@
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <!-- TODO: Format better -->
                     <TextBlock Text="{Binding Path=Header, Mode=OneTime}" />
                 </DataTemplate>
             </ListBox.ItemTemplate>

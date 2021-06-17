@@ -66,11 +66,9 @@ namespace RayCarrot.Ray1Editor
                 GamePath = Game.Path
             };
 
-            // TODO: Move to UI manager
-            var editGameWin = new EditGameWindow(editGameVM);
-            editGameWin.ShowDialog();
+            var result = AppViewModel.Instance.UI.EditGame(editGameVM);
 
-            if (editGameWin.DialogResult != true)
+            if (!result)
                 return;
 
             Game.Name = editGameVM.GameName;

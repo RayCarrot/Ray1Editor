@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media;
+using Microsoft.Win32;
 using NLog;
 using RayCarrot.UI;
 
@@ -12,7 +13,9 @@ namespace RayCarrot.Ray1Editor
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        /// <summary>Displays a message to the user</summary>
+        /// <summary>
+        /// Displays a message to the user
+        /// </summary>
         /// <param name="message">The message to display</param>
         /// <param name="header">The header for the message</param>
         /// <param name="messageType">The type of message, determining its visual appearance</param>
@@ -78,6 +81,35 @@ namespace RayCarrot.Ray1Editor
 
                 return win.DialogResult ?? false;
             });
+        }
+
+        public string GetSaveFilePath(string header, string defaultFileName, string defaultExtension, string filter)
+        {
+            var saveFileDialog = new SaveFileDialog
+            {
+                AddExtension = true,
+                DefaultExt = defaultExtension,
+                FileName = defaultFileName,
+                Title = header,
+                ValidateNames = true,
+                Filter = filter,
+                OverwritePrompt = true
+            };
+
+            var result = saveFileDialog.ShowDialog();
+
+            if (result != true)
+                return null;
+            else
+                return saveFileDialog.FileName;
+        }
+
+        public bool EditGame(EditGameViewModel viewModel)
+        {
+            var editGameWin = new EditGameWindow(viewModel);
+            editGameWin.ShowDialog();
+
+            return editGameWin.DialogResult == true;
         }
     }
 }
