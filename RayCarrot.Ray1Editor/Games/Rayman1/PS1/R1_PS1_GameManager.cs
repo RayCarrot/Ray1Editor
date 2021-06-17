@@ -3,6 +3,7 @@ using BinarySerializer.PS1;
 using BinarySerializer.Ray1;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,12 @@ namespace RayCarrot.Ray1Editor
 {
     public class R1_PS1_GameManager : R1_GameManager
     {
+        #region Logger
+
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        #endregion
+
         #region Paths
 
         public string Path_ExeFile => "SLUS-000.05"; // TODO: Different for each release!
@@ -111,6 +118,8 @@ namespace RayCarrot.Ray1Editor
 
         public override void Save(Context context, GameData gameData)
         {
+            Logger.Log(LogLevel.Info, "Saving R1 PS1");
+
             // Get settings
             var settings = context.GetSettings<Ray1Settings>();
 
@@ -145,14 +154,20 @@ namespace RayCarrot.Ray1Editor
             // Save background
             exe.PS1_LevelBackgroundIndexTable[(int)settings.World - 1][settings.Level - 1] = (byte)data.Layers.OfType<BackgroundLayer>().First().SelectedBackgroundIndex;
 
+            Logger.Log(LogLevel.Info, "Data has been saved. Relocating level data.");
+
             // Relocate level data
             RelocateLevelData(data, lev, exe);
+
+            Logger.Log(LogLevel.Info, "Level data has been relocated. Writing files.");
 
             // Save files
             FileFactory.Write<PS1_AllfixFile>(fileEntryFix.ProcessedFilePath, context);
             FileFactory.Write<PS1_WorldFile>(fileEntryworld.ProcessedFilePath, context);
             FileFactory.Write<SerializableEditorFile<PS1_LevFile>>(fileEntrylevel.ProcessedFilePath, context);
             FileFactory.Write<PS1_Executable>(Path_ExeFile, context);
+
+            Logger.Log(LogLevel.Info, "Saved R1 PS1");
         }
 
         #endregion
@@ -690,6 +705,8 @@ namespace RayCarrot.Ray1Editor
                     // Get the new pointer
                     var newPointer = getNextPointer(size);
 
+                    Logger.Log(LogLevel.Info, $"Relocating data from 0x{originalPointer.AbsoluteOffset:X8} to 0x{newPointer.AbsoluteOffset:X8}.");
+
                     // Add pointer to table
                     relocatedStructs.Add(new RelocatedStruct
                     {
@@ -760,6 +777,8 @@ namespace RayCarrot.Ray1Editor
                 var size = unrefData.Size;
 
                 var newPointer = getNextPointer(size);
+
+                Logger.Log(LogLevel.Info, $"Relocating unreferenced data from 0x{originalPointer.AbsoluteOffset:X8} to 0x{newPointer.AbsoluteOffset:X8}.");
 
                 // Add pointer to table
                 relocatedStructs.Add(new RelocatedStruct
