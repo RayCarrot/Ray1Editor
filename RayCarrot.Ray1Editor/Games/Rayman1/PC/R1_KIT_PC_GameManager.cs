@@ -26,8 +26,6 @@ namespace RayCarrot.Ray1Editor
 
             return new LoadGameLevelViewModel[]
             {
-                // TODO: Add world map?
-                //new LoadGameLevelViewModel("World Map", new Ray1Settings(g.EngineVersion, World.Menu, 0, volume: vol)),
                 new LoadGameLevelViewModel("Jungle", null),
                 new LoadGameLevelViewModel("The Sky's the Limit", new Ray1Settings(g.EngineVersion, World.Jungle, 1, volume: vol)),
                 new LoadGameLevelViewModel("Fruity Fun", new Ray1Settings(g.EngineVersion, World.Jungle, 2, volume: vol)),
