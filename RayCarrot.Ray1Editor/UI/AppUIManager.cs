@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media;
+using NLog;
 using RayCarrot.UI;
 
 namespace RayCarrot.Ray1Editor
 {
     public class AppUIManager
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         /// <summary>Displays a message to the user</summary>
         /// <param name="message">The message to display</param>
         /// <param name="header">The header for the message</param>
@@ -21,6 +24,8 @@ namespace RayCarrot.Ray1Editor
             // Make sure the application has been set up
             if (Application.Current.Dispatcher == null)
                 throw new Exception("A message box can not be shown when the application dispatcher is null");
+
+            Logger.Log(LogLevel.Info, $"Logging message with content: {message} of type {messageType}");
 
             // Create the message actions
             var actions = new ObservableCollection<DialogMessageActionViewModel>();
