@@ -18,6 +18,13 @@ namespace RayCarrot.Ray1Editor
         public abstract IEnumerable<LoadGameLevelViewModel> GetLevels(Games.Game game, string path);
 
         /// <summary>
+        /// Optionally gets actions which the user can initiate for the game
+        /// </summary>
+        /// <param name="data">The game data</param>
+        /// <returns>The actions, or null if none</returns>
+        public virtual IEnumerable<ActionViewModel> GetActions(GameData data) => null;
+
+        /// <summary>
         /// Loads the game to the editor
         /// </summary>
         /// <param name="context">The serializer context</param>

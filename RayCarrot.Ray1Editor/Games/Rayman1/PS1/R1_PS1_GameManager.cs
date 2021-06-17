@@ -1,13 +1,15 @@
 ﻿using BinarySerializer;
 using BinarySerializer.PS1;
 using BinarySerializer.Ray1;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using NLog;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
+using Microsoft.Win32;
+using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
 
 namespace RayCarrot.Ray1Editor
@@ -30,6 +32,52 @@ namespace RayCarrot.Ray1Editor
         #region Manager
 
         public override IEnumerable<LoadGameLevelViewModel> GetLevels(Games.Game game, string path) => GetLevels(((Games.R1_Game)game).EngineVersion);
+
+        public override IEnumerable<ActionViewModel> GetActions(GameData data)
+        {
+            yield return new ActionViewModel("Export VRAM", () =>
+            {
+                var saveFileDialog = new SaveFileDialog
+                {
+                    AddExtension = true,
+                    DefaultExt = ".png",
+                    FileName = "vram.png",
+                    Title = "Export VRAM",
+                    ValidateNames = true,
+                    Filter = "Image Files | *.png",
+                    OverwritePrompt = true
+                };
+
+                var result = saveFileDialog.ShowDialog();
+                
+                if (result != true)
+                    return;
+
+                try
+                {
+                    var vram = ((R1_PS1_GameData)data).Vram;
+
+                    // IDEA: Perhaps change this. Bitmaps are slow.
+                    using var bitmap = new Bitmap(16 * 128, 2 * 256);
+
+                    for (int x = 0; x < 16 * 128; x++)
+                    {
+                        for (int y = 0; y < 2 * 256; y++)
+                        {
+                            byte val = vram.GetPixel8(0, y / 256, x, y % 256);
+                            bitmap.SetPixel(x, y, System.Drawing.Color.FromArgb(val, val, val));
+                        }
+                    }
+
+                    bitmap.Save(saveFileDialog.FileName);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(LogLevel.Error, ex, "Exporting VRAM");
+                    AppViewModel.Instance.UI.DisplayMessage("An error occurred exporting the VRAM", "Error", DialogMessageType.Error);
+                }
+            });
+        }
 
         public override GameData Load(Context context, object settings, TextureManager textureManager)
         {
@@ -98,10 +146,10 @@ namespace RayCarrot.Ray1Editor
             var etaNames = LoadNameTable_ETA(data, game);
 
             // Load VRAM
-            var vram = LoadVRAM(fix, wld, lev);
+            LoadVRAM(data, fix, wld, lev);
 
             // Load palettes
-            LoadPalettes(data, vram, wld);
+            LoadPalettes(data, wld);
 
             // Load fond (background)
             LoadFond(data, exe, textureManager);
@@ -110,7 +158,7 @@ namespace RayCarrot.Ray1Editor
             LoadMap(data, wld, lev.MapData, textureManager);
 
             // Load DES (sprites & animations)
-            LoadDES(data, vram, lev.ObjData, desNames, textureManager, levFile.RelocatedStructs);
+            LoadDES(data, lev.ObjData, desNames, textureManager, levFile.RelocatedStructs);
 
             // Load ETA (states)
             LoadETA(data, lev.ObjData, etaNames, levFile.RelocatedStructs);
@@ -236,12 +284,12 @@ namespace RayCarrot.Ray1Editor
             return LoadEditorNameTable<Dictionary<string, Dictionary<string, uint>>>(game.NameTablesName, EditorNameTableType.ETA);
         }
 
-        public PS1_VRAM LoadVRAM(PS1_AllfixFile allfix, PS1_WorldFile world, PS1_LevFile lev)
+        public void LoadVRAM(R1_PS1_GameData data, PS1_AllfixFile allfix, PS1_WorldFile world, PS1_LevFile lev)
         {
-            return PS1VramHelpers.PS1_FillVRAM(PS1VramHelpers.VRAMMode.Level, allfix, world, null, lev, null, true); // TODO: Set to not be US version for other versions!
+            data.Vram = PS1VramHelpers.PS1_FillVRAM(PS1VramHelpers.VRAMMode.Level, allfix, world, null, lev, null, true); // TODO: Set to not be US version for other versions!
         }
 
-        public void LoadPalettes(R1_PS1_GameData data, PS1_VRAM vram, PS1_WorldFile wld)
+        public void LoadPalettes(R1_PS1_GameData data, PS1_WorldFile wld)
         {
             // Add tile palettes
             data.PS1_TilePalettes = wld.TilePalettes.Select((x, i) => new Palette(x, $"Tile Palette {i}")).ToArray();
@@ -250,13 +298,13 @@ namespace RayCarrot.Ray1Editor
                 data.TextureManager.AddPalette(pal);
 
             // Add sprite palettes
-            data.PS1_SpritePalettes = vram.Palettes.Select(x => new R1_PS1_GameData.LoadedPalette(x.Colors, new Palette(x.Colors, $"Sprite Palette ({x.X}, {x.Y})"))).ToArray();
+            data.PS1_SpritePalettes = data.Vram.Palettes.Select(x => new R1_PS1_GameData.LoadedPalette(x.Colors, new Palette(x.Colors, $"Sprite Palette ({x.X}, {x.Y})"))).ToArray();
 
             foreach (var pal in data.PS1_SpritePalettes)
                 data.TextureManager.AddPalette(pal.Palette);
         }
 
-        public void LoadDES(R1_PS1_GameData data, PS1_VRAM vram, PS1_ObjBlock objData, Dictionary<string, Dictionary<string, DESPointers>> nameTable, TextureManager textureManager, RelocatedStruct[] relocatedStructs)
+        public void LoadDES(R1_PS1_GameData data, PS1_ObjBlock objData, Dictionary<string, Dictionary<string, DESPointers>> nameTable, TextureManager textureManager, RelocatedStruct[] relocatedStructs)
         {
             foreach (var des in GetLevelDES(data.Context, objData.Objects, nameTable, relocatedStructs))
             {
@@ -278,7 +326,7 @@ namespace RayCarrot.Ray1Editor
                         if (spriteSheet.Entries[i] == null)
                             continue;
 
-                        InitializeSprite(data, vram, sprites.Sprites[i], spriteSheet, i);
+                        InitializeSprite(data, data.Vram, sprites.Sprites[i], spriteSheet, i);
                     }
 
                     // Get the DES name

@@ -22,7 +22,7 @@ namespace RayCarrot.Ray1Editor
             AvailableObjects = new ObservableCollection<string>();
             GameObjects = new ObservableCollection<GameObjectListItemViewModel>();
             ObjFields = new ObservableCollection<EditorFieldViewModel>();
-
+            
             // Create commands
             LoadOtherMapCommand = new RelayCommand(LoadOtherMap);
             SaveCommand = new RelayCommand(Save);
@@ -114,6 +114,7 @@ namespace RayCarrot.Ray1Editor
             set => EditorScene.ShowLinks = value;
         }
         public string DebugText { get; set; }
+        public ObservableCollection<ActionViewModel> GameActions { get; set; }
 
         // General
         public ObservableCollection<PaletteEditorViewModel> Palettes { get; }
@@ -184,7 +185,11 @@ namespace RayCarrot.Ray1Editor
             // Create object items
             GameObjects.AddRange(EditorScene.GameData.Objects.Select(x => new GameObjectListItemViewModel(x)));
 
-            // Default to objects mode
+            // Get game actions
+            var actions = CurrentGameManager.GetActions(EditorScene.GameData);
+            GameActions = actions == null ? null : new ObservableCollection<ActionViewModel>(actions);
+
+                // Default to objects mode
             Mode = EditorMode.Objects;
         }
 
@@ -260,6 +265,8 @@ namespace RayCarrot.Ray1Editor
             EditorScene = null;
             SelectedObject = null;
             DebugText = null;
+            GameActions = null;
+            AvailableObjects.Clear();
             SelectedObjectName = null;
             Palettes.Clear();
             Layers.Clear();

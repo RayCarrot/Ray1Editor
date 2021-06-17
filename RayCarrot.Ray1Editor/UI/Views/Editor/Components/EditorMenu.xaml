@@ -73,13 +73,22 @@
     <!-- Tools -->
 
     <MenuItem Header="Tools">
-        <MenuItem Header="View/Edit">
-            <MenuItem Header="PS1 VRAM"
-                      IsEnabled="False" />
-            <MenuItem Header="Sprites"
-                      IsEnabled="False" />
-            <MenuItem Header="Animation"
-                      IsEnabled="False" />
+        <MenuItem Header="Sprites"
+                  IsEnabled="False" />
+        <MenuItem Header="Animations"
+                  IsEnabled="False" />
+        <MenuItem Header="States"
+                  IsEnabled="False" />
+        <Separator Visibility="{Binding Path=GameActions, Converter={local:InvertedObjectNullToVisibilityConverter}}" />
+        <MenuItem Header="Actions" 
+                  Visibility="{Binding Path=GameActions, Converter={local:InvertedObjectNullToVisibilityConverter}}"
+                  ItemsSource="{Binding Path=GameActions}">
+            <MenuItem.ItemContainerStyle>
+                <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
+                    <Setter Property="Header" Value="{Binding Path=Header, Mode=OneTime}" />
+                    <Setter Property="Command" Value="{Binding Path=ActionCommand, Mode=OneTime}" />
+                </Style>
+            </MenuItem.ItemContainerStyle>
         </MenuItem>
         <Separator />
         <MenuItem Header="Settings"
