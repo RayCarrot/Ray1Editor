@@ -116,7 +116,7 @@ namespace RayCarrot.Ray1Editor
                 obj.AnimationsCount = (byte)obj.AnimationCollection.Animations.Length;
                 obj.PC_ImageBufferIndex = (uint)data.PC_DES.FindItemIndex(x => x?.ImageData == obj.ImageBuffer);
                 obj.PC_SpritesIndex = (uint)data.PC_DES.FindItemIndex(x => x?.SpriteCollection == obj.SpriteCollection);
-                obj.SpritesCount = (byte)obj.SpriteCollection.Sprites.Length;
+                obj.SpritesCount = (ushort)obj.SpriteCollection.Sprites.Length;
                 obj.PC_ETAIndex = (uint)data.ETA.FindLastIndex(x => x.ETA == obj.ETA);
 
                 var cmds = obj.Commands ?? new CommandCollection()

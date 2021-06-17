@@ -589,7 +589,7 @@ namespace RayCarrot.Ray1Editor
                 obj.AnimationsCount = (byte)obj.AnimationCollection.Animations.Length;
                 obj.ImageBufferPointer = null; // TODO: Support saving image buffer pointer for games which use it
                 obj.SpritesPointer = obj.SpriteCollection.Offset;
-                obj.SpritesCount = (byte)obj.SpriteCollection.Sprites.Length;
+                obj.SpritesCount = (ushort)obj.SpriteCollection.Sprites.Length;
                 obj.ETAPointer = obj.ETA.Offset;
                 // No need to update commands/labels pointers since they can't be changed in the editor
             }
