@@ -148,12 +148,11 @@ namespace RayCarrot.Ray1Editor
             // Relocate level data
             RelocateLevelData(data, lev, exe);
 
-            // Save the level file
+            // Save files
+            FileFactory.Write<PS1_AllfixFile>(fileEntryFix.ProcessedFilePath, context);
+            FileFactory.Write<PS1_WorldFile>(fileEntryworld.ProcessedFilePath, context);
             FileFactory.Write<SerializableEditorFile<PS1_LevFile>>(fileEntrylevel.ProcessedFilePath, context);
-            
-            // TODO: Write wld (due to changed palettes)
-            // TODO: Write fix (due to changed palettes)
-            // TODO: Write exe (due to changed bg index)
+            FileFactory.Write<PS1_Executable>(Path_ExeFile, context);
         }
 
         #endregion
