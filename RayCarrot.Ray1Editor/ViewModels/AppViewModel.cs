@@ -109,6 +109,8 @@ namespace RayCarrot.Ray1Editor
 
             if (state != null)
                 Title += $" - {state}";
+            else
+                Title += $" {CurrentAppVersion}";
             
             Logger.Log(LogLevel.Trace, "Title set to {0}", Title);
         }
