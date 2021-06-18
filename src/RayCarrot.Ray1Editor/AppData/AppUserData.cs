@@ -20,6 +20,7 @@ namespace RayCarrot.Ray1Editor
             App_IsFirstLaunch = true;
             UI_WindowState = null;
             UI_EditorTabsWidth = 350;
+            UI_ShowDebugInfo = false;
             Editor_PauseWhenInactive = true;
             Serializer_EnableLog = false;
             Serializer_CreateBackupOnWrite = true;
@@ -62,6 +63,8 @@ namespace RayCarrot.Ray1Editor
         public bool Editor_PauseWhenInactive { get; set; }
 
         public double UI_EditorTabsWidth { get; set; }
+
+        public bool UI_ShowDebugInfo { get; set; }
 
         /// <summary>
         /// Indicates if the serializer log is enabled

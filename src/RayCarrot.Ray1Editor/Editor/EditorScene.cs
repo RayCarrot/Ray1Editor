@@ -115,7 +115,6 @@ namespace RayCarrot.Ray1Editor
             }
         }
         public bool IsDraggingObject { get; protected set; }
-        //public Point DraggingObjectOffset { get; protected set; }
         public Vector2 PrevMousePos { get; protected set; }
         public Point DraggingObjectInitialPosition { get; protected set; }
 
@@ -347,7 +346,7 @@ namespace RayCarrot.Ray1Editor
                     break;
             }
 
-            VM.DebugText = EditorUpdateData.DebugText.ToString();
+            VM.DebugText = R1EServices.App.UserData.UI_ShowDebugInfo ? EditorUpdateData.DebugText.ToString() : null;
             VM.OnUpdate();
         }
 

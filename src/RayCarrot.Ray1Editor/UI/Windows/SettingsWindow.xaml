@@ -85,10 +85,15 @@
 
         </Grid>
 
-        <CheckBox Margin="0 0 0 15"
+        <CheckBox Margin="0 0 0 7"
                   Content="Create backup when saving"
                   ToolTip="Indicates if backups are created of the modified files before saving."
                   IsChecked="{Binding Path=CreateBackupOnWrite}" />
+
+        <CheckBox Margin="0 0 0 15"
+                  Content="Show debug info"
+                  ToolTip="Indicates if debug info shows in the editor."
+                  IsChecked="{Binding Path=UI_ShowDebugInfo}" />
 
         <!-- PS1 -->
 

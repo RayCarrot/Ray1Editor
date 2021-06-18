@@ -67,6 +67,12 @@ namespace RayCarrot.Ray1Editor
             set => Data.Serializer_CreateBackupOnWrite = value;
         }
 
+        public bool UI_ShowDebugInfo
+        {
+            get => Data.UI_ShowDebugInfo;
+            set => Data.UI_ShowDebugInfo = value;
+        }
+
         public string PS1_mkpsxisoPath
         {
             get => Data.PS1_mkpsxisoPath;
