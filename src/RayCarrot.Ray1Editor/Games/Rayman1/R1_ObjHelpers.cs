@@ -453,7 +453,7 @@ namespace RayCarrot.Ray1Editor
                                                          et == ObjType.TYPE_FALLING_CRAYON ||
                                                          et == ObjType.EDU_ArtworkObject;
 
-        // TODO: Support for EDU/KIT/FAN
+        // TODO: Support multi-colored object sprites for EDU/KIT/FAN
         /// <summary>
         /// Indicates if the HitPoints value is the sub-palette to use
         /// </summary>

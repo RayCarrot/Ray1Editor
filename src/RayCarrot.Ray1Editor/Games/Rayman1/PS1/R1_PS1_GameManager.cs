@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Microsoft.Win32;
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
 
@@ -50,7 +49,6 @@ namespace RayCarrot.Ray1Editor
                 {
                     var vram = ((R1_PS1_GameData)data).Vram;
 
-                    // IDEA: Perhaps change this. Bitmaps are slow.
                     using var bitmap = new Bitmap(16 * 128, 2 * 256);
 
                     for (int x = 0; x < 16 * 128; x++)
@@ -610,7 +608,7 @@ namespace RayCarrot.Ray1Editor
             foreach (var obj in objData.Objects)
             {
                 obj.AnimationsPointer = obj.AnimationCollection.Offset;
-                obj.AnimationsCount = (byte)obj.AnimationCollection.Animations.Length;
+                obj.AnimationsCount = (byte)(obj.Type == ObjType.TYPE_DEMI_RAYMAN ? 0 : obj.AnimationCollection.Animations.Length);
                 obj.ImageBufferPointer = null;
                 obj.SpritesPointer = obj.SpriteCollection.Offset;
                 obj.SpritesCount = (ushort)obj.SpriteCollection.Sprites.Length;
@@ -707,13 +705,11 @@ namespace RayCarrot.Ray1Editor
                 var hasRelocatedAnims = relocatedData.Contains(obj.AnimationCollection);
 
                 // Relocate animations, sprites and states
-                // TODO: For bad Rayman the animation pointer is null, for small Rayman it's the same as for Rayman but with a count of 0
                 obj.AnimationsPointer = relocateData(obj.AnimationsPointer, obj.AnimationCollection);
                 obj.SpritesPointer = relocateData(obj.SpritesPointer, obj.SpriteCollection);
                 obj.ETAPointer = relocateData(obj.ETAPointer, obj.ETA);
 
                 // Relocate states
-                // TODO: This will write too much ETA since we're reading it wrong! Correct ETA reading first.
                 if (!hasRelocatedETA && obj.ETAPointer.File == lev.Offset.File)
                 {
                     for (var i = 0; i < obj.ETA.States.Length; i++)
@@ -738,6 +734,9 @@ namespace RayCarrot.Ray1Editor
                 Pointer relocateData<T>(Pointer currentPointer, T refData)
                     where T : BinarySerializable, new()
                 {
+                    if (refData == null)
+                        return currentPointer;
+
                     // Only relocate data in the level file
                     if (currentPointer.File != lev.Offset.File)
                         return currentPointer;

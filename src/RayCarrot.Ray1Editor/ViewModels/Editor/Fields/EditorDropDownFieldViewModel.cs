@@ -40,7 +40,7 @@ namespace RayCarrot.Ray1Editor
         {
             var newItems = GetItemsAction();
 
-            // TODO: Maybe improve this by only resetting the items when a flag for it gets set to avoid always getting the items collection
+            // IDEA: Maybe improve this by only resetting the items when a flag for it gets set to avoid always getting the items collection
             if (!ReferenceEquals(newItems, _prevItems))
             {
                 _prevItems = newItems;

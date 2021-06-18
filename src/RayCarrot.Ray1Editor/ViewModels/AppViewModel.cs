@@ -104,8 +104,6 @@ namespace RayCarrot.Ray1Editor
 
         #region Public Methods
 
-        // TODO: Move most of these to file manager
-
         public void SetTitle(string state)
         {
             Title = "Ray1Editor";

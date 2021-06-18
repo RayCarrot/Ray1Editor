@@ -42,7 +42,7 @@ namespace RayCarrot.Ray1Editor
             ObjData.InitialXPosition = (short)ObjData.XPosition;
             ObjData.InitialYPosition = (short)ObjData.YPosition;
             ObjData.CurrentAnimationIndex = 0;
-            //ObjData.InitialHitPoints = ObjData.HitPoints; // TODO: Can't do this with HP due to later versions storing it as a uint (same in Save)
+            //ObjData.InitialHitPoints = ObjData.HitPoints; // NOTE: Can't do this with HP due to later versions storing it as a uint
 
             // Set random frame
             if (ObjData.Type.UsesRandomFrame())
@@ -57,7 +57,7 @@ namespace RayCarrot.Ray1Editor
             ObjData.SubEtat = ObjData.InitialSubEtat;
             ObjData.XPosition = ObjData.InitialXPosition;
             ObjData.YPosition = ObjData.InitialYPosition;
-            //ObjData.ActualHitPoints = ObjData.InitialHitPoints;
+            //ObjData.ActualHitPoints = ObjData.InitialHitPoints; // NOTE: Can't do this with HP due to later versions storing it as a uint
         }
 
         // Layout
