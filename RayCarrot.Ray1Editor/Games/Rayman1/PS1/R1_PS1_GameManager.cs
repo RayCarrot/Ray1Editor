@@ -296,9 +296,9 @@ namespace RayCarrot.Ray1Editor
                 {
                     // Read or get the data
                     var s = data.Context.Deserializer;
-                    var sprites = des.EventData?.SpriteCollection ?? s.DoAt(des.SpritesPointer, () => s.SerializeObject<SpriteCollection>(default, x => x.Pre_SpritesCount = des.ImageDescriptorCount, name: $"Sprites"));
-                    var animations = des.EventData?.AnimationCollection ?? s.DoAt(des.AnimationsPointer, () => s.SerializeObject<AnimationCollection>(default, x => x.Pre_AnimationsCount = des.AnimationsCount, name: $"Animations"));
-                    var imgBuffer = des.EventData?.ImageBuffer ?? s.DoAt(des.ImageBufferPointer, () => s.SerializeArray<byte>(default, des.ImageBufferLength ?? 0, name: $"ImageBuffer"));
+                    var sprites = des.ObjData?.SpriteCollection ?? s.DoAt(des.SpritesPointer, () => s.SerializeObject<SpriteCollection>(default, x => x.Pre_SpritesCount = des.ImageDescriptorCount, name: $"Sprites"));
+                    var animations = des.ObjData?.AnimationCollection ?? s.DoAt(des.AnimationsPointer, () => s.SerializeObject<AnimationCollection>(default, x => x.Pre_AnimationsCount = des.AnimationsCount, name: $"Animations"));
+                    var imgBuffer = des.ObjData?.ImageBuffer ?? s.DoAt(des.ImageBufferPointer, () => s.SerializeArray<byte>(default, des.ImageBufferLength ?? 0, name: $"ImageBuffer"));
 
                     // Create the sprite sheet
                     var spriteSheet = new PalettedTextureSheet(textureManager, sprites.Sprites.Select(x => x.IsDummySprite() ? (Point?)null : new Point(x.Width, x.Height)).ToArray());
@@ -315,8 +315,8 @@ namespace RayCarrot.Ray1Editor
 
                     // Get the DES name
                     var desName = des.Name ?? nameTable?.TryGetValue(des.SpritesPointer?.File.FilePath)?.FirstOrDefault(x =>
-                        x.Value.ImageDescriptors == des.SpritesPointer?.AbsoluteOffset &&
-                        x.Value.AnimationDescriptors == des.AnimationsPointer?.AbsoluteOffset &&
+                        x.Value.Sprites == des.SpritesPointer?.AbsoluteOffset &&
+                        x.Value.Animations == des.AnimationsPointer?.AbsoluteOffset &&
                         (!x.Value.ImageBuffer.HasValue || x.Value.ImageBuffer == des.ImageBufferPointer?.AbsoluteOffset)).Key;
 
                     data.AddDES(new R1_GameData.DESData(sprites, spriteSheet, animations, animations.Animations.Select(x => ToCommonAnimation(x)).ToArray(), imgBuffer)
@@ -404,17 +404,17 @@ namespace RayCarrot.Ray1Editor
                 AnimationsCount = x.AnimationsCount,
                 ImageBufferLength = null,
                 Name = null,
-                EventData = x
+                ObjData = x
             }).Concat(nameTable_R1PS1DES?.Where(d => context.FileExists(d.Key)).SelectMany(d => d.Value.Select(des => new DES
             {
-                SpritesPointer = GetPointer(des.Value.ImageDescriptors != null ? new Pointer(des.Value.ImageDescriptors.Value, context.GetFile(d.Key)) : null, relocatedStructs),
-                AnimationsPointer = GetPointer(des.Value.AnimationDescriptors != null ? new Pointer(des.Value.AnimationDescriptors.Value, context.GetFile(d.Key)) : null, relocatedStructs),
+                SpritesPointer = GetPointer(des.Value.Sprites != null ? new Pointer(des.Value.Sprites.Value, context.GetFile(d.Key)) : null, relocatedStructs),
+                AnimationsPointer = GetPointer(des.Value.Animations != null ? new Pointer(des.Value.Animations.Value, context.GetFile(d.Key)) : null, relocatedStructs),
                 ImageBufferPointer = GetPointer(des.Value.ImageBuffer != null ? new Pointer(des.Value.ImageBuffer.Value, context.GetFile(d.Key)) : null, relocatedStructs),
-                ImageDescriptorCount = des.Value.ImageDescriptorsCount,
-                AnimationsCount = des.Value.AnimationDescriptorsCount,
+                ImageDescriptorCount = des.Value.SpritesCount,
+                AnimationsCount = des.Value.AnimationsCount,
                 ImageBufferLength = des.Value.ImageBufferLength,
                 Name = des.Key,
-                EventData = null
+                ObjData = null
             })) ?? new DES[0]);
         }
 
@@ -429,7 +429,7 @@ namespace RayCarrot.Ray1Editor
 
                     var s = data.Context.Deserializer;
 
-                    var etaObj = eta.EventData?.ETA ?? s.DoAt(eta.ETAPointer, () => s.SerializeObject<BinarySerializer.Ray1.ETA>(default, name: $"ETA"));
+                    var etaObj = eta.ObjData?.ETA ?? s.DoAt(eta.ETAPointer, () => s.SerializeObject<BinarySerializer.Ray1.ETA>(default, name: $"ETA"));
 
                     // Add to the ETA
                     data.ETA.Add(new R1_GameData.ETAData(etaObj)
@@ -446,12 +446,12 @@ namespace RayCarrot.Ray1Editor
             {
                 ETAPointer = x.ETAPointer,
                 Name = null,
-                EventData = x
+                ObjData = x
             }).Concat(nameTable_R1PS1ETA?.Where(d => context.FileExists(d.Key)).SelectMany(d => d.Value.Select(des => new ETA
             {
                 ETAPointer = GetPointer(new Pointer(des.Value, context.GetFile(d.Key)), relocatedStructs),
                 Name = des.Key,
-                EventData = null
+                ObjData = null
             })) ?? new ETA[0]);
         }
 
@@ -952,10 +952,10 @@ namespace RayCarrot.Ray1Editor
 
         public class DESPointers
         {
-            public uint? ImageDescriptors { get; set; }
-            public ushort ImageDescriptorsCount { get; set; }
-            public uint? AnimationDescriptors { get; set; }
-            public byte AnimationDescriptorsCount { get; set; }
+            public uint? Sprites { get; set; }
+            public ushort SpritesCount { get; set; }
+            public uint? Animations { get; set; }
+            public byte AnimationsCount { get; set; }
             public uint? ImageBuffer { get; set; }
             public uint ImageBufferLength { get; set; }
         }
@@ -969,13 +969,13 @@ namespace RayCarrot.Ray1Editor
             public byte AnimationsCount { get; set; }
             public uint? ImageBufferLength { get; set; }
             public string Name { get; set; }
-            public ObjData EventData { get; set; }
+            public ObjData ObjData { get; set; }
         }
         protected class ETA
         {
             public Pointer ETAPointer { get; set; }
             public string Name { get; set; }
-            public ObjData EventData { get; set; }
+            public ObjData ObjData { get; set; }
         }
 
         private class LBALogEntry

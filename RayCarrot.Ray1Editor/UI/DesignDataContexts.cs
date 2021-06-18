@@ -21,7 +21,7 @@ namespace RayCarrot.Ray1Editor
                     SelectedObjectName = "Object Name",
                 };
 
-                vm.ObjFields.Add(new EditorIntFieldViewModel("Int field", "Int field info", () => 0, x => {}));
+                vm.ObjFields.Add(new EditorIntFieldViewModel("Int field", "Int field info", () => 0, _ => {}));
                 vm.ObjFields.Add(new EditorDropDownFieldViewModel("Drop-down field", "Drop-down field info", () => 0, x => {}, () => new EditorDropDownFieldViewModel.DropDownItem[]
                 {
                     new EditorDropDownFieldViewModel.DropDownItem("Item 1", null),
