@@ -294,7 +294,7 @@ namespace RayCarrot.Ray1Editor
                     width: selection.Width * TileSet.TileSize.X,
                     height: selection.Height * TileSet.TileSize.Y);
 
-                r.DrawRectangle(rect, State == TileEditorState.Selecting ? EditorState.Color_TileSelection : EditorState.Color_TileTiling, 1);
+                r.DrawRectangle(rect, State == TileEditorState.Selecting ? EditorState.Colors[EditorColor.TileSelection] : EditorState.Colors[EditorColor.TileTiling], 1);
             }
         }
 

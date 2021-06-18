@@ -238,7 +238,7 @@ namespace RayCarrot.Ray1Editor
                 hy += CurrentAnimation?.Frames.ElementAtOrDefault(AnimationFrame)?.SpriteLayers.ElementAtOrDefault(ObjData.FollowSprite)?.Position.Y ?? 0;
 
             if (hy != 0)
-                DrawOffset(r, Position + new Point(0, hy), EditorState.Color_ObjOffsetGeneric);
+                DrawOffset(r, Position + new Point(0, hy), EditorState.Colors[EditorColor.ObjOffsetGeneric]);
         }
     }
 }

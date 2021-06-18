@@ -546,7 +546,7 @@ namespace RayCarrot.Ray1Editor
             base.Draw(gameTime);
 
             // Clear the screen with the background color
-            GraphicsDevice.Clear(State.Color_Background);
+            GraphicsDevice.Clear(State.Colors[EditorColor.Background]);
 
             // Begin drawing using the camera's transform matrix
             Renderer.SpriteBatch.Begin(
@@ -554,7 +554,7 @@ namespace RayCarrot.Ray1Editor
                 transformMatrix: Cam.TransformMatrix);
 
             // Draw map background color
-            Renderer.DrawFilledRectangle(new Rectangle(Point.Zero, State.MapSize), State.Color_MapBackground);
+            Renderer.DrawFilledRectangle(new Rectangle(Point.Zero, State.MapSize), State.Colors[EditorColor.MapBackground]);
 
             // Draw the content
             Draw(Renderer);
@@ -595,7 +595,7 @@ namespace RayCarrot.Ray1Editor
 
                 // Draw link grip border if hovering over it in links mode
                 if (Mode == EditorMode.Links && HoverLinkGripObj != null)
-                    r.DrawRectangle(HoverLinkGripObj.LinkGripBounds, State.Color_SelectedObjBounds);
+                    r.DrawRectangle(HoverLinkGripObj.LinkGripBounds, State.Colors[EditorColor.SelectedObjBounds]);
 
                 if (CanHoverOverObject)
                 {
@@ -605,11 +605,11 @@ namespace RayCarrot.Ray1Editor
                     // When in links mode we show the bounds for the object the link is being
                     // moved for.
                     if (SelectedObject != null) // Selected object
-                        r.DrawRectangle(SelectedObject.WorldBounds, State.Color_SelectedObjBounds);
+                        r.DrawRectangle(SelectedObject.WorldBounds, State.Colors[EditorColor.SelectedObjBounds]);
                     if (HoverObject != null && !IsDraggingObject && !IsDraggingLink && HoverObject != SelectedObject) // Hovering object
-                        r.DrawRectangle(HoverObject.WorldBounds, State.Color_HoveringObjBounds);
+                        r.DrawRectangle(HoverObject.WorldBounds, State.Colors[EditorColor.HoveringObjBounds]);
                     else if (SelectedLinkObject != null) // Selected link object
-                        r.DrawRectangle(SelectedLinkObject.WorldBounds, State.Color_SelectedObjBounds);
+                        r.DrawRectangle(SelectedLinkObject.WorldBounds, State.Colors[EditorColor.SelectedObjBounds]);
                 }
 
                 if (ShowObjectOffsets)

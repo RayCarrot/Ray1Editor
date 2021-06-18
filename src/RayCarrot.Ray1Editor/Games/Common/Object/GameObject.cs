@@ -210,7 +210,7 @@ namespace RayCarrot.Ray1Editor
         {
             if (CanBeLinkedToGroup)
             {
-                var color = LinkGroup == 0 ? EditorState.Color_ObjLinksDisabled : EditorState.Color_ObjLinksEnabled;
+                var color = LinkGroup == 0 ? EditorState.Colors[EditorColor.ObjLinksDisabled] : EditorState.Colors[EditorColor.ObjLinksEnabled];
 
                 r.DrawLine(new Vector2(Position.X + Center.X, Position.Y + Center.Y), LinkGripBounds.Center.ToVector2(), color, LinkLineThickness);
                 r.DrawFilledRectangle(LinkGripBounds, color);
@@ -218,10 +218,10 @@ namespace RayCarrot.Ray1Editor
         }
         public virtual void DrawOffsets(Renderer r)
         {
-            DrawOffset(r, Position, EditorState.Color_ObjOffsetPos);
+            DrawOffset(r, Position, EditorState.Colors[EditorColor.ObjOffsetPos]);
 
             if (Pivot != Point.Zero)
-                DrawOffset(r, Position + Pivot, EditorState.Color_ObjOffsetPivot);
+                DrawOffset(r, Position + Pivot, EditorState.Colors[EditorColor.ObjOffsetPivot]);
         }
         public virtual void DrawOffset(Renderer r, Point pos, Color c)
         {

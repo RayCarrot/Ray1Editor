@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 
 namespace RayCarrot.Ray1Editor
@@ -10,18 +11,23 @@ namespace RayCarrot.Ray1Editor
     {
         #region Colors
 
-        // Colors
-        public Color Color_Background { get; set; } = new Color(0x28, 0x35, 0x93);
-        public Color Color_MapBackground { get; set; } = new Color(0x79, 0x86, 0xCB);
-        public Color Color_SelectedObjBounds { get; set; } = new Color(0xf4, 0x43, 0x36);
-        public Color Color_HoveringObjBounds { get; set; } = new Color(0xFF, 0xEB, 0x3B);
-        public Color Color_ObjLinksEnabled { get; set; } = new Color(0xFD, 0xD8, 0x35);
-        public Color Color_ObjLinksDisabled { get; set; } = new Color(0xE5, 0x73, 0x73);
-        public Color Color_ObjOffsetPos { get; set; } = new Color(0xFF, 0x57, 0x22);
-        public Color Color_ObjOffsetPivot { get; set; } = new Color(0xFF, 0xC1, 0x07);
-        public Color Color_ObjOffsetGeneric { get; set; } = new Color(0x7E, 0x57, 0xC2);
-        public Color Color_TileSelection { get; set; } = new Color(0xFD, 0xD8, 0x35);
-        public Color Color_TileTiling { get; set; } = new Color(0xFF, 0x8F, 0x00);
+        public Dictionary<EditorColor, Color> Colors { get; set; } = Colors_Ray1Editor;
+
+        // TODO: Support multiple color profiles
+        public static Dictionary<EditorColor, Color> Colors_Ray1Editor => new Dictionary<EditorColor, Color>()
+        {
+            [EditorColor.Background] = new Color(0x28, 0x35, 0x93),
+            [EditorColor.MapBackground] = new Color(0x79, 0x86, 0xCB),
+            [EditorColor.SelectedObjBounds] = new Color(0xf4, 0x43, 0x36),
+            [EditorColor.HoveringObjBounds] = new Color(0xFF, 0xEB, 0x3B),
+            [EditorColor.ObjLinksEnabled] = new Color(0xFD, 0xD8, 0x35),
+            [EditorColor.ObjLinksDisabled] = new Color(0xE5, 0x73, 0x73),
+            [EditorColor.ObjOffsetPos] = new Color(0xFF, 0x57, 0x22),
+            [EditorColor.ObjOffsetPivot] = new Color(0xFF, 0xC1, 0x07),
+            [EditorColor.ObjOffsetGeneric] = new Color(0x7E, 0x57, 0xC2),
+            [EditorColor.TileSelection] = new Color(0xFD, 0xD8, 0x35),
+            [EditorColor.TileTiling] = new Color(0xFF, 0x8F, 0x00),
+        };
 
         #endregion
 
