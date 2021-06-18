@@ -11,5 +11,6 @@ namespace RayCarrot.Ray1Editor
         public PC_DES[] PC_DES { get; set; }
         public AnimationCollection[] PC_LoadedAnimations { get; set; }
         public IReadOnlyList<Palette> PC_Palettes { get; set; }
+        public MapTile.PC_TransparencyMode[] PC_TileSetTransparencyModes { get; set; }
     }
 }

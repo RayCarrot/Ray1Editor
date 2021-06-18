@@ -348,6 +348,19 @@ namespace RayCarrot.Ray1Editor
                 tileSheet.InitEntry(i, data.PC_Palettes[0], tex.ImgData.Select(x => (byte)(255 - x)).ToArray());
             }
 
+            data.PC_TileSetTransparencyModes = lev.TileTextureData?.TexturesOffsetTable.Select(x => lev.TileTextureData.NonTransparentTextures.Concat(lev.TileTextureData.TransparentTextures).FirstOrDefault(t => t.Offset == x)).Select(x =>
+            {
+                if (x == null)
+                    return MapTile.PC_TransparencyMode.FullyTransparent;
+
+                return x.TransparencyMode switch
+                {
+                    0xAAAAAAAA => MapTile.PC_TransparencyMode.FullyTransparent,
+                    0x55555555 => MapTile.PC_TransparencyMode.NoTransparency,
+                    _ => MapTile.PC_TransparencyMode.PartiallyTransparent
+                };
+            }).ToArray();
+
             return tileSet;
         }
 

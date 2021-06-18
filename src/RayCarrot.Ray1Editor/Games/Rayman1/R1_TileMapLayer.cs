@@ -31,12 +31,16 @@ namespace RayCarrot.Ray1Editor
                     if (index >= tilesCount)
                         break;
 
-                    tiles[index] = new MapTile()
+                    var tile = new MapTile()
                     {
-                        // TODO: Set PC transparency
                         TileMapY = y,
-                        TileMapX = x
+                        TileMapX = x,
                     };
+
+                    if (Data is R1_PC_GameData pcData)
+                        tile.TransparencyMode = pcData.PC_TileSetTransparencyModes[y]; // PC version is 1-dimensional
+
+                    tiles[index] = tile;
                 }
             }
 
