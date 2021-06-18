@@ -18,38 +18,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Menu Grid.Row="0">
-
-            <!-- File -->
-
-            <MenuItem Header="File">
-                <MenuItem Header="Exit"
-                          Icon="{iconPacks:Material CloseOutline}"
-                          InputGestureText="Alt+F4"
-                          Click="CloseMenuItem_OnClick" />
-            </MenuItem>
-
-            <!-- Tools -->
-
-            <MenuItem Header="Tools">
-                <MenuItem Header="Settings"
-                          Icon="{iconPacks:Material CogOutline}"
-                          Click="SettingsMenuItem_OnClick" />
-            </MenuItem>
-
-            <!-- Help -->
-
-            <MenuItem Header="Help">
-                <MenuItem Header="Check for Updates"
-                          Icon="{iconPacks:Material Update}"
-                          Click="CheckForUpdatesMenuItem_OnClick"/>
-                <Separator />
-                <MenuItem Header="About Ray1Editor"
-                          Icon="{iconPacks:Material InformationOutline}"
-                          Click="AboutMenuItem_OnClick" />
-            </MenuItem>
-
-        </Menu>
+        <local:LoadMapMenu Grid.Row="0" />
 
         <Grid Grid.Row="1" Margin="20">
 
