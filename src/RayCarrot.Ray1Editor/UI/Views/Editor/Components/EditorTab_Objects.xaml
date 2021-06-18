@@ -80,7 +80,17 @@
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Path=Header, Mode=OneTime}" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="{Binding Path=Header, Mode=OneTime}" />
+
+                        <TextBlock Grid.Column="1" Text="{Binding Path=Tags, Mode=OneTime}" FontStyle="Italic" Margin="0 0 7 0" />
+
+                    </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

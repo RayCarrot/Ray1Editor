@@ -18,6 +18,12 @@ namespace RayCarrot.Ray1Editor
                 Scripts = String.Join(Environment.NewLine, cmdLines);
 
             SecondaryName = def?.Name;
+            
+            // TODO: Use object flags to determine if an object is always?
+            var typeInfo = ObjData.Type.GetAttribute<ObjTypeInfoAttribute>();
+            if (def?.CodeNames?.FirstOrDefault() == "always" || 
+                typeInfo?.Flag == ObjTypeFlag.Always && !(ObjData.Context.GetSettings<Ray1Settings>().EngineVersion == Ray1EngineVersion.PS1_JPDemoVol3 && ObjData.Type == ObjType.TYPE_DARK2_PINK_FLY))
+                Tags = "always";
         }
 
         // Data
@@ -119,6 +125,7 @@ namespace RayCarrot.Ray1Editor
         // Info
         public override string PrimaryName => (ushort)ObjData.Type < 262 ? $"{ObjData.Type.ToString().Replace("TYPE_", "")}" : $"TYPE_{(ushort)ObjData.Type}";
         public override string SecondaryName { get; }
+        public override string Tags { get; }
         public override string Scripts { get; }
 
         // Animations

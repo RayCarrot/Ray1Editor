@@ -10,6 +10,7 @@ namespace RayCarrot.Ray1Editor
         }
 
         public string Header => Obj.DisplayName;
+        public string Tags => Obj.Tags;
         public GameObject Obj { get; }
     }
 }
