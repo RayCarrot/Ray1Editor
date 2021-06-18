@@ -7,19 +7,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RayCarrot.Ray1Editor", "Ray
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Binary", "Binary", "{2A1690C2-EB67-4CD8-9028-6ADACD513B55}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinarySerializer", "..\Binary\BinarySerializer\src\BinarySerializer.csproj", "{EC0A4575-312E-4A01-94F5-0C9B080044F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinarySerializer", "..\..\Binary\BinarySerializer\src\BinarySerializer.csproj", "{EC0A4575-312E-4A01-94F5-0C9B080044F1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinarySerializer.GBA", "..\Binary\BinarySerializer.GBA\src\BinarySerializer.GBA.csproj", "{AC7E61EA-631F-40A3-8499-A2B47A74C735}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinarySerializer.GBA", "..\..\Binary\BinarySerializer.GBA\src\BinarySerializer.GBA.csproj", "{AC7E61EA-631F-40A3-8499-A2B47A74C735}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinarySerializer.Ray1", "..\Binary\BinarySerializer.Ray1\src\BinarySerializer.Ray1.csproj", "{E32E8D61-5972-4B64-930C-3DA57C6D86BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinarySerializer.Ray1", "..\..\Binary\BinarySerializer.Ray1\src\BinarySerializer.Ray1.csproj", "{E32E8D61-5972-4B64-930C-3DA57C6D86BF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{6A7C20BB-CA3C-4740-8B75-65476D3B4C2F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RayCarrot.UI", "..\RayCarrot.UI\RayCarrot.UI\RayCarrot.UI.csproj", "{B3FC7857-5CEF-4BDE-9D94-3AA55EAB702E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RayCarrot.UI", "..\..\RayCarrot.UI\RayCarrot.UI\RayCarrot.UI.csproj", "{B3FC7857-5CEF-4BDE-9D94-3AA55EAB702E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinarySerializer.Image", "..\Binary\BinarySerializer.Image\src\BinarySerializer.Image.csproj", "{DF2A195A-713B-4059-8610-BC36D834FB61}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinarySerializer.Image", "..\..\Binary\BinarySerializer.Image\src\BinarySerializer.Image.csproj", "{DF2A195A-713B-4059-8610-BC36D834FB61}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinarySerializer.PS1", "..\Binary\BinarySerializer.PS1\src\BinarySerializer.PS1.csproj", "{672575C7-21DB-4708-9D2F-B7348D5B7CA7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinarySerializer.PS1", "..\..\Binary\BinarySerializer.PS1\src\BinarySerializer.PS1.csproj", "{672575C7-21DB-4708-9D2F-B7348D5B7CA7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployable", "Deployable", "{4FD6DEEA-73A3-4FDD-9896-5C5DC5EFB75D}"
 EndProject
