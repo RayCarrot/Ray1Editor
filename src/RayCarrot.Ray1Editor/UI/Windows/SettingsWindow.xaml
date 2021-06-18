@@ -76,6 +76,7 @@
                       IsChecked="{Binding Path=EnableSerializerLog}" />
 
             <Button Grid.Column="2"
+                    ToolTip="Open log file"
                     Command="{Binding Path=OpenSerializerLogCommand, Mode=OneTime}"
                     VerticalAlignment="Center"
                     Style="{StaticResource FlatButton}">

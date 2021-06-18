@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
+using System.Windows;
 using NLog;
 
 namespace RayCarrot.Ray1Editor
@@ -22,7 +23,7 @@ namespace RayCarrot.Ray1Editor
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private async void MainWindow_LoadedAsync(object sender, System.Windows.RoutedEventArgs e)
+        private async void MainWindow_LoadedAsync(object sender, RoutedEventArgs e)
         {
             var app = R1EServices.App;
 
