@@ -88,12 +88,13 @@
                                Margin="0 0 0 7" />
 
                     <avalon:TextEditor x:Name="ScriptTextEditor"
-                                           ShowLineNumbers="True"
-                                           SyntaxHighlighting="C++"
-                                           HorizontalScrollBarVisibility="Disabled"
-                                           VerticalScrollBarVisibility="Disabled"
-                                           IsReadOnly="True"
-                                           Margin="0 0 0 7" />
+                                       Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}"
+                                       ShowLineNumbers="True"
+                                       SyntaxHighlighting="C++"
+                                       HorizontalScrollBarVisibility="Disabled"
+                                       VerticalScrollBarVisibility="Disabled"
+                                       IsReadOnly="True"
+                                       Margin="0 0 0 7" />
 
                 </StackPanel>
 
