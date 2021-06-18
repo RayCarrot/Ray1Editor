@@ -1,0 +1,33 @@
+﻿<local:BaseWindow x:Class="RayCarrot.Ray1Editor.FirstLaunchWindow"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                  xmlns:local="clr-namespace:RayCarrot.Ray1Editor"
+                  mc:Ignorable="d"
+                  Title="Ray1Editor Information"
+                  ResizeMode="NoResize"
+                  Width="480" Height="260"
+                  Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}"
+                  Background="{DynamicResource MahApps.Brushes.ThemeBackground}"
+                  CloseWithEscape="True">
+
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0"
+                   FontSize="18"
+                   TextWrapping="Wrap">
+            Welcome to the Ray1Editor! This is a level editor derived from Ray1Map, primarily used for editing Rayman 1 levels.<LineBreak/>
+            To ensure that no data is lost make sure to keep backups of your game files and save often in the editor.<LineBreak/>
+            If there are any issues please open an issue on the GitHub page. Thank you!
+        </TextBlock>
+
+        <Button Grid.Row="1" Content="Continue" Click="ContinueButton_OnClick" />
+
+    </Grid>
+
+</local:BaseWindow>

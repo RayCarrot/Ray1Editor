@@ -36,10 +36,11 @@
                        HorizontalAlignment="Center"
                        Margin="0 0 0 15" />
 
-            <TextBlock Text="Ray1Editor is an open-source level editor by RayCarrot primarily created for editing levels in Rayman 1. 
-The program was created from the Ray1Map project. Special thanks to Droolie and Ryemanni for their work on Ray1Map!"
-                       TextWrapping="Wrap"
-                       TextAlignment="Center"/>
+            <TextBlock TextWrapping="Wrap"
+                       TextAlignment="Center">
+                Ray1Editor is an open-source level editor by RayCarrot primarily created for editing levels in Rayman 1. 
+                The program is derived from the Ray1Map project. Special thanks to Droolie and Ryemanni for their work on Ray1Map!
+            </TextBlock>
 
         </StackPanel>
 

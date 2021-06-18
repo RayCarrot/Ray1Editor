@@ -17,6 +17,7 @@ namespace RayCarrot.Ray1Editor
         {
             App_Version = R1EServices.App.CurrentAppVersion;
             App_Games = new List<UserData_Game>();
+            App_IsFirstLaunch = true;
             UI_WindowState = null;
             UI_EditorTabsWidth = 350;
             Editor_PauseWhenInactive = true;
@@ -47,6 +48,8 @@ namespace RayCarrot.Ray1Editor
         /// The added games
         /// </summary>
         public List<UserData_Game> App_Games { get; set; }
+
+        public bool App_IsFirstLaunch { get; set; }
 
         /// <summary>
         /// The window state

@@ -26,6 +26,13 @@ namespace RayCarrot.Ray1Editor
         {
             var app = R1EServices.App;
 
+            if (app.UserData.App_IsFirstLaunch)
+            {
+                var win = new FirstLaunchWindow();
+                win.ShowDialog();
+                app.UserData.App_IsFirstLaunch = false;
+            }
+
             if (File.Exists(app.Path_UpdaterFile))
             {
                 int retryTime = 0;
