@@ -25,6 +25,7 @@ The PS1 version of Rayman 1 is more complicated to save than the PC version. For
 ## Screenshots
 ![Tile Editor](img/TileEditor.png)
 ![Object Editor](img/ObjEditor.png)
+![Layer Editor](img/LayerEditor.png)
 
 ## TODO
 In the code there are several comments for changes which should be made. These are marked with either 'TODO' or 'IDEA'. The former are for more improtant changes while the latter is for optional improvements. Other potential changes not mentioned in comments include:
