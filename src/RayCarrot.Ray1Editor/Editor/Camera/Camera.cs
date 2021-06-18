@@ -66,12 +66,12 @@ namespace RayCarrot.Ray1Editor
 
         // Zoom
         public float MinZoom { get; set; } = 0.2f;
-        public float MaxZoom { get; set; } = 2.5f;
-        public float ZoomSpeed { get; set; } = 0.001f;
+        public float MaxZoom { get; set; } = 3f;
+        public float ZoomSpeed { get; set; } = 0.0008f;
 
         // Moving
         public bool IsDraggingCamera { get; protected set; }
-        public float CameraSpeed { get; set; } = 500;
+        public float CameraSpeed { get; set; } = 700;
 
         // Targeting
         public Vector2? TargetPosition { get; set; }
