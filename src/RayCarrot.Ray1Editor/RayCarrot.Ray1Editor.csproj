@@ -6,6 +6,12 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
     <LangVersion>9</LangVersion>
+    <ApplicationIcon>UI\Img\AppIcon.ico</ApplicationIcon>
+    <Version>0.1.0</Version>
+    <Authors>RayCarrot</Authors>
+    <Product>Ray1Editor</Product>
+    <PackageProjectUrl>https://github.com/RayCarrot/RayCarrot.Ray1Editor</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/RayCarrot/RayCarrot.Ray1Editor</RepositoryUrl>
   </PropertyGroup>
 
   <!-- Debug -->
@@ -172,6 +178,7 @@
 
   <!-- Resources -->
   <ItemGroup>
+    <None Remove="UI\Img\AppIcon.ico" />
     <None Remove="UI\Img\Error.png" />
     <None Remove="UI\Img\Information.png" />
     <None Remove="UI\Img\Question.png" />
@@ -179,6 +186,7 @@
     <None Remove="UI\Img\Warning.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="UI\Img\AppIcon.ico" />
     <Resource Include="UI\Img\Error.png" />
     <Resource Include="UI\Img\Information.png" />
     <Resource Include="UI\Img\Question.png" />

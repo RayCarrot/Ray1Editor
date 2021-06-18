@@ -1,5 +1,6 @@
 ﻿using MahApps.Metro.Controls;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace RayCarrot.Ray1Editor.Updater
 {
@@ -20,8 +21,8 @@ namespace RayCarrot.Ray1Editor.Updater
             ShowMaxRestoreButton = false;
 
             // Set icon style
-            //Icon = new ImageSourceConverter().ConvertFromString("pack://application:,,,/RayCarrot.Ray1Editor.Updater;component/Img/Rayman Control Panel Icon.ico") as ImageSource;
-            //IconBitmapScalingMode = BitmapScalingMode.NearestNeighbor;
+            Icon = new ImageSourceConverter().ConvertFromString("pack://application:,,,/RayCarrot.Ray1Editor.Updater;component/Img/AppIcon.ico") as ImageSource;
+            IconBitmapScalingMode = BitmapScalingMode.NearestNeighbor;
         }
     }
 }
