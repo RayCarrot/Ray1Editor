@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System.IO;
+using System.Windows.Input;
 using Microsoft.Win32;
 using RayCarrot.UI;
 
@@ -6,13 +7,25 @@ namespace RayCarrot.Ray1Editor
 {
     public class SettingsViewModel : BaseViewModel
     {
+        #region Constructor
+
         public SettingsViewModel()
         {
             Data = AppViewModel.Instance.UserData;
+            OpenSerializerLogCommand = new RelayCommand(OpenSerializerLog);
             BrowsemkpsxisoCommand = new RelayCommand(Browsemkpsxiso);
         }
 
+        #endregion
+
+        #region Commands
+
+        public ICommand OpenSerializerLogCommand { get; }
         public ICommand BrowsemkpsxisoCommand { get; }
+
+        #endregion
+
+        #region Public Properties
 
         public AppUserData Data { get; }
 
@@ -72,6 +85,20 @@ namespace RayCarrot.Ray1Editor
             set => Data.Update_GetBeta = value;
         }
 
+        #endregion
+
+        #region Public Methods
+
+        public void OpenSerializerLog()
+        {
+            var file = AppViewModel.Instance.Path_SerializerLogFile;
+
+            if (File.Exists(file))
+                AppViewModel.Instance.LaunchFile(file);
+            else
+                AppViewModel.Instance.UI.DisplayMessage("No serializer log file has been created", "File does not exist", DialogMessageType.Information);
+        }
+
         public void Browsemkpsxiso()
         {
             // Create the dialog
@@ -86,5 +113,7 @@ namespace RayCarrot.Ray1Editor
             if (openFileDialog.ShowDialog() == true)
                 PS1_mkpsxisoPath = openFileDialog.FileName;
         }
+
+        #endregion
     }
 }

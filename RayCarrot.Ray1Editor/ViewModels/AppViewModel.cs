@@ -27,7 +27,7 @@ namespace RayCarrot.Ray1Editor
 
         public AppViewModel()
         {
-            Path_AppDataDir = $"AppUserData";
+            Path_AppDataDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Ray1Editor");
             Path_AppUserDataFile = Path.Combine(Path_AppDataDir, $"Settings.json");
             Path_LogFile = Path.Combine(Path_AppDataDir, $"Log.txt");
             Path_SerializerLogFile = Path.Combine(Path_AppDataDir, $"SerializerLog.txt");
@@ -53,6 +53,8 @@ namespace RayCarrot.Ray1Editor
 
         public string Url_Ray1EditorHome => "https://raym.app/ray1editor";
         public string Url_Ray1EditorUpdateManifest => "https://raym.app/ray1editor/update_manifest.json";
+        public string Url_Ray1EditorGitHub => "https://github.com/RayCarrot/RayCarrot.Ray1Editor";
+        public string Url_Ray1Map => "https://raym.app/maps_r1";
 
         #endregion
 
@@ -110,6 +112,8 @@ namespace RayCarrot.Ray1Editor
 
         #region Public Methods
 
+        // TODO: Move most of these to file manager
+
         public void OpenURL(string url)
         {
             try
@@ -137,7 +141,9 @@ namespace RayCarrot.Ray1Editor
                     FileName = file,
 
                     // Set to working directory to the parent directory if not otherwise specified
-                    WorkingDirectory = wd ?? Path.GetDirectoryName(file)
+                    WorkingDirectory = wd ?? Path.GetDirectoryName(file),
+
+                    UseShellExecute = true
                 };
 
                 // Set arguments if specified
@@ -173,6 +179,17 @@ namespace RayCarrot.Ray1Editor
             return null;
         }
 
+        public void OpenExplorerPath(string path)
+        {
+            // TODO: Try/catch
+            if (File.Exists(path))
+                Process.Start("explorer.exe", "/select, \"" + path + "\"")?.Dispose();
+            else if (Directory.Exists(path))
+                Process.Start("explorer.exe", path)?.Dispose();
+
+            Logger.Log(LogLevel.Trace, "Opened path in explorer");
+        }
+
         public bool CheckFileWriteAccess(string path)
         {
             if (!File.Exists(path))
@@ -194,14 +211,14 @@ namespace RayCarrot.Ray1Editor
         {
             Title = "Ray1Editor";
 
+            if (IsBeta)
+                Title += $" (BETA)";
+
             if (state != null)
                 Title += $" - {state}";
             else
                 Title += $" {CurrentAppVersion}";
 
-            if (IsBeta)
-                Title += $" (BETA)";
-            
             Logger.Log(LogLevel.Trace, "Title set to {0}", Title);
         }
 
@@ -230,15 +247,15 @@ namespace RayCarrot.Ray1Editor
 
         public void Initialize(string[] args)
         {
+            // Create the data directory
+            Directory.CreateDirectory(Path_AppDataDir);
+
             InitializeLogging(args.Any() && args[0] == "logtrace");
 
             Logger.Log(LogLevel.Info, "Initializing application with app version {0}", CurrentAppVersion);
 
             // Default the title
             SetTitle(null);
-
-            // Create the data directory
-            Directory.CreateDirectory(Path_AppDataDir);
 
             // Load the app user data
             LoadAppUserData();

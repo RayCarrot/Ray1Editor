@@ -82,13 +82,7 @@ namespace RayCarrot.Ray1Editor
 
         public void OpenFolder()
         {
-            string path = Game.Path;
-
-            // TODO: Move to file manager
-            if (File.Exists(path))
-                Process.Start("explorer.exe", "/select, \"" + path + "\"")?.Dispose();
-            else if (Directory.Exists(path))
-                Process.Start("explorer.exe", path)?.Dispose();
+            AppViewModel.Instance.OpenExplorerPath(Game.Path);
 
             Logger.Log(LogLevel.Trace, "Opened game path");
         }

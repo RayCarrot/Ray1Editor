@@ -15,9 +15,10 @@
                   CloseWithEscape="True">
 
     <local:BaseWindow.RightWindowCommands>
-        <metro:WindowCommands>
-            <Button Content="GitHub" Click="SourceCodeButton_OnClick" />
-            <Button Content="Ray1Map" Click="Ray1MapButton_OnClick" />
+        <metro:WindowCommands DataContext="{x:Static local:AppViewModel.Instance}">
+            <Button Content="App Data" ToolTip="{Binding Path=Path_AppDataDir, Mode=OneTime}" Click="AppDataButton_OnClick" />
+            <Button Content="GitHub" ToolTip="{Binding Path=Url_Ray1EditorGitHub, Mode=OneTime}" Click="SourceCodeButton_OnClick" />
+            <Button Content="Ray1Map" ToolTip="{Binding Path=Url_Ray1Map, Mode=OneTime}" Click="Ray1MapButton_OnClick" />
         </metro:WindowCommands>
     </local:BaseWindow.RightWindowCommands>
 

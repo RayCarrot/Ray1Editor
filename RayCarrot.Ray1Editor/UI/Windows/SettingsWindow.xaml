@@ -62,10 +62,27 @@
                   ToolTip="Indicates if the editor should automatically pause when inactive."
                   IsChecked="{Binding Path=PauseWhenInactive}" />
 
-        <CheckBox Margin="0 0 0 7"
-                  Content="Serializer log"
-                  ToolTip="Indicates if the binary serializer logging should be enabled, logging any read/write operations. Having this be enabled will slow down the loading and saving in the editor."
-                  IsChecked="{Binding Path=EnableSerializerLog}" />
+        <Grid Margin="0 0 0 7">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="7" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <CheckBox Grid.Column="0"
+                      Content="Serializer log"
+                      ToolTip="Indicates if the binary serializer logging should be enabled, logging any read/write operations. Having this be enabled will slow down the loading and saving in the editor."
+                      IsChecked="{Binding Path=EnableSerializerLog}" />
+
+            <Button Grid.Column="2"
+                    Command="{Binding Path=OpenSerializerLogCommand, Mode=OneTime}"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource FlatButton}">
+                <iconPacks:PackIconMaterial Kind="Launch" Background="Transparent" />
+            </Button>
+
+        </Grid>
 
         <CheckBox Margin="0 0 0 15"
                   Content="Create backup when saving"
