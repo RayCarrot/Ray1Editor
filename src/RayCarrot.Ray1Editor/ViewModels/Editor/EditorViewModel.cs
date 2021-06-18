@@ -365,12 +365,12 @@ namespace RayCarrot.Ray1Editor
             try
             {
                 EditorScene.Save();
-                App.UI.DisplayMessage("Successfully saved", "Saved", DialogMessageType.Success);
+                R1EServices.UI.DisplayMessage("Successfully saved", "Saved", DialogMessageType.Success);
             }
             catch (Exception ex)
             {
                 Logger.Log(LogLevel.Error, ex, "Saving");
-                App.UI.DisplayMessage($"An error occurred while saving. Error message: {ex.Message}", "Error saving", DialogMessageType.Error);
+                R1EServices.UI.DisplayMessage($"An error occurred while saving. Error message: {ex.Message}", "Error saving", DialogMessageType.Error);
             }
         }
 

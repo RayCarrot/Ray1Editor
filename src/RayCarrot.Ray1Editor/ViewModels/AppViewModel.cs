@@ -5,24 +5,17 @@ using NLog.Config;
 using NLog.Targets;
 using RayCarrot.UI;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using NLog.Fluent;
+using System.Windows.Input;
 
 namespace RayCarrot.Ray1Editor
 {
     public class AppViewModel : BaseViewModel
     {
-        #region Singleton
-
-        public static AppViewModel Instance { get; } = new();
-
-        #endregion
-
         #region Constructor
 
         public AppViewModel()
@@ -33,8 +26,7 @@ namespace RayCarrot.Ray1Editor
             Path_SerializerLogFile = Path.Combine(Path_AppDataDir, $"SerializerLog.txt");
             Path_UpdaterFile = Path.Combine(Path_AppDataDir, $"Updater.exe");
 
-            UI = new AppUIManager();
-            UpdaterManager = new R1EUpdateManager();
+            CloseAppCommand = new RelayCommand(() => App.Current.Shutdown());
         }
 
         #endregion
@@ -64,10 +56,15 @@ namespace RayCarrot.Ray1Editor
 
         #endregion
 
+        #region Commands
+
+        public ICommand CloseAppCommand { get; }
+
+        #endregion
+
         #region Private Properties
 
         private bool CheckingForUpdates { get; set; }
-        private UpdaterManager UpdaterManager { get; }
 
         #endregion
 
@@ -99,11 +96,6 @@ namespace RayCarrot.Ray1Editor
         public AppViewBaseViewModel CurrentAppViewViewModel { get; protected set; }
 
         /// <summary>
-        /// The current UI manager
-        /// </summary>
-        public AppUIManager UI { get; }
-
-        /// <summary>
         /// The current application title
         /// </summary>
         public string Title { get; protected set; }
@@ -113,99 +105,6 @@ namespace RayCarrot.Ray1Editor
         #region Public Methods
 
         // TODO: Move most of these to file manager
-
-        public void OpenURL(string url)
-        {
-            try
-            {
-                url = url.Replace("&", "^&");
-                Process.Start(new ProcessStartInfo("cmd", $"/c start {url}")
-                {
-                    CreateNoWindow = true
-                });
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(LogLevel.Error, ex, "Opening URL {0}", url);
-            }
-        }
-
-        public Process LaunchFile(string file, bool asAdmin = false, string arguments = null, string wd = null)
-        {
-            try
-            {
-                // Create the process start info
-                ProcessStartInfo info = new ProcessStartInfo
-                {
-                    // Set the file path
-                    FileName = file,
-
-                    // Set to working directory to the parent directory if not otherwise specified
-                    WorkingDirectory = wd ?? Path.GetDirectoryName(file),
-
-                    UseShellExecute = true
-                };
-
-                // Set arguments if specified
-                if (arguments != null)
-                    info.Arguments = arguments;
-
-                // Set to run as admin if specified
-                if (asAdmin)
-                    info.Verb = "runas";
-
-                // Start the process and get the process
-                var p = Process.Start(info);
-
-                Logger.Log(LogLevel.Info, "The file {0} launched with the arguments: {1}", file, arguments);
-
-                // Return the process
-                return p;
-            }
-            catch (FileNotFoundException ex)
-            {
-                Logger.Log(LogLevel.Warn, ex, "Launching file", file);
-
-                UI.DisplayMessage($"The specified file could not be found: {file}", "File not found", DialogMessageType.Error);
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(LogLevel.Warn, ex, "Launching file", file);
-
-                UI.DisplayMessage($"An error occurred when attempting to run {file}", "Error opening file", DialogMessageType.Error);
-            }
-
-            // Return null if the process could not launch
-            return null;
-        }
-
-        public void OpenExplorerPath(string path)
-        {
-            // TODO: Try/catch
-            if (File.Exists(path))
-                Process.Start("explorer.exe", "/select, \"" + path + "\"")?.Dispose();
-            else if (Directory.Exists(path))
-                Process.Start("explorer.exe", path)?.Dispose();
-
-            Logger.Log(LogLevel.Trace, "Opened path in explorer");
-        }
-
-        public bool CheckFileWriteAccess(string path)
-        {
-            if (!File.Exists(path))
-                return false;
-
-            try
-            {
-                using (File.Open(path, FileMode.Open, FileAccess.ReadWrite))
-                    return true;
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(LogLevel.Trace, ex, "Checking for file write access");
-                return false;
-            }
-        }
 
         public void SetTitle(string state)
         {
@@ -314,14 +213,14 @@ namespace RayCarrot.Ray1Editor
                 CheckingForUpdates = true;
 
                 // Check for updates
-                var result = await UpdaterManager.CheckAsync(forceUpdate && isManualSearch, UserData.Update_GetBeta || IsBeta);
+                var result = await R1EServices.Updater.CheckAsync(forceUpdate && isManualSearch, UserData.Update_GetBeta || IsBeta);
 
                 // Check if there is an error
                 if (result.ErrorMessage != null)
                 {
                     Logger.Log(LogLevel.Error, result.Exception, "Checking for updates");
 
-                    UI.DisplayMessage($"The update check failed. Error message: {result.ErrorMessage}{Environment.NewLine}To manually update the app, go to {Url_Ray1EditorHome} and download the latest version.", "Error checking for updates", DialogMessageType.Error);
+                    R1EServices.UI.DisplayMessage($"The update check failed. Error message: {result.ErrorMessage}{Environment.NewLine}To manually update the app, go to {Url_Ray1EditorHome} and download the latest version.", "Error checking for updates", DialogMessageType.Error);
 
                     return;
                 }
@@ -330,7 +229,7 @@ namespace RayCarrot.Ray1Editor
                 if (!result.IsNewUpdateAvailable)
                 {
                     if (isManualSearch)
-                        UI.DisplayMessage($"The latest version {CurrentAppVersion} is already installed", "No new version found", DialogMessageType.Information); 
+                        R1EServices.UI.DisplayMessage($"The latest version {CurrentAppVersion} is already installed", "No new version found", DialogMessageType.Information); 
 
                     return;
                 }
@@ -343,10 +242,10 @@ namespace RayCarrot.Ray1Editor
                         : $"A new beta update is available to download. Download now?{Environment.NewLine}{Environment.NewLine}" +
                           $"News: {Environment.NewLine}{result.DisplayNews}";
 
-                    if (UI.DisplayMessage(updateMessage, "New update available", DialogMessageType.Information, true))
+                    if (R1EServices.UI.DisplayMessage(updateMessage, "New update available", DialogMessageType.Information, true))
                     {
                         // Launch the updater
-                        var succeeded = UpdaterManager.Update(result, false);
+                        var succeeded = R1EServices.Updater.Update(result, false);
 
                         if (!succeeded)
                             Logger.Log(LogLevel.Warn, "The updater failed to update the program");
@@ -355,7 +254,7 @@ namespace RayCarrot.Ray1Editor
                 catch (Exception ex)
                 {
                     Logger.Log(LogLevel.Error, ex, "Updating Ray1Editor");
-                    UI.DisplayMessage($"AN error occurred while updating. Error message: {ex.Message}", "Error updating", DialogMessageType.Error);
+                    R1EServices.UI.DisplayMessage($"AN error occurred while updating. Error message: {ex.Message}", "Error updating", DialogMessageType.Error);
                 }
             }
             finally

@@ -10,25 +10,25 @@ namespace RayCarrot.Ray1Editor
         public AboutWindow()
         {
             InitializeComponent();
-            VersionTextBlock.Text = $"{AppViewModel.Instance.CurrentAppVersion}";
+            VersionTextBlock.Text = $"{R1EServices.App.CurrentAppVersion}";
 
-            if (AppViewModel.Instance.IsBeta)
+            if (R1EServices.App.IsBeta)
                 VersionTextBlock.Text += " (BETA)";
         }
 
         private void AppDataButton_OnClick(object sender, RoutedEventArgs e)
         {
-            AppViewModel.Instance.OpenExplorerPath(AppViewModel.Instance.Path_AppDataDir);
+            R1EServices.File.OpenExplorerPath(R1EServices.App.Path_AppDataDir);
         }
 
         private void SourceCodeButton_OnClick(object sender, RoutedEventArgs e)
         {
-            AppViewModel.Instance.OpenURL(AppViewModel.Instance.Url_Ray1EditorGitHub);
+            R1EServices.File.OpenURL(R1EServices.App.Url_Ray1EditorGitHub);
         }
 
         private void Ray1MapButton_OnClick(object sender, RoutedEventArgs e)
         {
-            AppViewModel.Instance.OpenURL(AppViewModel.Instance.Url_Ray1Map);
+            R1EServices.File.OpenURL(R1EServices.App.Url_Ray1Map);
         }
     }
 }

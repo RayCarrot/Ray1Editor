@@ -61,7 +61,7 @@ namespace RayCarrot.Ray1Editor
         // General
         public EditorStage Stage { get; protected set; }
         public EditorViewModel VM => (EditorViewModel)DataContext;
-        public bool PauseWhenInactive => AppViewModel.Instance.UserData.Editor_PauseWhenInactive;
+        public bool PauseWhenInactive => R1EServices.App.UserData.Editor_PauseWhenInactive;
         public bool IsPaused { get; set; }
         public EditorState State { get; }
         public Context Context { get; }
@@ -214,7 +214,7 @@ namespace RayCarrot.Ray1Editor
             {
                 Logger.Log(LogLevel.Error, ex, "Loading editor");
 
-                AppViewModel.Instance.UI.DisplayMessage($"An error occurred loading the editor. Error message: {ex.Message}", "Error loading editor", DialogMessageType.Error);
+                R1EServices.UI.DisplayMessage($"An error occurred loading the editor. Error message: {ex.Message}", "Error loading editor", DialogMessageType.Error);
 
                 Stage = EditorStage.Error;
             }
@@ -666,7 +666,7 @@ namespace RayCarrot.Ray1Editor
         {
             if (GameData.Objects.Count >= GameManager.GetMaxObjCount(GameData))
             {
-                AppViewModel.Instance.UI.DisplayMessage("Maximum number of objects has been reached in the level", "Max object count reached", DialogMessageType.Error);
+                R1EServices.UI.DisplayMessage("Maximum number of objects has been reached in the level", "Max object count reached", DialogMessageType.Error);
                 
                 return;
             }

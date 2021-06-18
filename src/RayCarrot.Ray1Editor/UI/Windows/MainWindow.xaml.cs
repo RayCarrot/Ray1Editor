@@ -15,7 +15,7 @@ namespace RayCarrot.Ray1Editor
         {
             InitializeComponent();
 
-            AppViewModel.Instance.UserData.UI_WindowState?.ApplyToWindow(this);
+            R1EServices.App.UserData.UI_WindowState?.ApplyToWindow(this);
 
             Loaded += MainWindow_LoadedAsync;
         }
@@ -24,14 +24,14 @@ namespace RayCarrot.Ray1Editor
 
         private async void MainWindow_LoadedAsync(object sender, System.Windows.RoutedEventArgs e)
         {
-            var app = AppViewModel.Instance;
+            var app = R1EServices.App;
 
             if (File.Exists(app.Path_UpdaterFile))
             {
                 int retryTime = 0;
 
                 // Wait until we can write to the file (i.e. it closing after an update)
-                while (!app.CheckFileWriteAccess(app.Path_UpdaterFile))
+                while (!R1EServices.File.CheckFileWriteAccess(app.Path_UpdaterFile))
                 {
                     retryTime++;
 
@@ -67,18 +67,18 @@ namespace RayCarrot.Ray1Editor
                 catch (Exception ex)
                 {
                     Logger.Log(LogLevel.Error, ex, "Deleting updater");
-                    app.UI.DisplayMessage($"The updater could not be deleted. Error message: {ex.Message}", "Error deleting updater", DialogMessageType.Error);
+                    R1EServices.UI.DisplayMessage($"The updater could not be deleted. Error message: {ex.Message}", "Error deleting updater", DialogMessageType.Error);
                 }
             }
 
             if (app.UserData.Update_CheckOnLaunch)
-                await AppViewModel.Instance.CheckForUpdatesAsync(false, false);
+                await R1EServices.App.CheckForUpdatesAsync(false, false);
         }
 
         private void MainWindow_OnClosing(object sender, CancelEventArgs e)
         {
             // Update the saved window state
-            AppViewModel.Instance.UserData.UI_WindowState = UserData_WindowSessionState.GetWindowState(this);
+            R1EServices.App.UserData.UI_WindowState = UserData_WindowSessionState.GetWindowState(this);
         }
     }
 }

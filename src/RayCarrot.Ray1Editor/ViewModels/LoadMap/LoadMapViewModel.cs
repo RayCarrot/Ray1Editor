@@ -55,7 +55,7 @@ namespace RayCarrot.Ray1Editor
         {
             var editGameVM = new EditGameViewModel();
 
-            var result = App.UI.EditGame(editGameVM);
+            var result = R1EServices.UI.EditGame(editGameVM);
 
             if (!result)
                 return;
@@ -84,7 +84,7 @@ namespace RayCarrot.Ray1Editor
             if (g.PathType == GameModePathType.File && !File.Exists(gameData.Path) || 
                 g.PathType == GameModePathType.Directory && !Directory.Exists(gameData.Path))
             {
-                App.UI.DisplayMessage("The specified game path doesn't exist", "Path not found", DialogMessageType.Error);
+                R1EServices.UI.DisplayMessage("The specified game path doesn't exist", "Path not found", DialogMessageType.Error);
                 SelectedGame.Edit();
                 return;
             }

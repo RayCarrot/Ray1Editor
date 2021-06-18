@@ -8,7 +8,7 @@ namespace RayCarrot.Ray1Editor
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var vm = AppViewModel.Instance.CurrentAppViewViewModel;
+            var vm = R1EServices.App.CurrentAppViewViewModel;
 
             UserControl view = (AppViewModel.AppView)value switch
             {

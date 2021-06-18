@@ -11,7 +11,7 @@
             DataContext = new SettingsViewModel();
 
             // Save settings when closing
-            Closed += (_, _) => AppViewModel.Instance.SaveAppUserData();
+            Closed += (_, _) => R1EServices.App.SaveAppUserData();
         }
     }
 }

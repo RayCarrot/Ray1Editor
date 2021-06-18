@@ -18,7 +18,7 @@ namespace RayCarrot.Ray1Editor
                     EditorTabControl.SelectedIndex = 3;
             };
 
-            EditorTabsColumnDef.Width = new GridLength(AppViewModel.Instance.UserData.UI_EditorTabsWidth);
+            EditorTabsColumnDef.Width = new GridLength(R1EServices.App.UserData.UI_EditorTabsWidth);
         }
 
         public EditorViewModel ViewModel
@@ -29,7 +29,7 @@ namespace RayCarrot.Ray1Editor
 
         private void EditorView_OnUnloaded(object sender, RoutedEventArgs e)
         {
-            AppViewModel.Instance.UserData.UI_EditorTabsWidth = EditorTabsColumnDef.Width.Value;
+            R1EServices.App.UserData.UI_EditorTabsWidth = EditorTabsColumnDef.Width.Value;
         }
     }
 }

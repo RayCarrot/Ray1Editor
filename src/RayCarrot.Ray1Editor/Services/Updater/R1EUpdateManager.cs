@@ -47,16 +47,16 @@ namespace RayCarrot.Ray1Editor
         /// <summary>
         /// The current version of the application
         /// </summary>
-        protected override Version CurrentVersion => AppViewModel.Instance.CurrentAppVersion;
+        protected override Version CurrentVersion => R1EServices.App.CurrentAppVersion;
 
         /// <summary>
         /// The fallback URL to display to the user in case of an error
         /// </summary>
-        protected override string UserFallbackURL => AppViewModel.Instance.Url_Ray1EditorHome;
+        protected override string UserFallbackURL => R1EServices.App.Url_Ray1EditorHome;
 
         /// <summary>
         /// The manifest URL
         /// </summary>
-        protected override string ManifestURL => AppViewModel.Instance.Url_Ray1EditorUpdateManifest;
+        protected override string ManifestURL => R1EServices.App.Url_Ray1EditorUpdateManifest;
     }
 }

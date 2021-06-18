@@ -13,7 +13,7 @@ namespace RayCarrot.Ray1Editor
             var src = (LoadGameViewModel)dropInfo.Data;
             
             // Move the object to the new position in the app data
-            var objects = AppViewModel.Instance.UserData.App_Games;
+            var objects = R1EServices.App.UserData.App_Games;
             objects.Move(objects.IndexOf(src.Game), dropInfo.InsertIndex);
         }
     }

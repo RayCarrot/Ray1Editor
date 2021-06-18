@@ -13,11 +13,6 @@ namespace RayCarrot.Ray1Editor
             InitializeComponent();
         }
 
-        private void CloseMenuItem_OnClick(object sender, RoutedEventArgs e)
-        {
-            Window.GetWindow(this)?.Close();
-        }
-
         private void SettingsMenuItem_OnClick(object sender, RoutedEventArgs e)
         {
             var win = new SettingsWindow();
@@ -32,7 +27,7 @@ namespace RayCarrot.Ray1Editor
 
         private async void CheckForUpdatesMenuItem_OnClick(object sender, RoutedEventArgs e)
         {
-            await AppViewModel.Instance.CheckForUpdatesAsync(true, false);
+            await R1EServices.App.CheckForUpdatesAsync(true, false);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace RayCarrot.Ray1Editor
 
         public SettingsViewModel()
         {
-            Data = AppViewModel.Instance.UserData;
+            Data = R1EServices.App.UserData;
             OpenSerializerLogCommand = new RelayCommand(OpenSerializerLog);
             BrowsemkpsxisoCommand = new RelayCommand(Browsemkpsxiso);
         }
@@ -91,12 +91,12 @@ namespace RayCarrot.Ray1Editor
 
         public void OpenSerializerLog()
         {
-            var file = AppViewModel.Instance.Path_SerializerLogFile;
+            var file = R1EServices.App.Path_SerializerLogFile;
 
             if (File.Exists(file))
-                AppViewModel.Instance.LaunchFile(file);
+                R1EServices.File.LaunchFile(file);
             else
-                AppViewModel.Instance.UI.DisplayMessage("No serializer log file has been created", "File does not exist", DialogMessageType.Information);
+                R1EServices.UI.DisplayMessage("No serializer log file has been created", "File does not exist", DialogMessageType.Information);
         }
 
         public void Browsemkpsxiso()

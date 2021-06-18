@@ -19,11 +19,6 @@ namespace RayCarrot.Ray1Editor
             set => DataContext = value;
         }
 
-        private void CloseMenuItem_OnClick(object sender, RoutedEventArgs e)
-        {
-            Window.GetWindow(this)?.Close();
-        }
-
         private void ShowControlsMenuItem_OnClick(object sender, RoutedEventArgs e)
         {
             ViewModel.DoAndPause(() =>

@@ -5,7 +5,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace RayCarrot.Ray1Editor
@@ -161,7 +160,7 @@ namespace RayCarrot.Ray1Editor
         /// <returns>A value indicating if the operation succeeded</returns>
         public bool Update(UpdaterCheckResult result, bool asAdmin)
         {
-            var updateFilePath = AppViewModel.Instance.Path_UpdaterFile;
+            var updateFilePath = R1EServices.App.Path_UpdaterFile;
 
             try
             {
@@ -180,24 +179,24 @@ namespace RayCarrot.Ray1Editor
             {
                 Logger.Log(LogLevel.Error, ex, "Writing updater to temp path");
 
-                AppViewModel.Instance.UI.DisplayMessage($"The updater could not be created. To manually download the new version, go to {AppViewModel.Instance.Url_Ray1EditorHome} and download the latest version from there.", "Error creating updater", DialogMessageType.Error);
+                R1EServices.UI.DisplayMessage($"The updater could not be created. To manually download the new version, go to {R1EServices.App.Url_Ray1EditorHome} and download the latest version from there.", "Error creating updater", DialogMessageType.Error);
                 
                 return false;
             }
 
             // Launch the updater and capture the process
-            using var updateProcess = AppViewModel.Instance.LaunchFile(updateFilePath, asAdmin,
+            using var updateProcess = R1EServices.File.LaunchFile(updateFilePath, asAdmin,
                 // Arg 1: Program path
                 $"\"{Process.GetCurrentProcess().MainModule?.FileName}\" " +
                 // Arg 2: Dark mode
-                $"{AppViewModel.Instance.UserData.Theme_Dark} " +
+                $"{R1EServices.App.UserData.Theme_Dark} " +
                 // Arg 3: Update URL
                 $"\"{result.DownloadURL}\"");
 
             // Make sure we have a valid process
             if (updateProcess == null)
             {
-                AppViewModel.Instance.UI.DisplayMessage($"The updater could not be launched. To manually download the new version, go to {AppViewModel.Instance.Url_Ray1EditorHome} and download the latest version from there.", "Error updating", DialogMessageType.Error);
+                R1EServices.UI.DisplayMessage($"The updater could not be launched. To manually download the new version, go to {R1EServices.App.Url_Ray1EditorHome} and download the latest version from there.", "Error updating", DialogMessageType.Error);
 
                 return false;
             }

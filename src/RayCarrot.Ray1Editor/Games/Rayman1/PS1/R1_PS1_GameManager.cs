@@ -41,7 +41,7 @@ namespace RayCarrot.Ray1Editor
         {
             yield return new ActionViewModel("Export VRAM", () =>
             {
-                var file = AppViewModel.Instance.UI.GetSaveFilePath("Export VRAM", "vram.png", ".png", "Image Files | *.png");
+                var file = R1EServices.UI.GetSaveFilePath("Export VRAM", "vram.png", ".png", "Image Files | *.png");
 
                 if (file == null)
                     return;
@@ -67,7 +67,7 @@ namespace RayCarrot.Ray1Editor
                 catch (Exception ex)
                 {
                     Logger.Log(LogLevel.Error, ex, "Exporting VRAM");
-                    AppViewModel.Instance.UI.DisplayMessage("An error occurred exporting the VRAM", "Error", DialogMessageType.Error);
+                    R1EServices.UI.DisplayMessage("An error occurred exporting the VRAM", "Error", DialogMessageType.Error);
                 }
             });
         }
@@ -75,10 +75,10 @@ namespace RayCarrot.Ray1Editor
         public override GameData Load(Context context, object settings, TextureManager textureManager)
         {
             // Make sure valid files are specified for saving
-            var userData = AppViewModel.Instance.UserData;
+            var userData = R1EServices.App.UserData;
 
             if (!File.Exists(userData.PS1_mkpsxisoPath) || !File.Exists(context.BasePath + Path_DiscXMLFile))
-                AppViewModel.Instance.UI.DisplayMessage("To be able to save changes made to the PS1 versions of Rayman 1 you will need " +
+                R1EServices.UI.DisplayMessage("To be able to save changes made to the PS1 versions of Rayman 1 you will need " +
                                                         "to specify a file path for the mkpsxiso program. This can be done " +
                                                         $"in the settings window (Tools > Settings).{Environment.NewLine}" +
                                                         "In order for this to work the game folder for the game must contain every file " +
@@ -174,7 +174,7 @@ namespace RayCarrot.Ray1Editor
         {
             Logger.Log(LogLevel.Info, "Saving R1 PS1");
 
-            var userData = AppViewModel.Instance.UserData;
+            var userData = R1EServices.App.UserData;
 
             if (!File.Exists(userData.PS1_mkpsxisoPath))
                 throw new Exception("The specified file path for mkpsxiso is not valid");

@@ -66,7 +66,7 @@ namespace RayCarrot.Ray1Editor
                 GamePath = Game.Path
             };
 
-            var result = AppViewModel.Instance.UI.EditGame(editGameVM);
+            var result = R1EServices.UI.EditGame(editGameVM);
 
             if (!result)
                 return;
@@ -82,7 +82,7 @@ namespace RayCarrot.Ray1Editor
 
         public void OpenFolder()
         {
-            AppViewModel.Instance.OpenExplorerPath(Game.Path);
+            R1EServices.File.OpenExplorerPath(Game.Path);
 
             Logger.Log(LogLevel.Trace, "Opened game path");
         }
@@ -96,7 +96,7 @@ namespace RayCarrot.Ray1Editor
             LoadMapViewModel.SelectedGame = null;
 
             // Remove from user data
-            AppViewModel.Instance.UserData.App_Games.Remove(Game);
+            R1EServices.App.UserData.App_Games.Remove(Game);
 
             Logger.Log(LogLevel.Trace, "Removed game with mode {0}", Game.GameID);
         }

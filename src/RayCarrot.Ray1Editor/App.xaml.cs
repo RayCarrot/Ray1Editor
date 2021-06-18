@@ -27,7 +27,7 @@ namespace RayCarrot.Ray1Editor
         private void App_OnStartup(object sender, StartupEventArgs e)
         {
             // Initialize the view model
-            AppViewModel.Instance.Initialize(e.Args);
+            R1EServices.App.Initialize(e.Args);
 
             // Update the theme
             UpdateTheme();
@@ -35,7 +35,7 @@ namespace RayCarrot.Ray1Editor
 
         private void App_OnExit(object sender, ExitEventArgs e)
         {
-            AppViewModel.Instance.Unload();
+            R1EServices.App.Unload();
         }
 
         private void App_OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
@@ -52,7 +52,7 @@ namespace RayCarrot.Ray1Editor
 
         public void UpdateTheme()
         {
-            var data = AppViewModel.Instance.UserData;
+            var data = R1EServices.App.UserData;
             const string color = "Purple";
 
             if (data.Theme_Sync)

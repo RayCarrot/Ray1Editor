@@ -26,7 +26,7 @@
         <MenuItem Header="Exit"
                   Icon="{iconPacks:Material CloseOutline}"
                   InputGestureText="Alt+F4"
-                  Click="CloseMenuItem_OnClick" />
+                  Command="{Binding Source={x:Static local:R1EServices.App}, Path=CloseAppCommand, Mode=OneTime}" />
     </MenuItem>
 
     <!-- Edit -->

@@ -16,7 +16,7 @@ namespace RayCarrot.Ray1Editor
 
         public T FileData { get; set; }
         public int EditorVersion { get; set; } = 1;
-        public string Message { get; set; } = $"Ray1Editor v. {AppViewModel.Instance.CurrentAppVersion}";
+        public string Message { get; set; } = $"Ray1Editor v. {R1EServices.App.CurrentAppVersion}";
         public int RelocatedStructsCount { get; set; }
         public RelocatedStruct[] RelocatedStructs { get; set; }
 

@@ -11,7 +11,7 @@ namespace RayCarrot.Ray1Editor
         /// <summary>
         /// The app view model
         /// </summary>
-        public AppViewModel App => AppViewModel.Instance;
+        public AppViewModel App => R1EServices.App;
 
         /// <summary>
         /// Initializes the view model. Gets called once when the view is loaded.

@@ -7,7 +7,7 @@
                   xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
                   mc:Ignorable="d"
                   Title="{Binding Path=Title}"
-                  DataContext="{x:Static local:AppViewModel.Instance}"
+                  DataContext="{x:Static local:R1EServices.App}"
                   Height="600" Width="1024"
                   CloseWithEscape="False"
                   Closing="MainWindow_OnClosing">

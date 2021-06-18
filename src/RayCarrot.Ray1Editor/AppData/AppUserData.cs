@@ -15,7 +15,7 @@ namespace RayCarrot.Ray1Editor
         /// </summary>
         public void Reset()
         {
-            App_Version = AppViewModel.Instance.CurrentAppVersion;
+            App_Version = R1EServices.App.CurrentAppVersion;
             App_Games = new List<UserData_Game>();
             UI_WindowState = null;
             UI_EditorTabsWidth = 350;
@@ -34,7 +34,7 @@ namespace RayCarrot.Ray1Editor
         /// </summary>
         public void Verify()
         {
-            App_Version ??= AppViewModel.Instance.CurrentAppVersion;
+            App_Version ??= R1EServices.App.CurrentAppVersion;
             App_Games ??= new List<UserData_Game>();
         }
 
