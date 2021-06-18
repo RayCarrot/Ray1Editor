@@ -145,6 +145,7 @@
     <Content Remove="Assets\Object\object.png" />
     <Content Remove="Assets\Object\trigger.png" />
     <Content Remove="Assets\Object\waypoint.png" />
+    <Content Remove="Assets\Deployable\RayCarrot.Ray1Editor.Updater.exe" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Assets\Collision\R1_TypeCollision.png" />
@@ -158,6 +159,7 @@
     <EmbeddedResource Include="Assets\Object\object.png" />
     <EmbeddedResource Include="Assets\Object\trigger.png" />
     <EmbeddedResource Include="Assets\Object\waypoint.png" />
+    <EmbeddedResource Include="Assets\Deployable\RayCarrot.Ray1Editor.Updater.exe" />
   </ItemGroup>
 
   <!-- Resources -->

@@ -9,7 +9,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
+using NLog.Fluent;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -29,8 +31,10 @@ namespace RayCarrot.Ray1Editor
             Path_AppUserDataFile = Path.Combine(Path_AppDataDir, $"Settings.json");
             Path_LogFile = Path.Combine(Path_AppDataDir, $"Log.txt");
             Path_SerializerLogFile = Path.Combine(Path_AppDataDir, $"SerializerLog.txt");
+            Path_UpdaterFile = Path.Combine(Path_AppDataDir, $"Updater.exe");
 
             UI = new AppUIManager();
+            UpdaterManager = new R1EUpdateManager();
         }
 
         #endregion
@@ -41,6 +45,14 @@ namespace RayCarrot.Ray1Editor
         public string Path_AppUserDataFile { get; }
         public string Path_LogFile { get; }
         public string Path_SerializerLogFile { get; }
+        public string Path_UpdaterFile { get; }
+
+        #endregion
+
+        #region URLs
+
+        public string Url_Ray1EditorHome => "https://raym.app/ray1editor";
+        public string Url_Ray1EditorUpdateManifest => "https://raym.app/ray1editor/update_manifest.json";
 
         #endregion
 
@@ -50,12 +62,24 @@ namespace RayCarrot.Ray1Editor
 
         #endregion
 
+        #region Private Properties
+
+        private bool CheckingForUpdates { get; set; }
+        private UpdaterManager UpdaterManager { get; }
+
+        #endregion
+
         #region Public Properties
 
         /// <summary>
         /// The current app version
         /// </summary>
         public Version CurrentAppVersion => new Version(0, 0, 0, 0);
+
+        /// <summary>
+        /// Indicates if the current version is a BETA version
+        /// </summary>
+        public bool IsBeta => true;
 
         /// <summary>
         /// The loaded app user data
@@ -102,6 +126,70 @@ namespace RayCarrot.Ray1Editor
             }
         }
 
+        public Process LaunchFile(string file, bool asAdmin = false, string arguments = null, string wd = null)
+        {
+            try
+            {
+                // Create the process start info
+                ProcessStartInfo info = new ProcessStartInfo
+                {
+                    // Set the file path
+                    FileName = file,
+
+                    // Set to working directory to the parent directory if not otherwise specified
+                    WorkingDirectory = wd ?? Path.GetDirectoryName(file)
+                };
+
+                // Set arguments if specified
+                if (arguments != null)
+                    info.Arguments = arguments;
+
+                // Set to run as admin if specified
+                if (asAdmin)
+                    info.Verb = "runas";
+
+                // Start the process and get the process
+                var p = Process.Start(info);
+
+                Logger.Log(LogLevel.Info, "The file {0} launched with the arguments: {1}", file, arguments);
+
+                // Return the process
+                return p;
+            }
+            catch (FileNotFoundException ex)
+            {
+                Logger.Log(LogLevel.Warn, ex, "Launching file", file);
+
+                UI.DisplayMessage($"The specified file could not be found: {file}", "File not found", DialogMessageType.Error);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogLevel.Warn, ex, "Launching file", file);
+
+                UI.DisplayMessage($"An error occurred when attempting to run {file}", "Error opening file", DialogMessageType.Error);
+            }
+
+            // Return null if the process could not launch
+            return null;
+        }
+
+        public bool CheckFileWriteAccess(string path)
+        {
+            if (!File.Exists(path))
+                return false;
+
+            try
+            {
+                using (File.Open(path, FileMode.Open, FileAccess.ReadWrite))
+                    return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogLevel.Trace, ex, "Checking for file write access");
+                return false;
+            }
+        }
+
         public void SetTitle(string state)
         {
             Title = "Ray1Editor";
@@ -110,6 +198,9 @@ namespace RayCarrot.Ray1Editor
                 Title += $" - {state}";
             else
                 Title += $" {CurrentAppVersion}";
+
+            if (IsBeta)
+                Title += $" (BETA)";
             
             Logger.Log(LogLevel.Trace, "Title set to {0}", Title);
         }
@@ -195,6 +286,66 @@ namespace RayCarrot.Ray1Editor
         }
 
         public void PostUpdate() { }
+
+        public async Task CheckForUpdatesAsync(bool isManualSearch, bool forceUpdate)
+        {
+            if (CheckingForUpdates)
+                return;
+
+            try
+            {
+                CheckingForUpdates = true;
+
+                // Check for updates
+                var result = await UpdaterManager.CheckAsync(forceUpdate && isManualSearch, UserData.Update_GetBeta || IsBeta);
+
+                // Check if there is an error
+                if (result.ErrorMessage != null)
+                {
+                    Logger.Log(LogLevel.Error, result.Exception, "Checking for updates");
+
+                    UI.DisplayMessage($"The update check failed. Error message: {result.ErrorMessage}{Environment.NewLine}To manually update the app, go to {Url_Ray1EditorHome} and download the latest version.", "Error checking for updates", DialogMessageType.Error);
+
+                    return;
+                }
+
+                // Check if no new updates were found
+                if (!result.IsNewUpdateAvailable)
+                {
+                    if (isManualSearch)
+                        UI.DisplayMessage($"The latest version {CurrentAppVersion} is already installed", "No new version found", DialogMessageType.Information); 
+
+                    return;
+                }
+
+                try
+                {
+                    var updateMessage = !result.IsBetaUpdate
+                        ? $"A new update is available to download. Download now?{Environment.NewLine}{Environment.NewLine}" +
+                          $"News: {Environment.NewLine}{result.DisplayNews}"
+                        : $"A new beta update is available to download. Download now?{Environment.NewLine}{Environment.NewLine}" +
+                          $"News: {Environment.NewLine}{result.DisplayNews}";
+
+                    if (UI.DisplayMessage(updateMessage, "New update available", DialogMessageType.Information, true))
+                    {
+                        // Launch the updater
+                        var succeeded = UpdaterManager.Update(result, false);
+
+                        if (!succeeded)
+                            Logger.Log(LogLevel.Warn, "The updater failed to update the program");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(LogLevel.Error, ex, "Updating Ray1Editor");
+                    UI.DisplayMessage($"AN error occurred while updating. Error message: {ex.Message}", "Error updating", DialogMessageType.Error);
+                }
+            }
+            finally
+            {
+                CheckingForUpdates = false;
+            }
+        }
 
         public void Unload()
         {

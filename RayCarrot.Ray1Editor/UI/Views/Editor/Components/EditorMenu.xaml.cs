@@ -42,7 +42,7 @@ namespace RayCarrot.Ray1Editor
             });
         }
 
-        private void MenuItem_OnClick(object sender, RoutedEventArgs e)
+        private void AboutMenuItem_OnClick(object sender, RoutedEventArgs e)
         {
             ViewModel.DoAndPause(() =>
             {

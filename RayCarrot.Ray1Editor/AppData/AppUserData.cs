@@ -25,6 +25,8 @@ namespace RayCarrot.Ray1Editor
             Theme_Dark = true;
             Theme_Sync = false;
             PS1_mkpsxisoPath = null;
+            Update_CheckOnLaunch = true;
+            Update_GetBeta = false;
         }
 
         /// <summary>
@@ -69,5 +71,8 @@ namespace RayCarrot.Ray1Editor
         public bool Theme_Sync { get; set; }
 
         public string PS1_mkpsxisoPath { get; set; }
+
+        public bool Update_CheckOnLaunch { get; set; }
+        public bool Update_GetBeta { get; set; }
     }
 }

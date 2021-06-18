@@ -16,7 +16,7 @@
 
     <local:BaseWindow.RightWindowCommands>
         <metro:WindowCommands>
-            <Button Content="Source Code" Click="SourceCodeButton_OnClick" />
+            <Button Content="GitHub" Click="SourceCodeButton_OnClick" />
             <Button Content="Ray1Map" Click="Ray1MapButton_OnClick" />
         </metro:WindowCommands>
     </local:BaseWindow.RightWindowCommands>

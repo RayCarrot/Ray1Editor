@@ -22,10 +22,26 @@ namespace RayCarrot.Ray1Editor
             VM.LoadMap();
         }
 
-        private void SettingsButton_OnClick(object sender, RoutedEventArgs e)
+        private void CloseMenuItem_OnClick(object sender, RoutedEventArgs e)
+        {
+            Window.GetWindow(this)?.Close();
+        }
+
+        private void SettingsMenuItem_OnClick(object sender, RoutedEventArgs e)
         {
             var win = new SettingsWindow();
             win.ShowDialog();
+        }
+
+        private void AboutMenuItem_OnClick(object sender, RoutedEventArgs e)
+        {
+            var win = new AboutWindow();
+            win.ShowDialog();
+        }
+
+        private async void CheckForUpdatesMenuItem_OnClick(object sender, RoutedEventArgs e)
+        {
+            await AppViewModel.Instance.CheckForUpdatesAsync(true, false);
         }
     }
 }
