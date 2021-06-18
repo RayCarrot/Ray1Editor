@@ -13,7 +13,8 @@ namespace RayCarrot.Ray1Editor
         // Colors
         public Color Color_Background { get; set; } = new Color(0x28, 0x35, 0x93);
         public Color Color_MapBackground { get; set; } = new Color(0x79, 0x86, 0xCB);
-        public Color Color_ObjBounds { get; set; } = new Color(0xf4, 0x43, 0x36);
+        public Color Color_SelectedObjBounds { get; set; } = new Color(0xf4, 0x43, 0x36);
+        public Color Color_HoveringObjBounds { get; set; } = new Color(0xFF, 0xEB, 0x3B);
         public Color Color_ObjLinksEnabled { get; set; } = new Color(0xFD, 0xD8, 0x35);
         public Color Color_ObjLinksDisabled { get; set; } = new Color(0xE5, 0x73, 0x73);
         public Color Color_ObjOffsetPos { get; set; } = new Color(0xFF, 0x57, 0x22);

@@ -596,7 +596,7 @@ namespace RayCarrot.Ray1Editor
 
                 // Draw link grip border if hovering over it in links mode
                 if (Mode == EditorMode.Links && HoverLinkGripObj != null)
-                    r.DrawRectangle(HoverLinkGripObj.LinkGripBounds, State.Color_ObjBounds);
+                    r.DrawRectangle(HoverLinkGripObj.LinkGripBounds, State.Color_SelectedObjBounds);
 
                 if (CanHoverOverObject)
                 {
@@ -605,12 +605,12 @@ namespace RayCarrot.Ray1Editor
                     // show that too (the object we're dragging will always be selected!).
                     // When in links mode we show the bounds for the object the link is being
                     // moved for.
-                    if (SelectedObject != null)
-                        r.DrawRectangle(SelectedObject.WorldBounds, State.Color_ObjBounds);
-                    if (HoverObject != null && !IsDraggingObject && !IsDraggingLink)
-                        r.DrawRectangle(HoverObject.WorldBounds, State.Color_ObjBounds);
-                    else if (SelectedLinkObject != null)
-                        r.DrawRectangle(SelectedLinkObject.WorldBounds, State.Color_ObjBounds);
+                    if (SelectedObject != null) // Selected object
+                        r.DrawRectangle(SelectedObject.WorldBounds, State.Color_SelectedObjBounds);
+                    if (HoverObject != null && !IsDraggingObject && !IsDraggingLink && HoverObject != SelectedObject) // Hovering object
+                        r.DrawRectangle(HoverObject.WorldBounds, State.Color_HoveringObjBounds);
+                    else if (SelectedLinkObject != null) // Selected link object
+                        r.DrawRectangle(SelectedLinkObject.WorldBounds, State.Color_SelectedObjBounds);
                 }
 
                 if (ShowObjectOffsets)
