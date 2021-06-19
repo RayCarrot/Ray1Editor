@@ -18,6 +18,7 @@ namespace RayCarrot.Ray1Editor
             CurrentGameManager = currentGameManager;
             CurrentGameSettings = currentGameSettings;
             Palettes = new ObservableCollection<PaletteEditorViewModel>();
+            LevelAttributeFields = new ObservableCollection<EditorFieldViewModel>();
             Layers = new ObservableCollection<LayerEditorViewModel>();
             AvailableObjects = new ObservableCollection<string>();
             GameObjects = new ObservableCollection<GameObjectListItemViewModel>();
@@ -119,6 +120,8 @@ namespace RayCarrot.Ray1Editor
 
         // General
         public ObservableCollection<PaletteEditorViewModel> Palettes { get; }
+        public ObservableCollection<EditorFieldViewModel> LevelAttributeFields { get; }
+        public bool HasLevelAttributeFields => LevelAttributeFields.Any();
 
         // Layers
         public ObservableCollection<LayerEditorViewModel> Layers { get; }
@@ -180,6 +183,13 @@ namespace RayCarrot.Ray1Editor
             })));
 
             CurrentlySelectedPalette = Palettes.FirstOrDefault()?.Palette;
+
+            // Set up level attribute fields
+            LevelAttributeFields.AddRange(CurrentGameManager.GetEditorLevelAttributeFields(EditorScene.GameData));
+            OnPropertyChanged(nameof(HasLevelAttributeFields));
+
+            foreach (var field in LevelAttributeFields)
+                field.Refresh();
 
             // Set up layers
             Layers.AddRange(EditorScene.GameData.Layers.Select(x => new LayerEditorViewModel(x)));
@@ -279,6 +289,7 @@ namespace RayCarrot.Ray1Editor
             AvailableObjects.Clear();
             SelectedObjectName = null;
             Palettes.Clear();
+            LevelAttributeFields.Clear();
             Layers.Clear();
             ObjFields.Clear();
         }

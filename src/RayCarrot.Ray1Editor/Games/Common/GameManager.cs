@@ -49,6 +49,13 @@ namespace RayCarrot.Ray1Editor
         public abstract IEnumerable<EditorFieldViewModel> GetEditorObjFields(GameData gameData, Func<GameObject> getSelectedObj);
 
         /// <summary>
+        /// Gets the editor level attribute fields
+        /// </summary>
+        /// <param name="gameData">The game data</param>
+        /// <returns>The level attribute fields</returns>
+        public virtual IEnumerable<EditorFieldViewModel> GetEditorLevelAttributeFields(GameData gameData) => new EditorFieldViewModel[0];
+
+        /// <summary>
         /// Optional post load method. Gets called after the loaded data has been initialized.
         /// </summary>
         /// <param name="gameData">The game data</param>

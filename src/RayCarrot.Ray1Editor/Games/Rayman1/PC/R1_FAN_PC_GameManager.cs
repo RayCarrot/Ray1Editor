@@ -67,5 +67,16 @@ namespace RayCarrot.Ray1Editor
                 new LoadGameLevelViewModel("Supercopter Race", new Ray1Settings(g.EngineVersion, World.Cake, 6, volume: vol)),
             };
         }
+
+        public override IEnumerable<EditorFieldViewModel> GetEditorLevelAttributeFields(GameData gameData)
+        {
+            foreach (var field in base.GetEditorLevelAttributeFields(gameData))
+                yield return field;
+
+            var data = (R1_PC_GameData)gameData;
+            var profile = data.ProfileDefines;
+         
+            // TODO: Add fields for the profile defines
+        }
     }
 }

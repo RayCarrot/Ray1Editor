@@ -60,6 +60,10 @@ namespace RayCarrot.Ray1Editor
             var desNames = LoadNameTable_DES(data, game, ray1Settings);
             var etaNames = LoadNameTable_ETA(data, game, ray1Settings);
 
+            // Store the level defines
+            data.LevelDefines = lev.LevelDefines;
+            data.ProfileDefines = lev.ProfileDefine;
+
             // Load palettes
             LoadPalettes(data, lev);
 

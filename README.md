@@ -54,7 +54,6 @@ In the code there are several comments for changes which should be made. These a
 * Automatically add/remove always objects when adding/removing objects in Rayman 1.
 * Use object type flags in Rayman 1 to determine object attributes, such as if they can be linked (PC only) or if they are always objects.
 * Handle multi-colored and frame variant objects better in event sheet for Rayman 1.
-* Add more general fields for EDU/KIT/FAN for modifying level defines, such as level powers, effects etc. For FAN this should also include the profile defines.
 * Parse the ETA structs better in the PS1 version of Rayman 1, avoiding reading the wrong amount and thus repacking the wrong amount when saving.
 * Allow tiles to be selected like objects, allowing tile attributes to be modified (such as the transparency for Rayman 1 on PC or the palette index for Rayman 1 on PS1).
 

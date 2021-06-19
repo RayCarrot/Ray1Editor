@@ -14,6 +14,8 @@
                   VerticalScrollBarVisibility="Auto">
         <StackPanel>
 
+            <!-- Palettes -->
+
             <TextBlock Style="{StaticResource HeaderTextBlock}"
                        Text="Palettes"
                        Margin="0 0 0 7" />
@@ -61,8 +63,18 @@
 
             </ItemsControl>
 
+            <!-- Level Attributes -->
+
+            <TextBlock Style="{StaticResource HeaderTextBlock}"
+                       Text="Attributes"
+                       Visibility="{Binding Path=HasLevelAttributeFields, Converter={local:BooleanToVisibilityConverter}}"
+                       Margin="0 0 0 7" />
+
+            <ItemsControl Style="{StaticResource FieldsItemsControl}"
+                          Margin="0 0 0 7"
+                          ItemsSource="{Binding Path=LevelAttributeFields, Mode=OneTime}" />
+
         </StackPanel>
     </ScrollViewer>
-
 
 </UserControl>

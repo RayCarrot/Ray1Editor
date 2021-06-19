@@ -46,6 +46,186 @@ namespace RayCarrot.Ray1Editor
             }
         }
 
+        public override IEnumerable<EditorFieldViewModel> GetEditorLevelAttributeFields(GameData gameData)
+        {
+            var data = (R1_PC_GameData)gameData;
+            var lvlDefines = data.LevelDefines;
+            var settings = data.Context.GetSettings<Ray1Settings>();
+
+            yield return new EditorIntFieldViewModel(
+                header: "Music track",
+                info: "The music track to use. The index corresponds to the CD track.",
+                getValueAction: () => lvlDefines.CDTrack,
+                setValueAction: x => lvlDefines.CDTrack = (byte)x,
+                max: 255);
+
+            yield return new EditorBoolFieldViewModel(
+                header: "Power: Fist",
+                info: null,
+                getValueAction: () => lvlDefines.RayEvts.HasFlag(RayEvts.Fist),
+                setValueAction: x => lvlDefines.RayEvts = lvlDefines.RayEvts.SetFlag(RayEvts.Fist, x));
+
+            yield return new EditorBoolFieldViewModel(
+                header: "Power: Hang",
+                info: null,
+                getValueAction: () => lvlDefines.RayEvts.HasFlag(RayEvts.Hang),
+                setValueAction: x => lvlDefines.RayEvts = lvlDefines.RayEvts.SetFlag(RayEvts.Hang, x));
+
+            yield return new EditorBoolFieldViewModel(
+                header: "Power: Helico",
+                info: null,
+                getValueAction: () => lvlDefines.RayEvts.HasFlag(RayEvts.Helico),
+                setValueAction: x => lvlDefines.RayEvts = lvlDefines.RayEvts.SetFlag(RayEvts.Helico, x));
+
+            yield return new EditorBoolFieldViewModel(
+                header: "Power: SuperHelico",
+                info: null,
+                getValueAction: () => lvlDefines.RayEvts.HasFlag(RayEvts.SuperHelico),
+                setValueAction: x => lvlDefines.RayEvts = lvlDefines.RayEvts.SetFlag(RayEvts.SuperHelico, x));
+
+            if (settings.World == World.Jungle)
+                yield return new EditorBoolFieldViewModel(
+                    header: "Power: Seed",
+                    info: null,
+                    getValueAction: () => lvlDefines.RayEvts.HasFlag(RayEvts.Seed),
+                    setValueAction: x => lvlDefines.RayEvts = lvlDefines.RayEvts.SetFlag(RayEvts.Seed, x));
+
+            yield return new EditorBoolFieldViewModel(
+                header: "Power: Grab",
+                info: null,
+                getValueAction: () => lvlDefines.RayEvts.HasFlag(RayEvts.Grab),
+                setValueAction: x => lvlDefines.RayEvts = lvlDefines.RayEvts.SetFlag(RayEvts.Grab, x));
+
+            yield return new EditorBoolFieldViewModel(
+                header: "Power: Run",
+                info: null,
+                getValueAction: () => lvlDefines.RayEvts.HasFlag(RayEvts.Run),
+                setValueAction: x => lvlDefines.RayEvts = lvlDefines.RayEvts.SetFlag(RayEvts.Run, x));
+
+            yield return new EditorBoolFieldViewModel(
+                header: "Effect: Firefly",
+                info: null,
+                getValueAction: () => lvlDefines.RayEvts.HasFlag(RayEvts.Firefly),
+                setValueAction: x => lvlDefines.RayEvts = lvlDefines.RayEvts.SetFlag(RayEvts.Firefly, x));
+
+            //yield return new EditorBoolFieldViewModel(
+            //    header: "Effect: 0",
+            //    info: null,
+            //    getValueAction: () => lvlDefines.EffectFlags.HasFlag(PC_LevelDefines.LevelEffectFlags.Effect_0),
+            //    setValueAction: x => lvlDefines.EffectFlags = lvlDefines.EffectFlags.SetFlag(PC_LevelDefines.LevelEffectFlags.Effect_0, x));
+
+            //yield return new EditorBoolFieldViewModel(
+            //    header: "Effect: 1",
+            //    info: null,
+            //    getValueAction: () => lvlDefines.EffectFlags.HasFlag(PC_LevelDefines.LevelEffectFlags.Effect_1),
+            //    setValueAction: x => lvlDefines.EffectFlags = lvlDefines.EffectFlags.SetFlag(PC_LevelDefines.LevelEffectFlags.Effect_1, x));
+
+            yield return new EditorBoolFieldViewModel(
+                header: "Effect: Lock camera (horizontally)",
+                info: null,
+                getValueAction: () => lvlDefines.EffectFlags.HasFlag(PC_LevelDefines.LevelEffectFlags.LockHorizontalCamera),
+                setValueAction: x => lvlDefines.EffectFlags = lvlDefines.EffectFlags.SetFlag(PC_LevelDefines.LevelEffectFlags.LockHorizontalCamera, x));
+
+            yield return new EditorBoolFieldViewModel(
+                header: "Effect: Lock camera (vertically)",
+                info: null,
+                getValueAction: () => lvlDefines.EffectFlags.HasFlag(PC_LevelDefines.LevelEffectFlags.LockVerticalCamera),
+                setValueAction: x => lvlDefines.EffectFlags = lvlDefines.EffectFlags.SetFlag(PC_LevelDefines.LevelEffectFlags.LockVerticalCamera, x));
+
+            yield return new EditorBoolFieldViewModel(
+                header: "Effect: Cutscene border",
+                info: null,
+                getValueAction: () => lvlDefines.EffectFlags.HasFlag(PC_LevelDefines.LevelEffectFlags.BetillaBorder),
+                setValueAction: x => lvlDefines.EffectFlags = lvlDefines.EffectFlags.SetFlag(PC_LevelDefines.LevelEffectFlags.BetillaBorder, x));
+
+            yield return new EditorBoolFieldViewModel(
+                header: "Effect: Storm",
+                info: null,
+                getValueAction: () => lvlDefines.EffectFlags.HasFlag(PC_LevelDefines.LevelEffectFlags.Storm),
+                setValueAction: x => lvlDefines.EffectFlags = lvlDefines.EffectFlags.SetFlag(PC_LevelDefines.LevelEffectFlags.Storm, x));
+
+            //yield return new EditorBoolFieldViewModel(
+            //    header: "Effect: RainOrSnow_0",
+            //    info: null,
+            //    getValueAction: () => lvlDefines.EffectFlags.HasFlag(PC_LevelDefines.LevelEffectFlags.RainOrSnow_0),
+            //    setValueAction: x => lvlDefines.EffectFlags = lvlDefines.EffectFlags.SetFlag(PC_LevelDefines.LevelEffectFlags.RainOrSnow_0, x));
+
+            //yield return new EditorBoolFieldViewModel(
+            //    header: "Effect: RainOrSnow_1",
+            //    info: null,
+            //    getValueAction: () => lvlDefines.EffectFlags.HasFlag(PC_LevelDefines.LevelEffectFlags.RainOrSnow_1),
+            //    setValueAction: x => lvlDefines.EffectFlags = lvlDefines.EffectFlags.SetFlag(PC_LevelDefines.LevelEffectFlags.RainOrSnow_1, x));
+
+            //yield return new EditorBoolFieldViewModel(
+            //    header: "Effect: Wind",
+            //    info: null,
+            //    getValueAction: () => lvlDefines.EffectFlags.HasFlag(PC_LevelDefines.LevelEffectFlags.Wind),
+            //    setValueAction: x => lvlDefines.EffectFlags = lvlDefines.EffectFlags.SetFlag(PC_LevelDefines.LevelEffectFlags.Wind, x));
+
+            //yield return new EditorBoolFieldViewModel(
+            //    header: "Effect: Effect_9",
+            //    info: null,
+            //    getValueAction: () => lvlDefines.EffectFlags.HasFlag(PC_LevelDefines.LevelEffectFlags.Effect_9),
+            //    setValueAction: x => lvlDefines.EffectFlags = lvlDefines.EffectFlags.SetFlag(PC_LevelDefines.LevelEffectFlags.Effect_9, x));
+
+            yield return new EditorBoolFieldViewModel(
+                header: "Effect: Hot",
+                info: null,
+                getValueAction: () => lvlDefines.EffectFlags.HasFlag(PC_LevelDefines.LevelEffectFlags.HotEffect),
+                setValueAction: x => lvlDefines.EffectFlags = lvlDefines.EffectFlags.SetFlag(PC_LevelDefines.LevelEffectFlags.HotEffect, x));
+
+            //yield return new EditorBoolFieldViewModel(
+            //    header: "Effect: Effect_11",
+            //    info: null,
+            //    getValueAction: () => lvlDefines.EffectFlags.HasFlag(PC_LevelDefines.LevelEffectFlags.Effect_11),
+            //    setValueAction: x => lvlDefines.EffectFlags = lvlDefines.EffectFlags.SetFlag(PC_LevelDefines.LevelEffectFlags.Effect_11, x));
+
+            yield return new EditorBoolFieldViewModel(
+                header: "Effect: Hide HUD",
+                info: null,
+                getValueAction: () => lvlDefines.EffectFlags.HasFlag(PC_LevelDefines.LevelEffectFlags.HideHUD),
+                setValueAction: x => lvlDefines.EffectFlags = lvlDefines.EffectFlags.SetFlag(PC_LevelDefines.LevelEffectFlags.HideHUD, x));
+
+            //yield return new EditorBoolFieldViewModel(
+            //    header: "Effect: Effect_13",
+            //    info: null,
+            //    getValueAction: () => lvlDefines.EffectFlags.HasFlag(PC_LevelDefines.LevelEffectFlags.Effect_13),
+            //    setValueAction: x => lvlDefines.EffectFlags = lvlDefines.EffectFlags.SetFlag(PC_LevelDefines.LevelEffectFlags.Effect_13, x));
+
+            //yield return new EditorBoolFieldViewModel(
+            //    header: "Effect: Effect_14",
+            //    info: null,
+            //    getValueAction: () => lvlDefines.EffectFlags.HasFlag(PC_LevelDefines.LevelEffectFlags.Effect_14),
+            //    setValueAction: x => lvlDefines.EffectFlags = lvlDefines.EffectFlags.SetFlag(PC_LevelDefines.LevelEffectFlags.Effect_14, x));
+
+            //yield return new EditorBoolFieldViewModel(
+            //    header: "Effect: Effect_15",
+            //    info: null,
+            //    getValueAction: () => lvlDefines.EffectFlags.HasFlag(PC_LevelDefines.LevelEffectFlags.Effect_15),
+            //    setValueAction: x => lvlDefines.EffectFlags = lvlDefines.EffectFlags.SetFlag(PC_LevelDefines.LevelEffectFlags.Effect_15, x));
+        }
+
+        public override void Save(Context context, GameData gameData)
+        {
+            var data = (R1_PC_GameData)gameData;
+            var lvlDefines = data.LevelDefines;
+
+            // Verify level define combinations
+            if (lvlDefines.RayEvts.HasFlag(RayEvts.Firefly) && lvlDefines.EffectFlags.HasFlag(PC_LevelDefines.LevelEffectFlags.Storm))
+                throw new Exception("Firefly can't be used with storm");
+
+            if (lvlDefines.EffectFlags.HasFlag(PC_LevelDefines.LevelEffectFlags.RainOrSnow_0) && lvlDefines.EffectFlags.HasFlag(PC_LevelDefines.LevelEffectFlags.RainOrSnow_1))
+                throw new Exception("Rain can't be used with snow");
+
+            if (lvlDefines.EffectFlags.HasFlag(PC_LevelDefines.LevelEffectFlags.Wind) && (!lvlDefines.EffectFlags.HasFlag(PC_LevelDefines.LevelEffectFlags.RainOrSnow_0) && !lvlDefines.EffectFlags.HasFlag(PC_LevelDefines.LevelEffectFlags.RainOrSnow_1)))
+                throw new Exception("Wind can't be used without rain or snow");
+
+            if (lvlDefines.EffectFlags.HasFlag(PC_LevelDefines.LevelEffectFlags.HotEffect) && lvlDefines.FNDIndex != lvlDefines.ScrollDiffFNDIndex)
+                throw new Exception("Hot effect can't be used with differential scroll");
+
+            base.Save(context, gameData);
+        }
+
         #endregion
 
         #region R1 Manager
