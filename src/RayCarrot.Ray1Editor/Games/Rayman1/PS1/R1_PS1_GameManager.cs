@@ -132,8 +132,8 @@ namespace RayCarrot.Ray1Editor
             InitRandom(data);
 
             // Load the editor name tables
-            var desNames = LoadNameTable_DES(data, game);
-            var etaNames = LoadNameTable_ETA(data, game);
+            var desNames = LoadNameTable_DES(data, game, levFile.RelocatedStructs);
+            var etaNames = LoadNameTable_ETA(data, game, levFile.RelocatedStructs);
 
             // Load VRAM
             LoadVRAM(data, fix, wld, lev);
@@ -148,10 +148,10 @@ namespace RayCarrot.Ray1Editor
             LoadMap(data, wld, lev.MapData, textureManager);
 
             // Load DES (sprites & animations)
-            LoadDES(data, lev.ObjData, desNames, textureManager, levFile.RelocatedStructs);
+            LoadDES(data, lev.ObjData, desNames, textureManager);
 
             // Load ETA (states)
-            LoadETA(data, lev.ObjData, etaNames, levFile.RelocatedStructs);
+            LoadETA(data, lev.ObjData, etaNames);
 
             // Load the editor event definitions
             LoadEditorEventDefinitions(data);
@@ -247,26 +247,52 @@ namespace RayCarrot.Ray1Editor
             });
         }
 
-        public Pointer GetPointer(Pointer pointer, RelocatedStruct[] relocatedStructs)
+        public uint? GetActualPointer(uint? pointer, RelocatedStruct[] relocatedStructs)
         {
-            if (relocatedStructs == null)
+            if (relocatedStructs == null || pointer == null)
                 return pointer;
 
-            if (pointer == null)
-                return null;
-
-            var reloc = relocatedStructs.FirstOrDefault(x => x.OriginalPointer == pointer);
-            return reloc?.NewPointer ?? pointer;
+            var reloc = relocatedStructs.FirstOrDefault(x => x.OriginalPointer.AbsoluteOffset == pointer);
+            return (uint?)reloc?.NewPointer.AbsoluteOffset ?? pointer;
         }
 
-        protected virtual Dictionary<string, Dictionary<string, DESPointers>> LoadNameTable_DES(R1_GameData data, Games.R1_Game game)
+        protected virtual Dictionary<string, Dictionary<string, DESPointers>> LoadNameTable_DES(R1_GameData data, Games.R1_Game game, RelocatedStruct[] relocatedStructs)
         {
-            return LoadEditorNameTable<Dictionary<string, Dictionary<string, DESPointers>>>(game.NameTablesName, EditorNameTableType.DES);
+            // Read the name tables
+            var nameTables = LoadEditorNameTable<Dictionary<string, Dictionary<string, DESPointers>>>(game.NameTablesName, EditorNameTableType.DES);
+
+            // Only keep the files we have loaded
+            nameTables = nameTables.Where(x => data.Context.FileExists(x.Key)).ToDictionary(x => x.Key, x => x.Value);
+
+            // Update any relocated pointers
+            foreach (var des in nameTables.Values.SelectMany(x => x.Values))
+            {
+                des.Sprites = GetActualPointer(des.Sprites, relocatedStructs);
+                des.Animations = GetActualPointer(des.Animations, relocatedStructs);
+                des.ImageBuffer = GetActualPointer(des.ImageBuffer, relocatedStructs);
+            }
+
+            return nameTables;
         }
 
-        protected virtual Dictionary<string, Dictionary<string, uint>> LoadNameTable_ETA(R1_GameData data, Games.R1_Game game)
+        protected virtual Dictionary<string, Dictionary<string, uint>> LoadNameTable_ETA(R1_GameData data, Games.R1_Game game, RelocatedStruct[] relocatedStructs)
         {
-            return LoadEditorNameTable<Dictionary<string, Dictionary<string, uint>>>(game.NameTablesName, EditorNameTableType.ETA);
+            // Read the name tables
+            var nameTables = LoadEditorNameTable<Dictionary<string, Dictionary<string, uint>>>(game.NameTablesName, EditorNameTableType.ETA);
+
+            // Only keep the files we have loaded
+            nameTables = nameTables.Where(x => data.Context.FileExists(x.Key)).ToDictionary(x => x.Key, x => x.Value);
+
+            // Update any relocated pointers
+            foreach (var eta in nameTables.Values)
+            {
+                foreach (var key in eta.Keys.ToArray())
+                {
+                    eta[key] = GetActualPointer(eta[key], relocatedStructs) ?? 0;
+                }
+            }
+
+            return nameTables;
         }
 
         public abstract void LoadVRAM(R1_PS1_GameData data, PS1_AllfixFile allfix, PS1_WorldFile world, PS1_LevFile lev);
@@ -286,9 +312,9 @@ namespace RayCarrot.Ray1Editor
                 data.TextureManager.AddPalette(pal.Palette);
         }
 
-        public void LoadDES(R1_PS1_GameData data, PS1_ObjBlock objData, Dictionary<string, Dictionary<string, DESPointers>> nameTable, TextureManager textureManager, RelocatedStruct[] relocatedStructs)
+        public void LoadDES(R1_PS1_GameData data, PS1_ObjBlock objData, Dictionary<string, Dictionary<string, DESPointers>> nameTable, TextureManager textureManager)
         {
-            foreach (var des in GetLevelDES(data.Context, objData.Objects, nameTable, relocatedStructs))
+            foreach (var des in GetLevelDES(data.Context, objData.Objects, nameTable))
             {
                 if (des.SpritesPointer != null && data.DES.All(x => x.SpritesData.Offset != des.SpritesPointer))
                 {
@@ -391,7 +417,7 @@ namespace RayCarrot.Ray1Editor
             sheet.InitEntry(index, pal, imgData, format: format, paletteOffset: palOffset);
         }
 
-        protected IEnumerable<DES> GetLevelDES(Context context, IEnumerable<ObjData> objects, Dictionary<string, Dictionary<string, DESPointers>> nameTable_R1PS1DES, RelocatedStruct[] relocatedStructs)
+        protected IEnumerable<DES> GetLevelDES(Context context, IEnumerable<ObjData> objects, Dictionary<string, Dictionary<string, DESPointers>> nameTable_R1PS1DES)
         {
             return objects.Select(x => new DES
             {
@@ -403,11 +429,11 @@ namespace RayCarrot.Ray1Editor
                 ImageBufferLength = null,
                 Name = null,
                 ObjData = x
-            }).Concat(nameTable_R1PS1DES?.Where(d => context.FileExists(d.Key)).SelectMany(d => d.Value.Select(des => new DES
+            }).Concat(nameTable_R1PS1DES?.SelectMany(d => d.Value.Select(des => new DES
             {
-                SpritesPointer = GetPointer(des.Value.Sprites != null ? new Pointer(des.Value.Sprites.Value, context.GetFile(d.Key)) : null, relocatedStructs),
-                AnimationsPointer = GetPointer(des.Value.Animations != null ? new Pointer(des.Value.Animations.Value, context.GetFile(d.Key)) : null, relocatedStructs),
-                ImageBufferPointer = GetPointer(des.Value.ImageBuffer != null ? new Pointer(des.Value.ImageBuffer.Value, context.GetFile(d.Key)) : null, relocatedStructs),
+                SpritesPointer = des.Value.Sprites != null ? new Pointer(des.Value.Sprites.Value, context.GetFile(d.Key)) : null,
+                AnimationsPointer = des.Value.Animations != null ? new Pointer(des.Value.Animations.Value, context.GetFile(d.Key)) : null,
+                ImageBufferPointer = des.Value.ImageBuffer != null ? new Pointer(des.Value.ImageBuffer.Value, context.GetFile(d.Key)) : null,
                 ImageDescriptorCount = des.Value.SpritesCount,
                 AnimationsCount = des.Value.AnimationsCount,
                 ImageBufferLength = des.Value.ImageBufferLength,
@@ -416,9 +442,9 @@ namespace RayCarrot.Ray1Editor
             })) ?? new DES[0]);
         }
 
-        public void LoadETA(R1_GameData data, PS1_ObjBlock objBlock, Dictionary<string, Dictionary<string, uint>> nameTable, RelocatedStruct[] relocatedStructs)
+        public void LoadETA(R1_GameData data, PS1_ObjBlock objBlock, Dictionary<string, Dictionary<string, uint>> nameTable)
         {
-            foreach (var eta in GetLevelETA(data.Context, objBlock.Objects, nameTable, relocatedStructs))
+            foreach (var eta in GetLevelETA(data.Context, objBlock.Objects, nameTable))
             {
                 // Add if not found
                 if (eta.ETAPointer != null && data.ETA.All(x => x.ETA.Offset != eta.ETAPointer))
@@ -438,16 +464,16 @@ namespace RayCarrot.Ray1Editor
             }
         }
 
-        protected IEnumerable<ETA> GetLevelETA(Context context, IEnumerable<ObjData> objects, Dictionary<string, Dictionary<string, uint>> nameTable_R1PS1ETA, RelocatedStruct[] relocatedStructs)
+        protected IEnumerable<ETA> GetLevelETA(Context context, IEnumerable<ObjData> objects, Dictionary<string, Dictionary<string, uint>> nameTable_R1PS1ETA)
         {
             return objects.Select(x => new ETA
             {
                 ETAPointer = x.ETAPointer,
                 Name = null,
                 ObjData = x
-            }).Concat(nameTable_R1PS1ETA?.Where(d => context.FileExists(d.Key)).SelectMany(d => d.Value.Select(des => new ETA
+            }).Concat(nameTable_R1PS1ETA?.SelectMany(d => d.Value.Select(des => new ETA
             {
-                ETAPointer = GetPointer(new Pointer(des.Value, context.GetFile(d.Key)), relocatedStructs),
+                ETAPointer = new Pointer(des.Value, context.GetFile(d.Key)),
                 Name = des.Key,
                 ObjData = null
             })) ?? new ETA[0]);
