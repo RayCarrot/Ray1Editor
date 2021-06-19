@@ -31,8 +31,8 @@ namespace RayCarrot.Ray1Editor
             return new TileSet(tex, tileSize);
         }
 
-        protected override MapTile CreateNewTile() => throw new Exception("A collision tile can't be created from the collision map layer");
-        
+        protected override MapTile CreateNewTile() => new MapTile();
+
         protected override MapTile[] GetTileSetMap() => Enumerable.Range(0, TileSet.TileSheet.Entries.Length).Select(x => new MapTile()
         {
             BlockType = (ushort)x
