@@ -672,7 +672,7 @@ namespace RayCarrot.Ray1Editor
 
             var obj = GameManager.CreateGameObject(GameData, index);
             obj.Position = Cam.Position.ToPoint();
-            obj.LoadElement(this);
+            LoadElement(obj);
             obj.Load();
             GameData.Objects.Add(obj);
             VM.OnObjectAdded(obj);

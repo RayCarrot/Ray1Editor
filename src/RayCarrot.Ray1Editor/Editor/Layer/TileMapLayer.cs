@@ -20,6 +20,7 @@ namespace RayCarrot.Ray1Editor
 
         #region Logger
 
+        // ReSharper disable once StaticMemberInGenericType
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         #endregion
@@ -47,7 +48,7 @@ namespace RayCarrot.Ray1Editor
                     var missingTilesCount = width - (map.Length % width);
 
                     if (missingTilesCount != 0)
-                        map = map.Concat(Enumerable.Range(0, missingTilesCount).Select(x => CreateNewTile())).ToArray();
+                        map = map.Concat(Enumerable.Range(0, missingTilesCount).Select(_ => CreateNewTile())).ToArray();
 
                     _tileSetLayer = new TileSetLayer<T>(map, Position, new Point(width, map.Length / width), TileSet,
                         GetTileSetIndex, CloneTile)

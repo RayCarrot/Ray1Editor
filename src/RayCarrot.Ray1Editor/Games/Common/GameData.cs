@@ -56,11 +56,11 @@ namespace RayCarrot.Ray1Editor
         {
             // Load objects
             foreach (var obj in Objects)
-                obj.LoadElement(e);
+                e.LoadElement(obj);
 
             // Load layers
             foreach (var layer in Layers)
-                layer.LoadElement(e);
+                e.LoadElement(layer);
         }
 
         public void Dispose()

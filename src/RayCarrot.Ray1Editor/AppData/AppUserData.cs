@@ -50,6 +50,9 @@ namespace RayCarrot.Ray1Editor
         /// </summary>
         public List<UserData_Game> App_Games { get; set; }
 
+        /// <summary>
+        /// Indicates if this is the first time the app is launched
+        /// </summary>
         public bool App_IsFirstLaunch { get; set; }
 
         /// <summary>
@@ -62,8 +65,14 @@ namespace RayCarrot.Ray1Editor
         /// </summary>
         public bool Editor_PauseWhenInactive { get; set; }
 
+        /// <summary>
+        /// The width of the editor tabs panel
+        /// </summary>
         public double UI_EditorTabsWidth { get; set; }
 
+        /// <summary>
+        /// Indicates if debug info should show in the editor
+        /// </summary>
         public bool UI_ShowDebugInfo { get; set; }
 
         /// <summary>
