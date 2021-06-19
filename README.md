@@ -27,6 +27,23 @@ The PS1 version of Rayman 1 is more complicated to save than the PC version. For
 ![Object Editor](img/ObjEditor.png)
 ![Layer Editor](img/LayerEditor.png)
 
+## FAQ
+**Q: Why is the exe so big?**
+
+A: Due to it running in .NET Core rather than .NET Framework it means that compiling it as a single exe will include the entire runtime in it.
+
+**Q: Will the editor support all games which Ray1Map supports?**
+
+A: No, but it's planned to add support for more games and versions. Feel free to leave suggestions for games you want added. If you want to add your own games (non-Rayman included), feel free to talk to me about it and/or make a pull request.
+
+**Q: My edited level crashes when I try and open it again, can it be fixed?**
+
+A: It depends on how the level data is corrupted. Feel free to send me the modified level file and/or the serialization log and I can try repairing it.
+
+**Q: Can I import custom tiles/backgrounds/sprites etc.?**
+
+A: Not currently, but it's a planned feature. In the meantime if you want it for a mod you can send me the modified data and I can manually import it into the game files.
+
 ## TODO
 In the code there are several comments for changes which should be made. These are marked with either 'TODO' or 'IDEA'. The former are for more improtant changes while the latter is for optional improvements. Other potential changes not mentioned in comments include:
 * Include multiple themes for the editor colors which can be selected.
