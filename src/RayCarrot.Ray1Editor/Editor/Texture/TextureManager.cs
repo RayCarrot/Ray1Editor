@@ -58,8 +58,12 @@ namespace RayCarrot.Ray1Editor
 
         public void RefreshPalette(Palette pal)
         {
+            // Refresh every paletted texture
             foreach (var tex in EnumeratePalettedData().Where(x => x.Palette == pal))
                 tex.Apply();
+
+            // Update the palette
+            pal.Update();
 
             Logger.Log(LogLevel.Info, "Refreshed palette {0}", pal.Name);
         }
