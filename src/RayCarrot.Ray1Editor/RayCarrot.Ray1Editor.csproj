@@ -7,7 +7,7 @@
     <UseWPF>true</UseWPF>
     <LangVersion>9</LangVersion>
     <ApplicationIcon>UI\Img\AppIcon.ico</ApplicationIcon>
-    <Version>0.1.0</Version>
+    <Version>0.1.0.1</Version>
     <Authors>RayCarrot</Authors>
     <Product>Ray1Editor</Product>
     <PackageProjectUrl>https://github.com/RayCarrot/RayCarrot.Ray1Editor</PackageProjectUrl>
