@@ -361,11 +361,15 @@ namespace RayCarrot.Ray1Editor
         protected void UpdateModeObjects(EditorUpdateData updateData)
         {
             // Delete object
-            if (updateData.Keyboard.IsKeyDown(Keys.Delete) && SelectedObject != null)
+            if (updateData.IsKeyDown(Keys.Delete) && SelectedObject != null)
             {
                 RemoveObject(SelectedObject);
                 return;
             }
+
+            // Duplicate object
+            if (updateData.IsKeyDown(Keys.LeftControl, false) && updateData.IsKeyDown(Keys.D) && SelectedObject != null)
+                DuplicateObject(SelectedObject);
 
             // Move object
             if (updateData.Mouse.LeftButton == ButtonState.Pressed)
@@ -647,6 +651,27 @@ namespace RayCarrot.Ray1Editor
             Cam.TargetPosition = obj.Position.ToVector2();
             Cam.TargetZoom = 2;
             Logger.Log(LogLevel.Trace, "Targeting object {0} at {1}", obj.DisplayName, obj.Position);
+        }
+
+        public void DuplicateObject(GameObject obj)
+        {
+            if (GameData.Objects.Count >= GameManager.GetMaxObjCount(GameData))
+            {
+                R1EServices.UI.DisplayMessage("Maximum number of objects has been reached in the level", "Max object count reached", DialogMessageType.Error);
+
+                return;
+            }
+
+            var newObj = GameManager.DuplicateObject(GameData, obj);
+
+            newObj.Position = obj.Position + new Point(20, 0); // Offset new object slightly so it's distinct
+            LoadElement(newObj);
+            newObj.Load();
+            GameData.Objects.Add(newObj);
+            VM.OnObjectAdded(newObj);
+
+            // Select the new object
+            SelectedObject = newObj;
         }
 
         public void RemoveObject(GameObject obj)

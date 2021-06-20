@@ -278,10 +278,47 @@ namespace RayCarrot.Ray1Editor
             obj.ObjData.ImageBuffer = des.ImageBuffer;
             obj.ObjData.SpriteCollection = des.SpritesData;
             obj.ObjData.ETA = eta.ETA;
-            obj.ObjData.SetFollowEnabled(data.Context.GetSettings<Ray1Settings>(), def.FollowEnabled);
+            obj.ObjData.SetFollowEnabled(settings, def.FollowEnabled);
             obj.ObjData.ActualHitPoints = def.HitPoints;
 
             Logger.Log(LogLevel.Trace, "Created object {0}", obj.DisplayName);
+
+            return obj;
+        }
+
+        public override GameObject DuplicateObject(GameData gameData, GameObject sourceObj)
+        {
+            var data = (R1_GameData)gameData;
+            var source = (R1_GameObject)sourceObj;
+            var settings = data.Context.GetSettings<Ray1Settings>();
+
+            var obj = new R1_GameObject(ObjData.CreateObj(settings), source.EventDefinition);
+
+            obj.ObjData.Type = source.ObjData.Type;
+            obj.ObjData.Etat = source.ObjData.Etat;
+            obj.ObjData.SubEtat = source.ObjData.SubEtat;
+            obj.ObjData.OffsetBX = source.ObjData.OffsetBX;
+            obj.ObjData.OffsetBY = source.ObjData.OffsetBY;
+            obj.ObjData.OffsetHY = source.ObjData.OffsetHY;
+            obj.ObjData.FollowSprite = source.ObjData.FollowSprite;
+            obj.ObjData.HitSprite = source.ObjData.HitSprite;
+            obj.ObjData.Commands = source.ObjData.Commands == null ? null : new CommandCollection()
+            {
+                Commands = source.ObjData.Commands.Commands.Select(x => new Command
+                {
+                    CommandType = x.CommandType,
+                    Arguments = x.Arguments.ToArray()
+                }).ToArray()
+            };
+            obj.ObjData.LabelOffsets = source.ObjData.LabelOffsets?.ToArray();
+            obj.ObjData.AnimationCollection = source.ObjData.AnimationCollection;
+            obj.ObjData.ImageBuffer = source.ObjData.ImageBuffer;
+            obj.ObjData.SpriteCollection = source.ObjData.SpriteCollection;
+            obj.ObjData.ETA = source.ObjData.ETA;
+            obj.ObjData.SetFollowEnabled(settings, source.ObjData.GetFollowEnabled(settings));
+            obj.ObjData.ActualHitPoints = source.ObjData.HitPoints;
+
+            Logger.Log(LogLevel.Trace, "Duplicated object {0}", obj.DisplayName);
 
             return obj;
         }

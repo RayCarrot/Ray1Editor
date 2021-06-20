@@ -77,6 +77,14 @@ namespace RayCarrot.Ray1Editor
         public abstract GameObject CreateGameObject(GameData gameData, int index);
 
         /// <summary>
+        /// Duplicates (clones) an existing object
+        /// </summary>
+        /// <param name="gameData">The game data</param>
+        /// <param name="sourceObj">The source object to duplicate</param>
+        /// <returns>The new object</returns>
+        public abstract GameObject DuplicateObject(GameData gameData, GameObject sourceObj);
+
+        /// <summary>
         /// Gets the maximum number of objects which can be added to a level
         /// </summary>
         /// <returns>The maximum number of objects which can be added to a level</returns>

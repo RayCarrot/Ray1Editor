@@ -714,6 +714,7 @@ namespace RayCarrot.Ray1Editor
             {
                 if (obj.Commands != null && obj.Commands.Commands.Length > 0)
                 {
+                    obj.Commands.Init(getNextPointer(0));
                     obj.Commands.RecalculateSize<CommandCollection>();
                     obj.CommandsPointer = getNextPointer(obj.Commands.Size);
                 }

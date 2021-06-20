@@ -148,15 +148,18 @@ namespace RayCarrot.Ray1Editor
 
             var camSpeed = CameraSpeed * updateData.DeltaTime * (1 - Math.Clamp(Zoom, 0.5f, 1.5f) + 1);
 
-            // Move camera with WASD
-            if (updateData.Keyboard.IsKeyDown(Keys.W))
-                Position += new Vector2(0, camSpeed * -1);
-            if (updateData.Keyboard.IsKeyDown(Keys.A))
-                Position += new Vector2(camSpeed * -1, 0);
-            if (updateData.Keyboard.IsKeyDown(Keys.S))
-                Position += new Vector2(0, camSpeed);
-            if (updateData.Keyboard.IsKeyDown(Keys.D))
-                Position += new Vector2(camSpeed, 0);
+            // Move camera with WASD if CTRL is not pressed
+            if (!updateData.IsKeyDown(Keys.LeftControl, false))
+            {
+                if (updateData.Keyboard.IsKeyDown(Keys.W))
+                    Position += new Vector2(0, camSpeed * -1);
+                if (updateData.Keyboard.IsKeyDown(Keys.A))
+                    Position += new Vector2(camSpeed * -1, 0);
+                if (updateData.Keyboard.IsKeyDown(Keys.S))
+                    Position += new Vector2(0, camSpeed);
+                if (updateData.Keyboard.IsKeyDown(Keys.D))
+                    Position += new Vector2(camSpeed, 0);
+            }
 
             if (updateData.Mouse.RightButton == ButtonState.Pressed)
             {

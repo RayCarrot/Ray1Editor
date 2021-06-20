@@ -55,6 +55,7 @@
             <TextBlock Text="O: Toggle visibility" />
             <TextBlock Text="X: Toggle offset visibility" />
             <TextBlock Text="DEL: Delete object" />
+            <TextBlock Text="CTRL+D: Duplicate object" />
 
             <TextBlock Style="{StaticResource Header}"
                        Text="Links"/>

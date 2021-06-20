@@ -11,6 +11,7 @@ namespace RayCarrot.Ray1Editor
         public R1_GameObject(ObjData objData, R1_EventDefinition def = null)
         {
             ObjData = objData;
+            EventDefinition = def;
 
             var cmdLines = objData.Commands?.ToTranslatedStrings(objData.LabelOffsets, 1);
 
@@ -28,6 +29,7 @@ namespace RayCarrot.Ray1Editor
 
         // Data
         public ObjData ObjData { get; }
+        public R1_EventDefinition EventDefinition { get; }
         public override BinarySerializable SerializableData => ObjData;
         public new R1_GameData Data => (R1_GameData)base.Data;
         public override void Load()
