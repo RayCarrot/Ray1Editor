@@ -1,4 +1,4 @@
-# Ray1Editor - 2D map editor
+# ![Alt text](img/IconSmall.png "Ray1Editor")Ray1Editor - 2D map editor
 The Ray1Editor is a 2D game editor used to modify maps in games. It is derived from the [Ray1Map](https://github.com/Adsolution/Ray1Map) project.
 
 ## Supported games
