@@ -100,6 +100,11 @@ namespace RayCarrot.Ray1Editor
         /// </summary>
         public string Title { get; protected set; }
 
+        /// <summary>
+        /// Indicates if an update was performed prior to launching this instance
+        /// </summary>
+        public bool HasUpdated { get; protected set; }
+
         #endregion
 
         #region Public Methods
@@ -158,7 +163,7 @@ namespace RayCarrot.Ray1Editor
             LoadAppUserData();
 
             if (UserData.App_Version < CurrentAppVersion)
-                PostUpdate();
+                PostUpdate(UserData.App_Version);
 
             // Update the version
             UserData.App_Version = CurrentAppVersion;
@@ -199,7 +204,10 @@ namespace RayCarrot.Ray1Editor
             LogManager.Configuration = logConfig;
         }
 
-        public void PostUpdate() { }
+        public void PostUpdate(Version prevVersion)
+        {
+            HasUpdated = true;
+        }
 
         public async Task CheckForUpdatesAsync(bool isManualSearch, bool forceUpdate)
         {

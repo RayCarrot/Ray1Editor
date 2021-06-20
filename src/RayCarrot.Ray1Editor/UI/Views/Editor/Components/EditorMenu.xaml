@@ -103,6 +103,10 @@
         <MenuItem Header="Show Controls"
                   Click="ShowControlsMenuItem_OnClick"
                   Icon="{iconPacks:Material KeyboardOutline}" />
+        <Separator />
+        <MenuItem Header="Version History"
+                  Icon="{iconPacks:Material TooltipTextOutline}"
+                  Click="ChangelogMenuItem_OnClick" />
         <MenuItem Header="About Ray1Editor"
                   Icon="{iconPacks:Material InformationOutline}"
                   Click="AboutMenuItem_OnClick" />

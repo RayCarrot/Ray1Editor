@@ -1,0 +1,19 @@
+﻿-----   Version 0.1.0.2 (beta) - June 20, 2021   -----
+• Add camera zoom box and buttons to editor panel
+• Show a border around the currently selected tiles
+• Allow selected tiles to be cleared with the DEL key
+• Allow objects to be duplicated using CTRL+D
+• Add version history window
+• Fix a crash when changing the ETA for an object
+• Fix object commands not showing for newly added objects
+• Fix the controls text showing the wrong controls for tiling the tile selection
+
+
+-----   Version 0.1.0.1 (beta) - June 20, 2021   -----
+• Add option to show tile grid
+• Add support for editor color themes
+• Fix uneven selection rectangles
+
+
+-----   Version 0.1.0.0 (beta) - June 20, 2021   -----
+• Initial release

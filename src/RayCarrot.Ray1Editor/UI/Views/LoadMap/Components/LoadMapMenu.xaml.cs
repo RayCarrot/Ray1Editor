@@ -29,5 +29,11 @@ namespace RayCarrot.Ray1Editor
         {
             await R1EServices.App.CheckForUpdatesAsync(true, false);
         }
+
+        private void ChangelogMenuItem_OnClick(object sender, RoutedEventArgs e)
+        {
+            var win = new ChangelogWindow();
+            win.ShowDialog();
+        }
     }
 }

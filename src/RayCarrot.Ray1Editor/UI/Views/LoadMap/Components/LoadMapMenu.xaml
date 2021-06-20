@@ -34,6 +34,9 @@
         <MenuItem Header="Check for Updates"
                   Icon="{iconPacks:Material Update}"
                   Click="CheckForUpdatesMenuItem_OnClick"/>
+        <MenuItem Header="Version History"
+                  Icon="{iconPacks:Material TooltipTextOutline}"
+                  Click="ChangelogMenuItem_OnClick" />
         <Separator />
         <MenuItem Header="About Ray1Editor"
                   Icon="{iconPacks:Material InformationOutline}"

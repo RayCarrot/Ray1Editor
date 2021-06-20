@@ -118,6 +118,10 @@
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="UI\Windows\ChangelogWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="UI\Windows\AboutWindow.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
@@ -150,6 +154,7 @@
 
   <!-- Embedded resources -->
   <ItemGroup>
+    <Content Remove="Assets\App\VersionHistory.txt" />
     <Content Remove="Assets\Collision\R1_TypeCollision.png" />
     <Content Remove="Assets\Rayman1\Events\edu_des.json" />
     <Content Remove="Assets\Rayman1\Events\edu_eta.json" />
@@ -162,6 +167,7 @@
     <Content Remove="Assets\Deployable\RayCarrot.Ray1Editor.Updater.exe" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Assets\App\VersionHistory.txt" />
     <EmbeddedResource Include="Assets\Collision\R1_TypeCollision.png" />
     <EmbeddedResource Include="Assets\Rayman1\Events\edu_des.json" />
     <EmbeddedResource Include="Assets\Rayman1\Events\edu_eta.json" />

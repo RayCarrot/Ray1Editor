@@ -49,5 +49,14 @@ namespace RayCarrot.Ray1Editor
                 win.ShowDialog();
             });
         }
+
+        private void ChangelogMenuItem_OnClick(object sender, RoutedEventArgs e)
+        {
+            ViewModel.DoAndPause(() =>
+            {
+                var win = new ChangelogWindow();
+                win.ShowDialog();
+            });
+        }
     }
 }
