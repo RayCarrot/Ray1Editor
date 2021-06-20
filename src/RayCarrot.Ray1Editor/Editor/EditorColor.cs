@@ -11,6 +11,7 @@
         ObjOffsetPos,
         ObjOffsetPivot,
         ObjOffsetGeneric,
+        TileSelecting,
         TileSelection,
         TileTiling,
         TileGrid,

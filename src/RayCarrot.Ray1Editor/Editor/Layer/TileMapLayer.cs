@@ -4,6 +4,7 @@ using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework.Input;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -219,9 +220,32 @@ namespace RayCarrot.Ray1Editor
         public override void UpdateLayerEditing(EditorUpdateData updateData)
         {
             if (IsShowingTileSet)
+            {
                 TileSetLayer.UpdateLayerEditing(updateData);
+            }
             else
+            {
                 base.UpdateLayerEditing(updateData);
+
+                // Clear selected tiles with delete
+                if (CanEdit && updateData.IsKeyDown(Keys.Delete))
+                {
+                    var selection = GetMapSelection(MapSelectionPoint1, MapSelectionPoint2);
+
+                    for (int y = 0; y < selection.Height; y++)
+                    {
+                        var originY = selection.Y + y;
+
+                        for (int x = 0; x < selection.Width; x++)
+                        {
+                            var originX = selection.X + x;
+
+                            SetTileAt(CreateNewTile(), originX, originY);
+                        }
+                    }
+
+                }
+            }
         }
 
         public override void Draw(Renderer r)

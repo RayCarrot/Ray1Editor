@@ -43,6 +43,7 @@
             <TextBlock Text="T: Toggle tile visibility" />
             <TextBlock Text="C: Toggle collision visibility" />
             <TextBlock Text="B: Toggle background visibility" />
+            <TextBlock Text="DEL: Clear selected tiles" />
 
             <TextBlock Style="{StaticResource Header}"
                        Text="Objects"/>

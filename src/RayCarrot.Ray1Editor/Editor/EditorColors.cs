@@ -14,7 +14,8 @@ namespace RayCarrot.Ray1Editor
             [EditorColor.ObjOffsetPos] = new Color(0xFF, 0x57, 0x22),
             [EditorColor.ObjOffsetPivot] = new Color(0xFF, 0xC1, 0x07),
             [EditorColor.ObjOffsetGeneric] = new Color(0x7E, 0x57, 0xC2),
-            [EditorColor.TileSelection] = new Color(0xFD, 0xD8, 0x35),
+            [EditorColor.TileSelecting] = new Color(0xFD, 0xD8, 0x35),
+            [EditorColor.TileSelection] = new Color(0xFF, 0x70, 0x43),
             [EditorColor.TileTiling] = new Color(0xFF, 0x8F, 0x00),
             [EditorColor.TileGrid] = new Color(0x00, 0x00, 0x00),
         };

@@ -29,9 +29,12 @@ namespace RayCarrot.Ray1Editor
 
         #region Protected Properties
 
+        protected bool ShowEditElements { get; set; }
         protected TileEditorState State { get; set; }
         protected Point MapSelectionPoint1 { get; set; }
         protected Point MapSelectionPoint2 { get; set; }
+        protected Point TilingMapSelectionPoint1 { get; set; }
+        protected Point TilingMapSelectionPoint2 { get; set; }
         protected Point? MapPreviewOrigin { get; set; }
         protected int SelectedTilesWidth => SelectedTiles.GetLength(0);
         protected int SelectedTilesHeight => SelectedTiles.GetLength(1);
@@ -81,14 +84,14 @@ namespace RayCarrot.Ray1Editor
                 y: Math.Clamp(tileMapPos.Y / TileSet.TileSize.Y, 0, MapSize.Y - 1));
         }
 
-        protected Rectangle GetMapSelection()
+        protected Rectangle GetMapSelection(Point point1, Point point2)
         {
             var selectionSourcePoint = new Point(
-                Math.Min(MapSelectionPoint1.X, MapSelectionPoint2.X),
-                Math.Min(MapSelectionPoint1.Y, MapSelectionPoint2.Y));
+                Math.Min(point1.X, point2.X),
+                Math.Min(point1.Y, point2.Y));
             var destPoint = new Point(
-                Math.Max(MapSelectionPoint1.X, MapSelectionPoint2.X),
-                Math.Max(MapSelectionPoint1.Y, MapSelectionPoint2.Y));
+                Math.Max(point1.X, point2.X),
+                Math.Max(point1.Y, point2.Y));
 
             var w = destPoint.X - selectionSourcePoint.X + 1;
             var h = destPoint.Y - selectionSourcePoint.Y + 1;
@@ -156,7 +159,7 @@ namespace RayCarrot.Ray1Editor
                 // Store the selected tiles if we were previously selecting tiles or no selection has been specified
                 if (State == TileEditorState.Selecting || SelectedTiles == null)
                 {
-                    var selection = GetMapSelection();
+                    var selection = GetMapSelection(MapSelectionPoint1, MapSelectionPoint2);
 
                     SelectedTiles = new T[selection.Width, selection.Height];
 
@@ -176,14 +179,15 @@ namespace RayCarrot.Ray1Editor
                 // Get the origin tile to show the preview map from
                 MapPreviewOrigin = Rectangle.Contains(updateData.MousePosition) ? hoverTile : null;
 
+                // Tiling
                 if (CanEdit && 
                     updateData.Mouse.LeftButton == ButtonState.Pressed && 
                     updateData.Keyboard.IsKeyDown(Keys.LeftControl))
                 {
                     if (State != TileEditorState.Tiling)
-                        MapSelectionPoint1 = hoverTile;
+                        TilingMapSelectionPoint1 = hoverTile;
 
-                    MapSelectionPoint2 = hoverTile;
+                    TilingMapSelectionPoint2 = hoverTile;
 
                     State = TileEditorState.Tiling;
                 }
@@ -194,7 +198,7 @@ namespace RayCarrot.Ray1Editor
                         State == TileEditorState.Tiling && 
                         MapPreviewOrigin != null)
                     {
-                        var selection = GetMapSelection();
+                        var selection = GetMapSelection(TilingMapSelectionPoint1, TilingMapSelectionPoint2);
 
                         var width = SelectedTilesWidth;
                         var height = SelectedTilesHeight;
@@ -255,6 +259,7 @@ namespace RayCarrot.Ray1Editor
             base.OnModeChanged(oldMode, newMode);
 
             State = newMode == EditorMode.Layers ? TileEditorState.Idle : TileEditorState.Disabled;
+            ShowEditElements = newMode == EditorMode.Layers;
         }
 
         public override void Draw(Renderer r)
@@ -264,7 +269,7 @@ namespace RayCarrot.Ray1Editor
             if (MapPreviewOrigin != null && State == TileEditorState.Idle)
                 previewBox = new Rectangle(MapPreviewOrigin.Value, new Point(SelectedTilesWidth, SelectedTilesHeight));
             else if (State == TileEditorState.Tiling)
-                previewBox = GetMapSelection();
+                previewBox = GetMapSelection(TilingMapSelectionPoint1, TilingMapSelectionPoint2);
 
             // Only draw tiles which are visible. We could have the renderer check each tile if it's in view during the drawing, but that
             // will impact performance for larger levels with multiple tile layers due to it having to loop through every tile each frame
@@ -308,9 +313,9 @@ namespace RayCarrot.Ray1Editor
             }
 
             // Draw selection border
-            if (IsSelected && State is TileEditorState.Selecting or TileEditorState.Tiling)
+            if (IsSelected && ShowEditElements)
             {
-                var selection = GetMapSelection();
+                var selection = GetMapSelection(MapSelectionPoint1, MapSelectionPoint2);
 
                 var rect = new Rectangle(
                     x: Position.X + selection.X * TileSet.TileSize.X,
@@ -318,7 +323,25 @@ namespace RayCarrot.Ray1Editor
                     width: selection.Width * TileSet.TileSize.X,
                     height: selection.Height * TileSet.TileSize.Y);
 
-                r.DrawRectangle(rect, State == TileEditorState.Selecting ? EditorState.Colors[EditorColor.TileSelection] : EditorState.Colors[EditorColor.TileTiling], 1);
+                var color = State is TileEditorState.Selecting
+                    ? EditorState.Colors[EditorColor.TileSelecting]
+                    : EditorState.Colors[EditorColor.TileSelection];
+
+                r.DrawRectangle(rect, color, 1);
+
+                // Tiling border
+                if (State == TileEditorState.Tiling)
+                {
+                    var tilingSelection = GetMapSelection(TilingMapSelectionPoint1, TilingMapSelectionPoint2);
+
+                    var tilingRect = new Rectangle(
+                        x: Position.X + tilingSelection.X * TileSet.TileSize.X,
+                        y: Position.Y + tilingSelection.Y * TileSet.TileSize.Y,
+                        width: tilingSelection.Width * TileSet.TileSize.X,
+                        height: tilingSelection.Height * TileSet.TileSize.Y);
+
+                    r.DrawRectangle(tilingRect, EditorState.Colors[EditorColor.TileTiling], 1);
+                }
             }
         }
 
