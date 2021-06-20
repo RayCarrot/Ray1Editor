@@ -39,7 +39,7 @@
 
             <TextBlock Text="Hold left mouse button: Select" />
             <TextBlock Text="CTRL+V: Paste selection" />
-            <TextBlock Text="Hold right mouse button: Tile selection" />
+            <TextBlock Text="CTRL+left mouse button: Tile selection" />
             <TextBlock Text="T: Toggle tile visibility" />
             <TextBlock Text="C: Toggle collision visibility" />
             <TextBlock Text="B: Toggle background visibility" />
