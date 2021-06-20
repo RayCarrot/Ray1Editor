@@ -86,7 +86,13 @@ namespace RayCarrot.Ray1Editor
                 header: "ETA",
                 info: "The group of states to use. This determines from which group the state indices are for.",
                 getValueAction: () => dropDownLookup_eta[getObjData().ETA],
-                setValueAction: x => getObjData().ETA = dropDownItems_eta[x].Data,
+                setValueAction: x =>
+                {
+                    var obj = getObjData();
+                    obj.ETA = dropDownItems_eta[x].Data;
+                    obj.Etat = obj.InitialEtat = 0;
+                    obj.SubEtat = obj.InitialSubEtat = 0;
+                },
                 getItemsAction: () => dropDownItems_eta);
 
             yield return new EditorDropDownFieldViewModel(
