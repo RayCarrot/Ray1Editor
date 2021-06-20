@@ -36,6 +36,8 @@ namespace RayCarrot.Ray1Editor
             ToggleModeCommand = new RelayCommand(() => Mode = (EditorMode)(((int)Mode % 3) + 1));
             DeleteSelectedObjectCommand = new RelayCommand(DeleteSelectedObject);
             AddObjCommand = new RelayCommand(AddObject);
+            ZoomInCommand = new RelayCommand(() => EditorScene.Cam.SetZoom(CameraZoom + 0.2f));
+            ZoomOutCommand = new RelayCommand(() => EditorScene.Cam.SetZoom(CameraZoom - 0.2f));
         }
 
         #endregion
@@ -59,6 +61,8 @@ namespace RayCarrot.Ray1Editor
         public ICommand ToggleModeCommand { get; }
         public ICommand DeleteSelectedObjectCommand { get; }
         public ICommand AddObjCommand { get; }
+        public ICommand ZoomInCommand { get; }
+        public ICommand ZoomOutCommand { get; }
 
         #endregion
 
@@ -116,6 +120,11 @@ namespace RayCarrot.Ray1Editor
             set => EditorScene.ShowLinks = value;
         }
         public string DebugText { get; set; }
+        public float CameraZoom
+        {
+            get => EditorScene?.Cam?.Zoom ?? 0;
+            set => EditorScene.Cam.Zoom = value;
+        }
         public ObservableCollection<ActionViewModel> GameActions { get; set; }
 
         // General
@@ -153,6 +162,15 @@ namespace RayCarrot.Ray1Editor
         public string SelectedObjectOffset { get; set; }
         public ObservableCollection<EditorFieldViewModel> ObjFields { get; }
         public string SelectedObjectScript { get; set; }
+
+        #endregion
+
+        #region Event Handlers
+
+        private void Cam_ZoomChanged(object sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(CameraZoom));
+        }
 
         #endregion
 
@@ -208,7 +226,12 @@ namespace RayCarrot.Ray1Editor
             var actions = CurrentGameManager.GetActions(EditorScene.GameData);
             GameActions = actions == null ? null : new ObservableCollection<ActionViewModel>(actions);
 
-                // Default to objects mode
+            OnPropertyChanged(nameof(CameraZoom));
+
+            // Subscribe to events
+            EditorScene.Cam.ZoomChanged += Cam_ZoomChanged;
+
+            // Default to objects mode
             Mode = EditorMode.Objects;
         }
 

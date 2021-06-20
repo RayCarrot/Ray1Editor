@@ -23,6 +23,9 @@ namespace RayCarrot.Ray1Editor
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
+        // Events
+        public event EventHandler ZoomChanged;
+
         // Data
         protected Viewport Viewport { get; }
 
@@ -33,9 +36,15 @@ namespace RayCarrot.Ray1Editor
             set
             {
                 if (_zoom != value)
+                {
                     _isDirty = true;
-
-                _zoom = value;
+                    _zoom = value;
+                    OnZoomChanged();
+                }
+                else
+                {
+                    _zoom = value;
+                }
             }
         }
 
@@ -113,6 +122,11 @@ namespace RayCarrot.Ray1Editor
             Logger.Log(LogLevel.Trace, "Reset the camera");
         }
 
+        public void SetZoom(float value)
+        {
+            Zoom = Math.Clamp(value, MinZoom, MaxZoom);
+        }
+
         public void Update(EditorUpdateData updateData)
         {
             if (TargetPosition.HasValue)
@@ -184,7 +198,10 @@ namespace RayCarrot.Ray1Editor
             var scrollChange = updateData.Mouse.ScrollWheelValue - PrevScrollWheelValue;
             PrevScrollWheelValue = updateData.Mouse.ScrollWheelValue;
 
-            Zoom = Math.Clamp(Zoom + scrollChange * ZoomSpeed, MinZoom, MaxZoom);
+            SetZoom(Zoom + scrollChange * ZoomSpeed);
         }
+
+        // Events
+        protected virtual void OnZoomChanged() => ZoomChanged?.Invoke(this, EventArgs.Empty);
     }
 }

@@ -5,6 +5,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:local="clr-namespace:RayCarrot.Ray1Editor"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d"
              d:Height="600" d:Width="1024"
              Unloaded="EditorView_OnUnloaded"
@@ -115,7 +116,43 @@
 
                 <Grid Grid.Row="1">
 
-                    <TextBlock Text="{Binding Path=DebugText}" />
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0"
+                               TextWrapping="Wrap"
+                               Text="{Binding Path=DebugText}"/>
+
+                    <Grid Grid.Column="1" VerticalAlignment="Bottom">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox Grid.Column="0"
+                                 Margin="0 0 7 0"
+                                 IsReadOnly="True"
+                                 Text="{Binding Path=CameraZoom, StringFormat=p}" />
+
+                        <Button Grid.Column="1" 
+                                Style="{StaticResource FlatButton}" 
+                                Command="{Binding Path=ZoomInCommand, Mode=OneTime}"
+                                Width="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight}">
+                            <iconPacks:PackIconMaterial Kind="Plus" Background="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </Button>
+
+                        <Button Grid.Column="2" 
+                                Style="{StaticResource FlatButton}" 
+                                Command="{Binding Path=ZoomOutCommand, Mode=OneTime}"
+                                Width="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight}">
+                            <iconPacks:PackIconMaterial Kind="Minus" Background="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </Button>
+
+                    </Grid>
 
                 </Grid>
 
