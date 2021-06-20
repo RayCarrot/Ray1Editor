@@ -262,28 +262,30 @@ namespace RayCarrot.Ray1Editor
             var des = data.DES.First(x => x.Name == def.DES);
             var eta = data.ETA.First(x => x.Name == def.ETA);
 
-            var obj = new R1_GameObject(ObjData.CreateObj(settings), def);
+            var obj = ObjData.CreateObj(settings);
 
-            obj.ObjData.Type = (ObjType)def.Type;
-            obj.ObjData.Etat = def.Etat;
-            obj.ObjData.SubEtat = def.SubEtat;
-            obj.ObjData.OffsetBX = def.OffsetBX;
-            obj.ObjData.OffsetBY = def.OffsetBY;
-            obj.ObjData.OffsetHY = def.OffsetHY;
-            obj.ObjData.FollowSprite = def.FollowSprite;
-            obj.ObjData.HitSprite = def.HitSprite;
-            obj.ObjData.Commands = cmds;
-            obj.ObjData.LabelOffsets = labelOffsets;
-            obj.ObjData.AnimationCollection = des.AnimationsData;
-            obj.ObjData.ImageBuffer = des.ImageBuffer;
-            obj.ObjData.SpriteCollection = des.SpritesData;
-            obj.ObjData.ETA = eta.ETA;
-            obj.ObjData.SetFollowEnabled(settings, def.FollowEnabled);
-            obj.ObjData.ActualHitPoints = def.HitPoints;
+            obj.Type = (ObjType)def.Type;
+            obj.Etat = def.Etat;
+            obj.SubEtat = def.SubEtat;
+            obj.OffsetBX = def.OffsetBX;
+            obj.OffsetBY = def.OffsetBY;
+            obj.OffsetHY = def.OffsetHY;
+            obj.FollowSprite = def.FollowSprite;
+            obj.HitSprite = def.HitSprite;
+            obj.Commands = cmds;
+            obj.LabelOffsets = labelOffsets;
+            obj.AnimationCollection = des.AnimationsData;
+            obj.ImageBuffer = des.ImageBuffer;
+            obj.SpriteCollection = des.SpritesData;
+            obj.ETA = eta.ETA;
+            obj.SetFollowEnabled(settings, def.FollowEnabled);
+            obj.ActualHitPoints = def.HitPoints;
 
-            Logger.Log(LogLevel.Trace, "Created object {0}", obj.DisplayName);
+            var gameObj = new R1_GameObject(obj, def);
 
-            return obj;
+            Logger.Log(LogLevel.Trace, "Created object {0}", gameObj.DisplayName);
+
+            return gameObj;
         }
 
         public override GameObject DuplicateObject(GameData gameData, GameObject sourceObj)
@@ -292,17 +294,17 @@ namespace RayCarrot.Ray1Editor
             var source = (R1_GameObject)sourceObj;
             var settings = data.Context.GetSettings<Ray1Settings>();
 
-            var obj = new R1_GameObject(ObjData.CreateObj(settings), source.EventDefinition);
+            var obj = ObjData.CreateObj(settings);
 
-            obj.ObjData.Type = source.ObjData.Type;
-            obj.ObjData.Etat = source.ObjData.Etat;
-            obj.ObjData.SubEtat = source.ObjData.SubEtat;
-            obj.ObjData.OffsetBX = source.ObjData.OffsetBX;
-            obj.ObjData.OffsetBY = source.ObjData.OffsetBY;
-            obj.ObjData.OffsetHY = source.ObjData.OffsetHY;
-            obj.ObjData.FollowSprite = source.ObjData.FollowSprite;
-            obj.ObjData.HitSprite = source.ObjData.HitSprite;
-            obj.ObjData.Commands = source.ObjData.Commands == null ? null : new CommandCollection()
+            obj.Type = source.ObjData.Type;
+            obj.Etat = source.ObjData.Etat;
+            obj.SubEtat = source.ObjData.SubEtat;
+            obj.OffsetBX = source.ObjData.OffsetBX;
+            obj.OffsetBY = source.ObjData.OffsetBY;
+            obj.OffsetHY = source.ObjData.OffsetHY;
+            obj.FollowSprite = source.ObjData.FollowSprite;
+            obj.HitSprite = source.ObjData.HitSprite;
+            obj.Commands = source.ObjData.Commands == null ? null : new CommandCollection()
             {
                 Commands = source.ObjData.Commands.Commands.Select(x => new Command
                 {
@@ -310,17 +312,19 @@ namespace RayCarrot.Ray1Editor
                     Arguments = x.Arguments.ToArray()
                 }).ToArray()
             };
-            obj.ObjData.LabelOffsets = source.ObjData.LabelOffsets?.ToArray();
-            obj.ObjData.AnimationCollection = source.ObjData.AnimationCollection;
-            obj.ObjData.ImageBuffer = source.ObjData.ImageBuffer;
-            obj.ObjData.SpriteCollection = source.ObjData.SpriteCollection;
-            obj.ObjData.ETA = source.ObjData.ETA;
-            obj.ObjData.SetFollowEnabled(settings, source.ObjData.GetFollowEnabled(settings));
-            obj.ObjData.ActualHitPoints = source.ObjData.HitPoints;
+            obj.LabelOffsets = source.ObjData.LabelOffsets?.ToArray();
+            obj.AnimationCollection = source.ObjData.AnimationCollection;
+            obj.ImageBuffer = source.ObjData.ImageBuffer;
+            obj.SpriteCollection = source.ObjData.SpriteCollection;
+            obj.ETA = source.ObjData.ETA;
+            obj.SetFollowEnabled(settings, source.ObjData.GetFollowEnabled(settings));
+            obj.ActualHitPoints = source.ObjData.HitPoints;
 
-            Logger.Log(LogLevel.Trace, "Duplicated object {0}", obj.DisplayName);
+            var gameObj = new R1_GameObject(obj, source.EventDefinition);
 
-            return obj;
+            Logger.Log(LogLevel.Trace, "Duplicated object {0}", gameObj.DisplayName);
+
+            return gameObj;
         }
 
         public override int GetMaxObjCount(GameData gameData)
