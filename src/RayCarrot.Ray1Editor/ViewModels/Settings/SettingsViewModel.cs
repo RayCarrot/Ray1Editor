@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
 using System.Windows.Input;
 using Microsoft.Win32;
 using RayCarrot.UI;
@@ -12,6 +14,7 @@ namespace RayCarrot.Ray1Editor
         public SettingsViewModel()
         {
             Data = R1EServices.App.UserData;
+            EditorColorProfiles = new ObservableCollection<EditorColorProfileViewModel>(EditorColorProfileViewModel.GetViewModels);
             OpenSerializerLogCommand = new RelayCommand(OpenSerializerLog);
             BrowsemkpsxisoCommand = new RelayCommand(Browsemkpsxiso);
         }
@@ -90,6 +93,14 @@ namespace RayCarrot.Ray1Editor
             get => Data.Update_GetBeta;
             set => Data.Update_GetBeta = value;
         }
+
+        public EditorColorProfileViewModel SelectedColorProfile
+        {
+            get => EditorColorProfiles.FirstOrDefault(x => x.ID == Data.Theme_EditorColors) ?? EditorColorProfiles.First();
+            set => Data.Theme_EditorColors = value.ID;
+        }
+
+        public ObservableCollection<EditorColorProfileViewModel> EditorColorProfiles { get; }
 
         #endregion
 

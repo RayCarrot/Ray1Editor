@@ -18,7 +18,7 @@ namespace RayCarrot.Ray1Editor
     {
         #region Constructor
 
-        public EditorScene(GameManager manager, Context context, object gameSettings)
+        public EditorScene(GameManager manager, Context context, object gameSettings, Dictionary<EditorColor, Color> colors)
         {
             GameManager = manager;
             Context = context;
@@ -26,7 +26,10 @@ namespace RayCarrot.Ray1Editor
 
             Stage = EditorStage.Loading;
             EditorUpdateData = new EditorUpdateData();
-            State = new EditorState();
+            State = new EditorState()
+            {
+                Colors = colors
+            };
 
             Mouse = new WpfMouse(this);
             Keyboard = new WpfKeyboard(this);

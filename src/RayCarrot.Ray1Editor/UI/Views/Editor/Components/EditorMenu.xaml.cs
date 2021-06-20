@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace RayCarrot.Ray1Editor
@@ -35,6 +36,9 @@ namespace RayCarrot.Ray1Editor
                 var win = new SettingsWindow();
                 win.ShowDialog();
             });
+
+            // Update colors
+            ViewModel.EditorScene.State.Colors = EditorColorProfileViewModel.GetViewModels.FirstOrDefault(x => x.ID == R1EServices.App.UserData.Theme_EditorColors)?.GetColorsFunc() ?? EditorColors.Colors_LightBlue;
         }
 
         private void AboutMenuItem_OnClick(object sender, RoutedEventArgs e)

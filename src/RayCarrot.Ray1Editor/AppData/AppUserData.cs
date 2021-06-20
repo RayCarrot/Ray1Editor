@@ -26,6 +26,7 @@ namespace RayCarrot.Ray1Editor
             Serializer_CreateBackupOnWrite = true;
             Theme_Dark = true;
             Theme_Sync = false;
+            Theme_EditorColors = "LightBlue";
             PS1_mkpsxisoPath = null;
             Update_CheckOnLaunch = true;
             Update_GetBeta = false;
@@ -84,6 +85,7 @@ namespace RayCarrot.Ray1Editor
 
         public bool Theme_Dark { get; set; }
         public bool Theme_Sync { get; set; }
+        public string Theme_EditorColors { get; set; }
 
         public string PS1_mkpsxisoPath { get; set; }
 

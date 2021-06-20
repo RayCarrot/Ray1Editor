@@ -272,7 +272,8 @@ namespace RayCarrot.Ray1Editor
             EditorScene = new EditorScene(
                 manager: CurrentGameManager,
                 context: c,
-                gameSettings: CurrentGameSettings);
+                gameSettings: CurrentGameSettings,
+                colors: EditorColorProfileViewModel.GetViewModels.FirstOrDefault(x => x.ID == App.UserData.Theme_EditorColors)?.GetColorsFunc() ?? EditorColors.Colors_LightBlue);
         }
 
         public void UnloadEditor()

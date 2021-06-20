@@ -44,12 +44,50 @@
                   ToolTip="Syncs the app theme with the Windows 10 theme."
                   IsChecked="{Binding Path=SyncTheme}" />
 
-        <metro:ToggleSwitch Margin="0 0 0 15"
+        <metro:ToggleSwitch Margin="0 0 0 7"
                             IsOn="{Binding Path=DarkTheme}"
                             IsEnabled="{Binding Path=SyncTheme, Converter={local:InvertedBooleanConverter}}"
                             HorizontalAlignment="Left"
                             OnContent="Dark"
                             OffContent="Light" />
+
+        <Grid Margin="0 0 0 15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0"
+                       Text="Editor theme"
+                       Margin="0 0 7 0"
+                       VerticalAlignment="Center" />
+
+            <ComboBox Grid.Column="1" 
+                      ItemsSource="{Binding Path=EditorColorProfiles, Mode=OneTime}"
+                      SelectedItem="{Binding Path=SelectedColorProfile}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Ellipse Grid.Column="0"
+                                     Width="16"
+                                     Height="16"
+                                     Margin="0 0 7 0"
+                                     Fill="{Binding ColorPreview, Mode=OneTime, Converter={local:ColorToBrushConverter}}" />
+
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding Path=DisplayName, Mode=OneTime}" />
+                            
+                        </Grid>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
+        </Grid>
 
         <!-- Editor -->
 
