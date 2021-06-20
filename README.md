@@ -44,6 +44,10 @@ A: It depends on how the level data is corrupted. Feel free to send me the modif
 
 A: Not currently, but it's a planned feature. In the meantime if you want it for a mod you can send me the modified data and I can manually import it into the game files.
 
+**Q: Which libraries were used for this?**
+
+A: Primarily [BinarySerializer.Ray1](https://github.com/RayCarrot/BinarySerializer.Ray) for parsing Rayman 1 data, [MahApps.Metro](https://github.com/MahApps/MahApps.Metro) for the XAML styles, [MonoGame WPF Interop](https://github.com/MarcStan/monogame-framework-wpfinterop) for using MonoGame in WPF and [NLog](https://github.com/NLog/NLog) for logging.
+
 ## TODO
 In the code there are several comments for changes which should be made. These are marked with either 'TODO' or 'IDEA'. The former are for more improtant changes while the latter is for optional improvements. Other potential changes not mentioned in comments include:
 * Undo/redo for editing. This is currently shown in the UI, but disabled.
