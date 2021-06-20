@@ -46,7 +46,6 @@ A: Not currently, but it's a planned feature. In the meantime if you want it for
 
 ## TODO
 In the code there are several comments for changes which should be made. These are marked with either 'TODO' or 'IDEA'. The former are for more improtant changes while the latter is for optional improvements. Other potential changes not mentioned in comments include:
-* Include multiple themes for the editor colors which can be selected.
 * Undo/redo for editing. This is currently shown in the UI, but disabled.
 * Allow Rayman 1 commands to be modified.
 * Allow sprites, animations and states to be viewed and modified. These options are shown in the menu, but disabled.
