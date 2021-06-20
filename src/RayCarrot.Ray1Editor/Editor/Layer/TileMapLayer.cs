@@ -165,7 +165,7 @@ namespace RayCarrot.Ray1Editor
         public override IEnumerable<EditorToggleIconViewModel> GetToggleFields()
         {
             yield return ToggleField_TileSet = new EditorToggleIconViewModel(
-                iconKind: PackIconMaterialKind.Grid, 
+                iconKind: PackIconMaterialKind.SelectionDrag, 
                 info: "View tileset", 
                 getValueAction: () => IsShowingTileSet, 
                 setValueAction: ToggleTileSet);

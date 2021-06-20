@@ -13,5 +13,6 @@
         ObjOffsetGeneric,
         TileSelection,
         TileTiling,
+        TileGrid,
     }
 }

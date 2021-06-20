@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
+using MahApps.Metro.IconPacks;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -62,6 +64,8 @@ namespace RayCarrot.Ray1Editor
 
         public T[,] SelectedTiles { get; set; }
 
+        public bool ShowGrid { get; set; }
+
         #endregion
 
         #region Protected Methods
@@ -95,6 +99,19 @@ namespace RayCarrot.Ray1Editor
         #endregion
 
         #region Public Methods
+
+        protected EditorToggleIconViewModel ToggleField_Grid { get; set; }
+        public override IEnumerable<EditorToggleIconViewModel> GetToggleFields()
+        {
+            yield return ToggleField_Grid = new EditorToggleIconViewModel(
+                iconKind: PackIconMaterialKind.Grid,
+                info: "View grid",
+                getValueAction: () => ShowGrid,
+                setValueAction: x => ShowGrid = x);
+
+            foreach (var f in base.GetToggleFields())
+                yield return f;
+        }
 
         public T GetTileAt(int x, int y)
         {
@@ -272,14 +289,21 @@ namespace RayCarrot.Ray1Editor
 
                     var tileIndex = GetTileSetIndex(tile);
 
+                    Rectangle? dest = null;
+
+                    if (ShowGrid)
+                    {
+                        dest = GetTileRect(x, y);
+                        r.DrawRectangle(dest.Value, EditorState.Colors[EditorColor.TileGrid]);
+                    }
+
                     // Skip fully transparent tiles to improve performance
                     if (TileSet.IsFullyTransparent(tileIndex))
                         continue;
 
-                    var dest = GetTileRect(x, y);
                     var src = TileSet.TileSheet.Entries[tileIndex].Source;
 
-                    r.SpriteBatch.Draw(TileSet.TileSheet.Sheet, dest, src, Color.White);
+                    r.SpriteBatch.Draw(TileSet.TileSheet.Sheet, dest ?? GetTileRect(x, y), src, Color.White);
                 }
             }
 

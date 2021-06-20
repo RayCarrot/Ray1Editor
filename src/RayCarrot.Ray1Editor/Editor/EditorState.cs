@@ -27,6 +27,7 @@ namespace RayCarrot.Ray1Editor
             [EditorColor.ObjOffsetGeneric] = new Color(0x7E, 0x57, 0xC2),
             [EditorColor.TileSelection] = new Color(0xFD, 0xD8, 0x35),
             [EditorColor.TileTiling] = new Color(0xFF, 0x8F, 0x00),
+            [EditorColor.TileGrid] = new Color(0x00, 0x00, 0x00),
         };
 
         #endregion
