@@ -49,6 +49,14 @@
                              Value="{Binding Path=Value}" />
     </DataTemplate>
 
+    <!-- String -->
+
+    <DataTemplate x:Key="EditorStringFieldTemplate"
+                  DataType="{x:Type local:EditorStringFieldViewModel}">
+        <TextBox MaxLength="{Binding Path=MaxLength, Mode=OneTime}"
+                 Text="{Binding Path=Value}" />
+    </DataTemplate>
+
     <!-- Bool -->
 
     <DataTemplate x:Key="EditorBoolFieldTemplate"

@@ -13,8 +13,6 @@ namespace RayCarrot.Ray1Editor
 
         public Dictionary<EditorColor, Color> Colors { get; set; }
 
-        // TODO: Support multiple color profiles
-
         #endregion
 
         #region Textures

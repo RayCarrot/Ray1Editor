@@ -17,6 +17,7 @@ namespace RayCarrot.Ray1Editor
         public const string WPFAppBasePath = "pack://application:,,,/RayCarrot.Ray1Editor;component/";
 
         public const string EditorIntFieldTemplateKey = "EditorIntFieldTemplate";
+        public const string EditorStringFieldTemplateKey = "EditorStringFieldTemplate";
         public const string EditorBoolFieldTemplateKey = "EditorBoolFieldTemplate";
         public const string EditorDropDownFieldTemplateKey = "EditorDropDownFieldTemplate";
         public const string EditorPointFieldTemplateKey = "EditorPointFieldTemplate";

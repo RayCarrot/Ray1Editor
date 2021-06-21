@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using BinarySerializer;
 using BinarySerializer.Ray1;
 
 namespace RayCarrot.Ray1Editor
@@ -75,8 +76,47 @@ namespace RayCarrot.Ray1Editor
 
             var data = (R1_PC_GameData)gameData;
             var profile = data.ProfileDefines;
-         
-            // TODO: Add fields for the profile defines
+
+            yield return new EditorStringFieldViewModel(
+                header: "Name",
+                info: null,
+                getValueAction: () => profile.LevelName,
+                setValueAction: x => profile.LevelName = x,
+                maxLength: 25);
+
+            yield return new EditorStringFieldViewModel(
+                header: "Author",
+                info: null,
+                getValueAction: () => profile.LevelAuthor,
+                setValueAction: x => profile.LevelAuthor = x,
+                maxLength: 25);
+
+            yield return new EditorStringFieldViewModel(
+                header: "Description",
+                info: null,
+                getValueAction: () => profile.LevelDescription,
+                setValueAction: x => profile.LevelDescription = x,
+                maxLength: 240);
+        }
+
+        public override void Save(Context context, GameData gameData)
+        {
+            // Get data
+            var data = (R1_PC_GameData)gameData;
+
+            var lvl = data.LevelDefines;
+            var profile = data.ProfileDefines;
+
+            // Update the profile defines
+            profile.Power_Fist = lvl.RayEvts.HasFlag(RayEvts.Fist);
+            profile.Power_Hang = lvl.RayEvts.HasFlag(RayEvts.Hang);
+            profile.Power_Run = lvl.RayEvts.HasFlag(RayEvts.Run);
+            profile.Power_Seed = lvl.RayEvts.HasFlag(RayEvts.Seed);
+            profile.Power_Helico = lvl.RayEvts.HasFlag(RayEvts.Helico);
+            profile.Power_SuperHelico = lvl.RayEvts.HasFlag(RayEvts.SuperHelico);
+
+            // Save the level
+            base.Save(context, gameData);
         }
     }
 }
