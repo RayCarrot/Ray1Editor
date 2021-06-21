@@ -28,12 +28,6 @@ namespace RayCarrot.Ray1Editor
             LoadOtherMapCommand = new RelayCommand(LoadOtherMap);
             SaveCommand = new RelayCommand(Save);
             ResetPositionCommand = new RelayCommand(ResetPosition);
-            ToggleAnimateObjectsCommand = new RelayCommand(() => AnimateObjects = !AnimateObjects);
-            ToggleShowObjectsCommand = new RelayCommand(() => ShowObjects = !ShowObjects);
-            ToggleShowObjectOffsetsCommand = new RelayCommand(() => ShowObjectOffsets = !ShowObjectOffsets);
-            ToggleShowLayerTypesCommand = new RelayCommand(x => ToggleLayerVisibilities((Layer.LayerType)x));
-            ToggleShowLinksCommand = new RelayCommand(() => ShowLinks = !ShowLinks);
-            ToggleModeCommand = new RelayCommand(() => Mode = (EditorMode)(((int)Mode % 3) + 1));
             DeleteSelectedObjectCommand = new RelayCommand(DeleteSelectedObject);
             AddObjCommand = new RelayCommand(AddObject);
             ZoomInCommand = new RelayCommand(() => EditorScene.Cam.SetZoom(CameraZoom + 0.2f));
@@ -53,12 +47,6 @@ namespace RayCarrot.Ray1Editor
         public ICommand LoadOtherMapCommand { get; }
         public ICommand SaveCommand { get; }
         public ICommand ResetPositionCommand { get; }
-        public ICommand ToggleAnimateObjectsCommand { get; }
-        public ICommand ToggleShowObjectsCommand { get; }
-        public ICommand ToggleShowObjectOffsetsCommand { get; }
-        public ICommand ToggleShowLayerTypesCommand { get; }
-        public ICommand ToggleShowLinksCommand { get; }
-        public ICommand ToggleModeCommand { get; }
         public ICommand DeleteSelectedObjectCommand { get; }
         public ICommand AddObjCommand { get; }
         public ICommand ZoomInCommand { get; }
@@ -359,17 +347,6 @@ namespace RayCarrot.Ray1Editor
         public void UpdateObjCountInfo()
         {
             ObjCountInfo = $"({EditorScene.GameData.Objects.Count}/{CurrentGameManager.GetMaxObjCount(EditorScene.GameData)})";
-        }
-
-        public void ToggleLayerVisibilities(Layer.LayerType type)
-        {
-            var isVisible = Layers.Select(x => x.Layer).FirstOrDefault(x => x.Type == type)?.IsVisible;
-
-            if (isVisible == null)
-                return;
-
-            foreach (var l in Layers.Select(x => x.Layer).Where(x => x.Type == type))
-                l.UpdateVisibility(!isVisible.Value);
         }
 
         public void ResetPosition()

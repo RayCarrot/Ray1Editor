@@ -281,6 +281,8 @@ namespace RayCarrot.Ray1Editor
 
             EditorUpdateData.Update();
 
+            UpdateKeyboardShortcuts(EditorUpdateData);
+
             var fullScreenLayer = State.GetActiveFullScreenLayer();
 
             if (fullScreenLayer == null)
@@ -351,6 +353,69 @@ namespace RayCarrot.Ray1Editor
 
             VM.DebugText = R1EServices.App.UserData.UI_ShowDebugInfo ? EditorUpdateData.DebugText.ToString() : null;
             VM.OnUpdate();
+        }
+
+        protected void UpdateKeyboardShortcuts(EditorUpdateData updateData)
+        {
+            // TODO: VM.OnPropertyChanged calls here are temporary until this system is changed
+
+            // P = play/pause animations
+            if (updateData.IsKeyDown(Keys.P))
+            {
+                State.AnimateObjects = !State.AnimateObjects;
+                VM.OnPropertyChanged(nameof(VM.AnimateObjects));
+            }
+
+            // O = show/hide objects
+            if (updateData.IsKeyDown(Keys.O))
+            {
+                ShowObjects = !ShowObjects;
+                VM.OnPropertyChanged(nameof(VM.ShowObjects));
+            }
+
+            // X = show/hide object offsets
+            if (updateData.IsKeyDown(Keys.X))
+            {
+                ShowObjectOffsets = !ShowObjectOffsets;
+                VM.OnPropertyChanged(nameof(VM.ShowObjectOffsets));
+            }
+
+            // L = show/hide links
+            if (updateData.IsKeyDown(Keys.L))
+            {
+                ShowLinks = !ShowLinks;
+                VM.OnPropertyChanged(nameof(VM.ShowLinks));
+            }
+
+            // M = toggle mode
+            if (updateData.IsKeyDown(Keys.M))
+            {
+                Mode = (EditorMode)(((int)Mode % 3) + 1);
+                VM.OnPropertyChanged(nameof(VM.Mode));
+            }
+
+            // T = toggle tile/map layers visibility
+            if (updateData.IsKeyDown(Keys.T))
+                toggleLayerVisibilities(Layer.LayerType.Map);
+
+            // C = toggle collision layers visibility
+            if (updateData.IsKeyDown(Keys.C))
+                toggleLayerVisibilities(Layer.LayerType.Collision);
+
+            // B = toggle background layers visibility
+            if (updateData.IsKeyDown(Keys.B))
+                toggleLayerVisibilities(Layer.LayerType.Background);
+
+            void toggleLayerVisibilities(Layer.LayerType type)
+            {
+                var isVisible = GameData.Layers.FirstOrDefault(x => x.Type == type)?.IsVisible;
+
+                if (isVisible == null)
+                    return;
+
+                foreach (var l in GameData.Layers.Where(x => x.Type == type))
+                    l.UpdateVisibility(!isVisible.Value);
+            }
         }
 
         protected void UpdateModeLayers(EditorUpdateData updateData)

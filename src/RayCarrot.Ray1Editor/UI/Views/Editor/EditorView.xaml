@@ -14,15 +14,10 @@
              d:DataContext="{x:Static local:DesignDataContexts.EditorViewModel}">
 
     <UserControl.InputBindings>
+
+        <!-- Save with CTRL+S -->
         <KeyBinding Modifiers="Control" Key="S" Command="{Binding Path=SaveCommand, Mode=OneTime}" />
-        <KeyBinding Key="P" Command="{Binding Path=ToggleAnimateObjectsCommand, Mode=OneTime}" />
-        <KeyBinding Key="O" Command="{Binding Path=ToggleShowObjectsCommand, Mode=OneTime}" />
-        <KeyBinding Key="X" Command="{Binding Path=ToggleShowObjectOffsetsCommand, Mode=OneTime}" />
-        <KeyBinding Key="T" Command="{Binding Path=ToggleShowLayerTypesCommand, Mode=OneTime}" CommandParameter="{x:Static local:Layer+LayerType.Map}"/>
-        <KeyBinding Key="C" Command="{Binding Path=ToggleShowLayerTypesCommand, Mode=OneTime}" CommandParameter="{x:Static local:Layer+LayerType.Collision}" />
-        <KeyBinding Key="B" Command="{Binding Path=ToggleShowLayerTypesCommand, Mode=OneTime}" CommandParameter="{x:Static local:Layer+LayerType.Background}" />
-        <KeyBinding Key="L" Command="{Binding Path=ToggleShowLinksCommand, Mode=OneTime}" />
-        <KeyBinding Key="M" Command="{Binding Path=ToggleModeCommand, Mode=OneTime}" />
+
     </UserControl.InputBindings>
 
     <Grid>
