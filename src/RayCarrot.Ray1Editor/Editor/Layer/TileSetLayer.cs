@@ -17,6 +17,7 @@ namespace RayCarrot.Ray1Editor
             GetTileSetIndexFunc = getTileSetIndexFunc;
             CloneTileFunc = cloneTileFunc;
             IsSelected = true;
+            ShowEditElements = true;
         }
 
         #endregion
