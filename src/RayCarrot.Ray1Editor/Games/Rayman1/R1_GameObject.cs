@@ -94,7 +94,7 @@ namespace RayCarrot.Ray1Editor
                 {
                     if (settings.EngineVersion == Ray1EngineVersion.PS1_JPDemoVol3)
                     {
-                        if (ObjData.PS1Demo_IsFlipped && EditorState.LoadFromMemory)
+                        if (ObjData.PS1Demo_IsFlipped && ViewModel.LoadFromMemory)
                             return true;
                     }
                     else
@@ -105,7 +105,7 @@ namespace RayCarrot.Ray1Editor
                 }
 
                 // If loading from memory, check only runtime flags
-                if (EditorState.LoadFromMemory)
+                if (ViewModel.LoadFromMemory)
                     return false;
 
                 // Check if it's the pin event and if the hp flag is set
@@ -216,7 +216,7 @@ namespace RayCarrot.Ray1Editor
         }
         public override void ResetFrame()
         {
-            if (EditorState.LoadFromMemory || ObjData.Type.UsesEditorFrame())
+            if (ViewModel.LoadFromMemory || ObjData.Type.UsesEditorFrame())
                 return;
 
             AnimationFrame = 0;
@@ -240,7 +240,7 @@ namespace RayCarrot.Ray1Editor
                 hy += CurrentAnimation?.Frames.ElementAtOrDefault(AnimationFrame)?.SpriteLayers.ElementAtOrDefault(ObjData.FollowSprite)?.Position.Y ?? 0;
 
             if (hy != 0)
-                DrawOffset(r, Position + new Point(0, hy), EditorState.Colors[EditorColor.ObjOffsetGeneric]);
+                DrawOffset(r, Position + new Point(0, hy), ViewModel.Colors[EditorColor.ObjOffsetGeneric]);
         }
     }
 }

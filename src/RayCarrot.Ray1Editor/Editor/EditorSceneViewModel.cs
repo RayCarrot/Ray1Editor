@@ -1,16 +1,31 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using RayCarrot.UI;
 
 namespace RayCarrot.Ray1Editor
 {
+    // TODO: Move more properties from scene here, bind directly to UI, don't add anything which updates every frame
+
     /// <summary>
-    /// Data for the state of the editor
+    /// The view model for the editor scene
     /// </summary>
-    public class EditorState
+    public class EditorSceneViewModel : BaseViewModel
     {
+        #region Constructor
+
+        public EditorSceneViewModel(Dictionary<EditorColor, Color> colors)
+        {
+            Colors = colors;
+        }
+
+        #endregion
+
         #region Colors
 
+        /// <summary>
+        /// The editor colors
+        /// </summary>
         public Dictionary<EditorColor, Color> Colors { get; set; }
 
         #endregion
@@ -22,6 +37,8 @@ namespace RayCarrot.Ray1Editor
         #endregion
 
         #region State
+
+        public bool IsPaused { get; set; }
 
         public Point MapSize { get; set; }
 

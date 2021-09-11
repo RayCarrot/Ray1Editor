@@ -299,7 +299,7 @@ namespace RayCarrot.Ray1Editor
                     if (ShowGrid)
                     {
                         dest = GetTileRect(x, y);
-                        r.DrawRectangle(dest.Value, EditorState.Colors[EditorColor.TileGrid]);
+                        r.DrawRectangle(dest.Value, ViewModel.Colors[EditorColor.TileGrid]);
                     }
 
                     // Skip fully transparent tiles to improve performance
@@ -324,8 +324,8 @@ namespace RayCarrot.Ray1Editor
                     height: selection.Height * TileSet.TileSize.Y);
 
                 var color = State is TileEditorState.Selecting
-                    ? EditorState.Colors[EditorColor.TileSelecting]
-                    : EditorState.Colors[EditorColor.TileSelection];
+                    ? ViewModel.Colors[EditorColor.TileSelecting]
+                    : ViewModel.Colors[EditorColor.TileSelection];
 
                 r.DrawRectangle(rect, color, 1);
 
@@ -340,7 +340,7 @@ namespace RayCarrot.Ray1Editor
                         width: tilingSelection.Width * TileSet.TileSize.X,
                         height: tilingSelection.Height * TileSet.TileSize.Y);
 
-                    r.DrawRectangle(tilingRect, EditorState.Colors[EditorColor.TileTiling], 1);
+                    r.DrawRectangle(tilingRect, ViewModel.Colors[EditorColor.TileTiling], 1);
                 }
             }
         }

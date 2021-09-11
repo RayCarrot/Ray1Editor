@@ -41,7 +41,7 @@
 
         <CheckBox Margin="0 0 0 7"
                   Content="Sync theme"
-                  ToolTip="Syncs the app theme with the Windows 10 theme."
+                  ToolTip="Syncs the app theme with the Windows theme."
                   IsChecked="{Binding Path=SyncTheme}" />
 
         <metro:ToggleSwitch Margin="0 0 0 7"

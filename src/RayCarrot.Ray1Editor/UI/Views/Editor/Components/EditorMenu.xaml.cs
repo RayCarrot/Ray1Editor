@@ -38,7 +38,7 @@ namespace RayCarrot.Ray1Editor
             });
 
             // Update colors
-            ViewModel.EditorScene.State.Colors = EditorColorProfileViewModel.GetViewModels.FirstOrDefault(x => x.ID == R1EServices.App.UserData.Theme_EditorColors)?.GetColorsFunc() ?? EditorColors.Colors_LightBlue;
+            ViewModel.SceneVM.Colors = EditorColorProfileViewModel.GetViewModels.FirstOrDefault(x => x.ID == R1EServices.App.UserData.Theme_EditorColors)?.GetColorsFunc() ?? EditorColors.Colors_LightBlue;
         }
 
         private void AboutMenuItem_OnClick(object sender, RoutedEventArgs e)

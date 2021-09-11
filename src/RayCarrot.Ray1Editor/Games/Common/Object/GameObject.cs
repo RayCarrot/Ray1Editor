@@ -41,8 +41,8 @@ namespace RayCarrot.Ray1Editor
                 return;
 
             // Increment frame if animating
-            if (EditorState.AnimateObjects && AnimSpeed > 0)
-                AnimationFrameFloat += (EditorState.FramesPerSecond / AnimSpeed) * deltaTime;
+            if (ViewModel.AnimateObjects && AnimSpeed > 0)
+                AnimationFrameFloat += (ViewModel.FramesPerSecond / AnimSpeed) * deltaTime;
 
             // Loop around if over the frame limit
             bool isFinished = false;
@@ -64,7 +64,7 @@ namespace RayCarrot.Ray1Editor
         protected virtual void OnFinishedAnimation() { }
         public virtual void ResetFrame()
         {
-            if (!EditorState.LoadFromMemory)
+            if (!ViewModel.LoadFromMemory)
             {
                 AnimationFrame = 0;
                 AnimationFrameFloat = 0;
@@ -193,9 +193,9 @@ namespace RayCarrot.Ray1Editor
         {
             Texture2D tex = Type switch
             {
-                GameObjType.Object => EditorState.EditorTextures.Icon_Object,
-                GameObjType.Trigger => EditorState.EditorTextures.Icon_Trigger,
-                GameObjType.WayPoint => EditorState.EditorTextures.Icon_WayPoint,
+                GameObjType.Object => ViewModel.EditorTextures.Icon_Object,
+                GameObjType.Trigger => ViewModel.EditorTextures.Icon_Trigger,
+                GameObjType.WayPoint => ViewModel.EditorTextures.Icon_WayPoint,
                 _ => throw new ArgumentOutOfRangeException(nameof(Type), Type, null)
             };
 
@@ -210,7 +210,7 @@ namespace RayCarrot.Ray1Editor
         {
             if (CanBeLinkedToGroup)
             {
-                var color = LinkGroup == 0 ? EditorState.Colors[EditorColor.ObjLinksDisabled] : EditorState.Colors[EditorColor.ObjLinksEnabled];
+                var color = LinkGroup == 0 ? ViewModel.Colors[EditorColor.ObjLinksDisabled] : ViewModel.Colors[EditorColor.ObjLinksEnabled];
 
                 r.DrawLine(new Vector2(Position.X + Center.X, Position.Y + Center.Y), LinkGripBounds.Center.ToVector2(), color, LinkLineThickness);
                 r.DrawFilledRectangle(LinkGripBounds, color);
@@ -218,10 +218,10 @@ namespace RayCarrot.Ray1Editor
         }
         public virtual void DrawOffsets(Renderer r)
         {
-            DrawOffset(r, Position, EditorState.Colors[EditorColor.ObjOffsetPos]);
+            DrawOffset(r, Position, ViewModel.Colors[EditorColor.ObjOffsetPos]);
 
             if (Pivot != Point.Zero)
-                DrawOffset(r, Position + Pivot, EditorState.Colors[EditorColor.ObjOffsetPivot]);
+                DrawOffset(r, Position + Pivot, ViewModel.Colors[EditorColor.ObjOffsetPivot]);
         }
         public virtual void DrawOffset(Renderer r, Point pos, Color c)
         {

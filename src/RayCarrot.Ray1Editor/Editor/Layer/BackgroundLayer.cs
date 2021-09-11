@@ -76,8 +76,8 @@ namespace RayCarrot.Ray1Editor
 
         public override void Draw(Renderer r)
         {
-            var height = RepeatY ? (EditorState.MapSize.Y - Rectangle.Y) : Rectangle.Height;
-            var width = RepeatX ? (EditorState.MapSize.X - Rectangle.X) : Rectangle.Width;
+            var height = RepeatY ? (ViewModel.MapSize.Y - Rectangle.Y) : Rectangle.Height;
+            var width = RepeatX ? (ViewModel.MapSize.X - Rectangle.X) : Rectangle.Width;
 
             for (int y = 0; y < height; y += Rectangle.Height)
             {

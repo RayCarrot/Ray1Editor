@@ -54,7 +54,7 @@ namespace RayCarrot.Ray1Editor
                     _tileSetLayer = new TileSetLayer<T>(map, Position, new Point(width, map.Length / width), TileSet,
                         GetTileSetIndex, CloneTile)
                     {
-                        EditorState = EditorState,
+                        ViewModel = ViewModel,
                         Camera = Camera,
                         Data = Data
                     };
@@ -118,13 +118,13 @@ namespace RayCarrot.Ray1Editor
             {
                 SavedCamPos_Map = Camera.Position;
                 SavedCamZoom_Map = Camera.Zoom;
-                SavedMapSize_Map = EditorState.MapSize;
+                SavedMapSize_Map = ViewModel.MapSize;
 
                 Camera.Position = SavedCamPos_TileSet;
                 Camera.Zoom = SavedCamZoom_TileSet;
-                EditorState.MapSize = TileSetLayer.Rectangle.Size + TileSetLayer.Rectangle.Location;
+                ViewModel.MapSize = TileSetLayer.Rectangle.Size + TileSetLayer.Rectangle.Location;
 
-                EditorState.FullscreenLayer ??= this;
+                ViewModel.FullscreenLayer ??= this;
             }
             else
             {
@@ -133,10 +133,10 @@ namespace RayCarrot.Ray1Editor
 
                 Camera.Position = SavedCamPos_Map;
                 Camera.Zoom = SavedCamZoom_Map;
-                EditorState.MapSize = SavedMapSize_Map;
+                ViewModel.MapSize = SavedMapSize_Map;
 
-                if (EditorState.FullscreenLayer == this)
-                    EditorState.FullscreenLayer = null;
+                if (ViewModel.FullscreenLayer == this)
+                    ViewModel.FullscreenLayer = null;
 
                 // Copy over the selected tiles from the tile set
                 SelectedTiles = TileSetLayer.SelectedTiles;
@@ -202,7 +202,7 @@ namespace RayCarrot.Ray1Editor
                 l.TileMap = newMap;
             }
 
-            EditorState.UpdateMapSize(Data);
+            ViewModel.UpdateMapSize(Data);
 
             Logger.Log(LogLevel.Info, "Updated the tile map layer size to {0}", newSize);
         }

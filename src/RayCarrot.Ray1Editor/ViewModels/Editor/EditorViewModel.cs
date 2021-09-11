@@ -17,6 +17,7 @@ namespace RayCarrot.Ray1Editor
             CurrentGame = currentGame;
             CurrentGameManager = currentGameManager;
             CurrentGameSettings = currentGameSettings;
+            SceneVM = new EditorSceneViewModel(EditorColorProfileViewModel.GetViewModels.FirstOrDefault(x => x.ID == App.UserData.Theme_EditorColors)?.GetColorsFunc() ?? EditorColors.Colors_LightBlue);
             Palettes = new ObservableCollection<PaletteEditorViewModel>();
             LevelAttributeFields = new ObservableCollection<EditorFieldViewModel>();
             Layers = new ObservableCollection<LayerEditorViewModel>();
@@ -74,6 +75,7 @@ namespace RayCarrot.Ray1Editor
         public object CurrentGameSettings { get; }
 
         // Editor
+        public EditorSceneViewModel SceneVM { get; }
         public bool IsEnabled { get; set; }
         public EditorScene EditorScene { get; set; }
         public EditorMode Mode
@@ -84,8 +86,8 @@ namespace RayCarrot.Ray1Editor
         public GameObject SelectedObject { get; set; }
         public bool IsPaused
         {
-            get => EditorScene?.IsPaused ?? false;
-            set => EditorScene.IsPaused = value;
+            get => SceneVM?.IsPaused ?? false;
+            set => SceneVM.IsPaused = value;
         }
         public bool ShowObjects
         {
@@ -96,11 +98,6 @@ namespace RayCarrot.Ray1Editor
         {
             get => EditorScene?.ShowObjectOffsets ?? false;
             set => EditorScene.ShowObjectOffsets = value;
-        }
-        public bool AnimateObjects
-        {
-            get => EditorScene?.State.AnimateObjects ?? true;
-            set => EditorScene.State.AnimateObjects = value;
         }
         public bool ShowLinks
         {
@@ -284,7 +281,7 @@ namespace RayCarrot.Ray1Editor
                 manager: CurrentGameManager,
                 context: c,
                 gameSettings: CurrentGameSettings,
-                colors: EditorColorProfileViewModel.GetViewModels.FirstOrDefault(x => x.ID == App.UserData.Theme_EditorColors)?.GetColorsFunc() ?? EditorColors.Colors_LightBlue);
+                viewModel: SceneVM);
         }
 
         public void UnloadEditor()

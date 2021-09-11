@@ -54,7 +54,7 @@
         <Separator />
         <MenuItem Header="Animate Objects"
                   IsCheckable="True"
-                  IsChecked="{Binding Path=AnimateObjects}"
+                  IsChecked="{Binding Path=SceneVM.AnimateObjects}"
                   InputGestureText="P" />
         <Separator />
         <MenuItem Header="Show Object Offsets"

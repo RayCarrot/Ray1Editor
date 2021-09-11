@@ -8,7 +8,7 @@
         /// <summary>
         /// The editor state
         /// </summary>
-        public EditorState EditorState { get; set; }
+        public EditorSceneViewModel ViewModel { get; set; }
         
         /// <summary>
         /// The editor camera

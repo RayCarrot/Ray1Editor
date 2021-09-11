@@ -18,18 +18,15 @@ namespace RayCarrot.Ray1Editor
     {
         #region Constructor
 
-        public EditorScene(GameManager manager, Context context, object gameSettings, Dictionary<EditorColor, Color> colors)
+        public EditorScene(GameManager manager, Context context, object gameSettings, EditorSceneViewModel viewModel)
         {
             GameManager = manager;
             Context = context;
             GameSettings = gameSettings;
+            ViewModel = viewModel;
 
             Stage = EditorStage.Loading;
             EditorUpdateData = new EditorUpdateData();
-            State = new EditorState()
-            {
-                Colors = colors
-            };
 
             Mouse = new WpfMouse(this);
             Keyboard = new WpfKeyboard(this);
@@ -62,11 +59,11 @@ namespace RayCarrot.Ray1Editor
         #region Public Properties
 
         // General
+        // TODO: Move over more properties and code to EditorSceneViewModel, remove cross-references between scene and EditorViewModel and use EditorSceneViewModel to hold the common data
         public EditorStage Stage { get; protected set; }
         public EditorViewModel VM => (EditorViewModel)DataContext;
         public bool PauseWhenInactive => R1EServices.App.UserData.Editor_PauseWhenInactive;
-        public bool IsPaused { get; set; }
-        public EditorState State { get; }
+        public EditorSceneViewModel ViewModel { get; }
         public Context Context { get; }
 
         // Mode
@@ -187,8 +184,8 @@ namespace RayCarrot.Ray1Editor
                 GameData.LoadElements(this);
 
                 // Load editor textures
-                State.EditorTextures = new EditorTextures(GameData.TextureManager);
-                State.EditorTextures.Init();
+                ViewModel.EditorTextures = new EditorTextures(GameData.TextureManager);
+                ViewModel.EditorTextures.Init();
 
                 // Post-load
                 GameManager.PostLoad(GameData);
@@ -207,7 +204,7 @@ namespace RayCarrot.Ray1Editor
                 Logger.Log(LogLevel.Trace, "Calculating the map size");
 
                 // Calculate the map size
-                State.UpdateMapSize(GameData);
+                ViewModel.UpdateMapSize(GameData);
 
                 // Load base content
                 base.LoadContent();
@@ -260,7 +257,7 @@ namespace RayCarrot.Ray1Editor
             Stage = EditorStage.Closed;
         }
 
-        protected bool GetIsEditorPaused() => PauseWhenInactive && !IsActive || IsPaused;
+        protected bool GetIsEditorPaused() => PauseWhenInactive && !IsActive || ViewModel.IsPaused;
 
         protected override void Update(GameTime gameTime)
         {
@@ -283,7 +280,7 @@ namespace RayCarrot.Ray1Editor
 
             UpdateKeyboardShortcuts(EditorUpdateData);
 
-            var fullScreenLayer = State.GetActiveFullScreenLayer();
+            var fullScreenLayer = ViewModel.GetActiveFullScreenLayer();
 
             if (fullScreenLayer == null)
             {
@@ -361,10 +358,7 @@ namespace RayCarrot.Ray1Editor
 
             // P = play/pause animations
             if (updateData.IsKeyDown(Keys.P))
-            {
-                State.AnimateObjects = !State.AnimateObjects;
-                VM.OnPropertyChanged(nameof(VM.AnimateObjects));
-            }
+                ViewModel.AnimateObjects = !ViewModel.AnimateObjects;
 
             // O = show/hide objects
             if (updateData.IsKeyDown(Keys.O))
@@ -602,23 +596,23 @@ namespace RayCarrot.Ray1Editor
 
             void autoScroll(double diff, int changeX, int changeY)
             {
-                if (diff < State.AutoScrollMargin)
+                if (diff < ViewModel.AutoScrollMargin)
                     Cam.Position = new Vector2(
-                        Cam.Position.X + State.AutoScrollSpeed * changeX,
-                        Cam.Position.Y + State.AutoScrollSpeed * changeY);
+                        Cam.Position.X + ViewModel.AutoScrollSpeed * changeX,
+                        Cam.Position.Y + ViewModel.AutoScrollSpeed * changeY);
             }
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            if (Stage != EditorStage.Editing || PauseWhenInactive && !IsActive || IsPaused)
+            if (Stage != EditorStage.Editing || PauseWhenInactive && !IsActive || ViewModel.IsPaused)
                 return;
 
             // Base call
             base.Draw(gameTime);
 
             // Clear the screen with the background color
-            GraphicsDevice.Clear(State.Colors[EditorColor.Background]);
+            GraphicsDevice.Clear(ViewModel.Colors[EditorColor.Background]);
 
             // Begin drawing using the camera's transform matrix
             Renderer.SpriteBatch.Begin(
@@ -626,7 +620,7 @@ namespace RayCarrot.Ray1Editor
                 transformMatrix: Cam.TransformMatrix);
 
             // Draw map background color
-            Renderer.DrawFilledRectangle(new Rectangle(Point.Zero, State.MapSize), State.Colors[EditorColor.MapBackground]);
+            Renderer.DrawFilledRectangle(new Rectangle(Point.Zero, ViewModel.MapSize), ViewModel.Colors[EditorColor.MapBackground]);
 
             // Draw the content
             Draw(Renderer);
@@ -637,7 +631,7 @@ namespace RayCarrot.Ray1Editor
 
         protected void Draw(Renderer r)
         {
-            var fullScreenLayer = State.GetActiveFullScreenLayer();
+            var fullScreenLayer = ViewModel.GetActiveFullScreenLayer();
 
             if (fullScreenLayer != null)
             {
@@ -667,7 +661,7 @@ namespace RayCarrot.Ray1Editor
 
                 // Draw link grip border if hovering over it in links mode
                 if (Mode == EditorMode.Links && HoverLinkGripObj != null)
-                    r.DrawRectangle(HoverLinkGripObj.LinkGripBounds, State.Colors[EditorColor.SelectedObjBounds]);
+                    r.DrawRectangle(HoverLinkGripObj.LinkGripBounds, ViewModel.Colors[EditorColor.SelectedObjBounds]);
 
                 if (CanHoverOverObject)
                 {
@@ -677,11 +671,11 @@ namespace RayCarrot.Ray1Editor
                     // When in links mode we show the bounds for the object the link is being
                     // moved for.
                     if (SelectedObject != null) // Selected object
-                        r.DrawRectangle(SelectedObject.WorldBounds, State.Colors[EditorColor.SelectedObjBounds]);
+                        r.DrawRectangle(SelectedObject.WorldBounds, ViewModel.Colors[EditorColor.SelectedObjBounds]);
                     if (HoverObject != null && !IsDraggingObject && !IsDraggingLink && HoverObject != SelectedObject) // Hovering object
-                        r.DrawRectangle(HoverObject.WorldBounds, State.Colors[EditorColor.HoveringObjBounds]);
+                        r.DrawRectangle(HoverObject.WorldBounds, ViewModel.Colors[EditorColor.HoveringObjBounds]);
                     else if (SelectedLinkObject != null) // Selected link object
-                        r.DrawRectangle(SelectedLinkObject.WorldBounds, State.Colors[EditorColor.SelectedObjBounds]);
+                        r.DrawRectangle(SelectedLinkObject.WorldBounds, ViewModel.Colors[EditorColor.SelectedObjBounds]);
                 }
 
                 if (ShowObjectOffsets)
@@ -704,7 +698,7 @@ namespace RayCarrot.Ray1Editor
         public T LoadElement<T>(T element)
             where T : EditorElement
         {
-            element.EditorState = State;
+            element.ViewModel = ViewModel;
             element.Camera = Cam;
             element.Data = GameData;
 
