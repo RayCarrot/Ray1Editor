@@ -75,7 +75,7 @@ namespace RayCarrot.Ray1Editor
         /// <summary>
         /// The current app version
         /// </summary>
-        public Version CurrentAppVersion => new Version(0, 1, 0, 3);
+        public Version CurrentAppVersion => new Version(0, 1, 1, 0);
 
         /// <summary>
         /// Indicates if the current version is a BETA version

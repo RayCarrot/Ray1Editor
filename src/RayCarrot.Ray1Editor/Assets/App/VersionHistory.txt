@@ -1,4 +1,12 @@
-﻿-----   Version 0.1.0.3 (beta) - June 21, 2021   -----
+﻿-----   Version 0.1.1.0 (beta) - September 11, 2021   -----
+• Add fields for editing the profile defines for Rayman by his Fans and Rayman 60 Levels
+• Save level define flags to the profile defines, thus correctly displaying which abilities can be used in the level for Rayman by his Fans and Rayman 60 Levels
+• Update logging to archive log files, save logs for crash handler, log exceptions and allow the log level to be changed with a launch argument
+• Update the updater to not include debug symbols
+• Update libraries
+
+
+-----   Version 0.1.0.3 (beta) - June 21, 2021   -----
 • Fix bug where the tileset would not show the selection border
 
 
