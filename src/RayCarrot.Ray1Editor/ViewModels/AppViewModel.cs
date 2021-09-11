@@ -23,6 +23,7 @@ namespace RayCarrot.Ray1Editor
             Path_AppDataDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Ray1Editor");
             Path_AppUserDataFile = Path.Combine(Path_AppDataDir, $"Settings.json");
             Path_LogFile = Path.Combine(Path_AppDataDir, $"Log.txt");
+            Path_ArchivedLogFile = Path.Combine(Path_AppDataDir, $"Log_archived.txt");
             Path_SerializerLogFile = Path.Combine(Path_AppDataDir, $"SerializerLog.txt");
             Path_UpdaterFile = Path.Combine(Path_AppDataDir, $"Updater.exe");
 
@@ -36,6 +37,7 @@ namespace RayCarrot.Ray1Editor
         public string Path_AppDataDir { get; }
         public string Path_AppUserDataFile { get; }
         public string Path_LogFile { get; }
+        public string Path_ArchivedLogFile { get; }
         public string Path_SerializerLogFile { get; }
         public string Path_UpdaterFile { get; }
 
@@ -152,7 +154,7 @@ namespace RayCarrot.Ray1Editor
             // Create the data directory
             Directory.CreateDirectory(Path_AppDataDir);
 
-            InitializeLogging(args.Any() && args[0] == "logtrace");
+            InitializeLogging(args);
 
             Logger.Log(LogLevel.Info, "Initializing application with app version {0}", CurrentAppVersion);
 
@@ -177,28 +179,78 @@ namespace RayCarrot.Ray1Editor
             Logger.Log(LogLevel.Info, "Initialized application");
         }
 
-        // ReSharper disable once RedundantAssignment
-        public void InitializeLogging(bool logTrace)
+        public void InitializeLogging(string[] args)
         {
+            // Create a new logging configuration
             var logConfig = new LoggingConfiguration();
 
 #if DEBUG
-            // On debug we force it to always log trace
-            logTrace = true;
+            // On debug we default it to log trace
+            LogLevel logLevel = LogLevel.Trace;
+#else
+            // If not on debug we default to log info
+            LogLevel logLevel = LogLevel.Info;
 #endif
 
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            logConfig.AddRule(logTrace ? LogLevel.Trace : LogLevel.Info, LogLevel.Fatal, new FileTarget("logfile")
+            // Allow the log level to be specified from a launch argument
+            if (args.Contains("-loglevel"))
             {
-                DeleteOldFileOnStartup = true,
-                FileName = Path_LogFile
-            });
+                string argLogLevel = args[args.FindItemIndex(x => x == "-loglevel") + 1];
+                logLevel = LogLevel.FromString(argLogLevel);
+            }
 
-            //MethodCallTarget target = new MethodCallTarget("logwindow", (logEvent, parms) =>
-            //{
+            const string logLayout = "${time:invariant=true}|${level:uppercase=true}|${logger}|${message}${onexception:${newline}${exception:format=tostring}}";
+            bool logToFile = !args.Contains("-nofilelog");
+            bool logToMemory = !args.Contains("-nomemlog");
+            bool logToViewer = args.Contains("-logviewer");
 
-            //});
-            //logConfig.AddRule(LogLevel.Trace, LogLevel.Fatal, target);
+            // Log to file
+            if (logToFile)
+            {
+                logConfig.AddRule(logLevel, LogLevel.Fatal, new FileTarget("file")
+                {
+                    // Archive a maximum of 5 logs. This makes it easier going back to check errors which happened on older instances of the app.
+                    ArchiveOldFileOnStartup = true,
+                    ArchiveFileName = Path_ArchivedLogFile,
+                    MaxArchiveFiles = 5,
+                    ArchiveNumbering = ArchiveNumberingMode.Sequence,
+                    
+                    // Keep the file open and disable concurrent writes to improve performance
+                    KeepFileOpen = true,
+                    ConcurrentWrites = false,
+
+                    // Set the file path and layout
+                    FileName = Path_LogFile,
+                    Layout = logLayout,
+                });
+            }
+
+            if (logToMemory)
+            {
+                logConfig.AddRule(logLevel, LogLevel.Fatal, new MemoryTarget("memory")
+                {
+                    Layout = logLayout,
+                });
+            }
+
+            // Log to log viewer
+            if (logToViewer)
+            {
+                // TODO: Add a log viewer
+                //LogViewerViewModel = new LogViewerViewModel();
+
+                //// Always log from trace to fatal to include all logs
+                //logConfig.AddRuleForAllLevels(new MethodCallTarget("logviewer", async (logEvent, _) =>
+                //{
+                //    // Await to avoid blocking
+                //    await App.Current.Dispatcher.InvokeAsync(() =>
+                //    {
+                //        var log = new LogItemViewModel(logEvent.Level, logEvent.Exception, logEvent.TimeStamp, logEvent.LoggerName, logEvent.FormattedMessage);
+                //        log.IsVisible = log.LogLevel >= LogViewerViewModel.ShowLogLevel;
+                //        LogViewerViewModel.LogItems.Add(log);
+                //    });
+                //}));
+            }
 
             // Apply config
             LogManager.Configuration = logConfig;

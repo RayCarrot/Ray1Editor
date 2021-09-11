@@ -1,8 +1,10 @@
-﻿using ControlzEx.Theming;
+﻿using System;
+using ControlzEx.Theming;
 using NLog;
 using System.IO;
 using System.Windows;
 using System.Windows.Threading;
+using NLog.Targets;
 
 namespace RayCarrot.Ray1Editor
 {
@@ -43,11 +45,30 @@ namespace RayCarrot.Ray1Editor
         {
             try
             {
-                File.WriteAllText($"crashlog.txt", e.Exception.ToString());
+                // Log the exception
+                Logger.Fatal(e?.Exception, "Unhandled exception");
+
+                // Get the path to log to
+                string logPath = Path.Combine(Directory.GetCurrentDirectory(), "crashlog.txt");
+
+                // Write log
+                File.WriteAllLines(logPath, LogManager.Configuration.FindTargetByName<MemoryTarget>("memory")?.Logs ?? new string[]
+                {
+                    "Service not available",
+                    Environment.NewLine,
+                    e?.Exception?.ToString()
+                });
+
+                // Notify user
+                MessageBox.Show($"The application crashed with the following exception message:{Environment.NewLine}{e?.Exception?.Message}" +
+                                $"{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}A crash log has been created under {logPath}.",
+                    "Critical error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            catch
+            catch (Exception)
             {
-                // ignored
+                // Notify user
+                MessageBox.Show($"The application crashed with the following exception message:{Environment.NewLine}{e?.Exception?.Message}",
+                    "Critical error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
