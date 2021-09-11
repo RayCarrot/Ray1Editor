@@ -40,10 +40,10 @@ namespace RayCarrot.Ray1Editor
             context.AddSettings(ray1Settings);
 
             // Add files
-            context.AddFile(new LinearSerializedFile(context, Path_VigFile(ray1Settings)));
-            context.AddFile(new LinearSerializedFile(context, Path_FixFile));
-            context.AddFile(new LinearSerializedFile(context, Path_WorldFile(ray1Settings)));
-            context.AddFile(new LinearSerializedFile(context, Path_LevelFile(ray1Settings)));
+            context.AddFile(new LinearFile(context, Path_VigFile(ray1Settings)));
+            context.AddFile(new LinearFile(context, Path_FixFile));
+            context.AddFile(new LinearFile(context, Path_WorldFile(ray1Settings)));
+            context.AddFile(new LinearFile(context, Path_LevelFile(ray1Settings)));
 
             // Create the data
             var data = new R1_PC_GameData(context, textureManager);

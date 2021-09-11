@@ -376,7 +376,7 @@ namespace RayCarrot.Ray1Editor
             int pageX = sprite.TexturePageInfo.TX;
             int pageY = sprite.TexturePageInfo.TY;
 
-            var is4Bit = sprite.TexturePageInfo.TP == PS1_TexturePageInfo.TexturePageTP.CLUT_4Bit;
+            var is4Bit = sprite.TexturePageInfo.TP == PS1_TSB.TexturePageTP.CLUT_4Bit;
             var length = sprite.Width * sprite.Height;
 
             if (is4Bit)
@@ -409,8 +409,8 @@ namespace RayCarrot.Ray1Editor
 
             var format = sprite.TexturePageInfo.TP switch
             {
-                PS1_TexturePageInfo.TexturePageTP.CLUT_4Bit => PalettedTextureData.ImageFormat.Linear_4bpp,
-                PS1_TexturePageInfo.TexturePageTP.CLUT_8Bit => PalettedTextureData.ImageFormat.Linear_8bpp,
+                PS1_TSB.TexturePageTP.CLUT_4Bit => PalettedTextureData.ImageFormat.Linear_4bpp,
+                PS1_TSB.TexturePageTP.CLUT_8Bit => PalettedTextureData.ImageFormat.Linear_8bpp,
                 _ => throw new Exception($"Unsupported texture type {sprite.TexturePageInfo.TP}")
             };
 
