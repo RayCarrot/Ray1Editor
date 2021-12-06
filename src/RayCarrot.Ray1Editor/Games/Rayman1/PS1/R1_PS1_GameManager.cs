@@ -676,11 +676,11 @@ namespace RayCarrot.Ray1Editor
 
             // Get the size of the objects (all have the same size)
             long objSize = 0;
-            var firstObj = objData.Objects.FirstOrDefault();
+            ObjData firstObj = objData.Objects.FirstOrDefault();
 
             if (firstObj != null)
             {
-                firstObj.RecalculateSize<ObjData>();
+                firstObj.RecalculateSize();
                 objSize = firstObj.Size;
             }
 
@@ -715,7 +715,7 @@ namespace RayCarrot.Ray1Editor
                 if (obj.Commands != null && obj.Commands.Commands.Length > 0)
                 {
                     obj.Commands.Init(getNextPointer(0));
-                    obj.Commands.RecalculateSize<CommandCollection>();
+                    obj.Commands.RecalculateSize();
                     obj.CommandsPointer = getNextPointer(obj.Commands.Size);
                 }
                 else
@@ -758,8 +758,7 @@ namespace RayCarrot.Ray1Editor
                     }
                 }
 
-                Pointer relocateData<T>(Pointer currentPointer, T refData)
-                    where T : BinarySerializable, new()
+                Pointer relocateData(Pointer currentPointer, BinarySerializable refData)
                 {
                     if (refData == null)
                         return currentPointer;
@@ -779,7 +778,7 @@ namespace RayCarrot.Ray1Editor
                     originalPointer ??= currentPointer;
 
                     // Next we get the size of the data to relocate
-                    refData.RecalculateSize<T>();
+                    refData.RecalculateSize();
                     var size = refData.Size;
 
                     // Get the new pointer
@@ -853,7 +852,7 @@ namespace RayCarrot.Ray1Editor
                 originalPointer ??= unrefData.Offset;
 
                 // Next we get the size of the data
-                unrefData.RecalculateSize<T>();
+                unrefData.RecalculateSize();
                 var size = unrefData.Size;
 
                 var newPointer = getNextPointer(size);
