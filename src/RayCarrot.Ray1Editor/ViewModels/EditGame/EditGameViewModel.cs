@@ -1,6 +1,5 @@
 ﻿using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using RayCarrot.UI;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;

@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
 using System.Windows.Input;
 using NLog;
-using RayCarrot.UI;
 
 namespace RayCarrot.Ray1Editor
 {

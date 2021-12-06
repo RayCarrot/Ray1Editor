@@ -1,6 +1,4 @@
-﻿using RayCarrot.UI;
-
-namespace RayCarrot.Ray1Editor
+﻿namespace RayCarrot.Ray1Editor
 {
     public class LoadGameLevelViewModel : BaseViewModel
     {

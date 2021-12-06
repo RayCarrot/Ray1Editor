@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows.Media;
-using RayCarrot.UI;
 
 namespace RayCarrot.Ray1Editor
 {

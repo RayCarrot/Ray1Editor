@@ -1,5 +1,4 @@
 ﻿using System.Windows.Media;
-using RayCarrot.UI;
 
 namespace RayCarrot.Ray1Editor
 {

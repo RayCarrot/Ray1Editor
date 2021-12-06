@@ -3,7 +3,6 @@ using Newtonsoft.Json.Converters;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
-using RayCarrot.UI;
 using System;
 using System.IO;
 using System.Linq;

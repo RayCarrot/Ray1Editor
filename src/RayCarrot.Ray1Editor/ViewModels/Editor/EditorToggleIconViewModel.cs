@@ -1,6 +1,5 @@
 ﻿using System;
 using MahApps.Metro.IconPacks;
-using RayCarrot.UI;
 
 namespace RayCarrot.Ray1Editor
 {

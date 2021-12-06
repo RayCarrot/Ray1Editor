@@ -1,6 +1,4 @@
-﻿using System;
-using NLog;
-using RayCarrot.UI;
+﻿using NLog;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;

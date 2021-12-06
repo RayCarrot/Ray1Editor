@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using Microsoft.Xna.Framework;
 
 namespace RayCarrot.Ray1Editor

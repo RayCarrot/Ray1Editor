@@ -1,5 +1,4 @@
-﻿using RayCarrot.UI;
-using System;
+﻿using System;
 using System.Windows.Input;
 
 namespace RayCarrot.Ray1Editor

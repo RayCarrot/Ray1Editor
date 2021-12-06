@@ -63,9 +63,6 @@
     <ProjectReference Include="..\..\..\Binary\BinarySerializer.Image\src\BinarySerializer.Image.csproj" />
     <ProjectReference Include="..\..\..\Binary\BinarySerializer.Ray1\src\BinarySerializer.Ray1.csproj" />
     <ProjectReference Include="..\..\..\Binary\BinarySerializer\src\BinarySerializer.csproj" />
-
-    <!-- RayCarrot libraries -->
-    <ProjectReference Include="..\..\..\RayCarrot.UI\RayCarrot.UI\RayCarrot.UI.csproj" />
   </ItemGroup>
 
   <!-- WPF XAML -->

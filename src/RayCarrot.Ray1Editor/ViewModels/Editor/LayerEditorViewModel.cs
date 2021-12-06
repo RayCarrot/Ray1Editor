@@ -1,5 +1,4 @@
-﻿using RayCarrot.UI;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using BinarySerializer;
 
 namespace RayCarrot.Ray1Editor

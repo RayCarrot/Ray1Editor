@@ -5,7 +5,6 @@ using System.Windows;
 using System.Windows.Media;
 using Microsoft.Win32;
 using NLog;
-using RayCarrot.UI;
 
 namespace RayCarrot.Ray1Editor
 {

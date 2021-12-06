@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using BinarySerializer.Ray1;
 using Microsoft.Xna.Framework;
 

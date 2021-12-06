@@ -1,5 +1,4 @@
 ﻿using NLog;
-using RayCarrot.UI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

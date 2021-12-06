@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Windows.Input;
 using Microsoft.Win32;
-using RayCarrot.UI;
 
 namespace RayCarrot.Ray1Editor
 {
