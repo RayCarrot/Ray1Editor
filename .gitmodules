@@ -1,0 +1,12 @@
+[submodule "submodules/BinarySerializer"]
+	path = submodules/BinarySerializer
+	url = https://github.com/BinarySerializer/BinarySerializer
+[submodule "submodules/BinarySerializer.Image"]
+	path = submodules/BinarySerializer.Image
+	url = https://github.com/BinarySerializer/BinarySerializer.Image
+[submodule "submodules/BinarySerializer.Ray1"]
+	path = submodules/BinarySerializer.Ray1
+	url = https://github.com/BinarySerializer/BinarySerializer.Ray1
+[submodule "submodules/BinarySerializer.PS1"]
+	path = submodules/BinarySerializer.PS1
+	url = https://github.com/BinarySerializer/BinarySerializer.PS1

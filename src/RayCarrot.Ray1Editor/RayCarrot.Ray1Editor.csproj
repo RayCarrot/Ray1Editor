@@ -58,11 +58,10 @@
   <!-- Project references -->
   <ItemGroup>
     <!-- Binary serializer -->
-    <ProjectReference Include="..\..\..\Binary\BinarySerializer.GBA\src\BinarySerializer.GBA.csproj" />
-    <ProjectReference Include="..\..\..\Binary\BinarySerializer.PS1\src\BinarySerializer.PS1.csproj" />
-    <ProjectReference Include="..\..\..\Binary\BinarySerializer.Image\src\BinarySerializer.Image.csproj" />
-    <ProjectReference Include="..\..\..\Binary\BinarySerializer.Ray1\src\BinarySerializer.Ray1.csproj" />
-    <ProjectReference Include="..\..\..\Binary\BinarySerializer\src\BinarySerializer.csproj" />
+    <ProjectReference Include="..\..\submodules\BinarySerializer\src\BinarySerializer.csproj" />
+    <ProjectReference Include="..\..\submodules\BinarySerializer.Image\src\BinarySerializer.Image.csproj" />
+    <ProjectReference Include="..\..\submodules\BinarySerializer.PS1\src\BinarySerializer.PS1.csproj" />
+    <ProjectReference Include="..\..\submodules\BinarySerializer.Ray1\src\BinarySerializer.Ray1\BinarySerializer.Ray1.csproj" />
   </ItemGroup>
 
   <!-- WPF XAML -->
