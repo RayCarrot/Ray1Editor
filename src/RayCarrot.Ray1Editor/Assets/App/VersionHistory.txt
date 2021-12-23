@@ -1,5 +1,4 @@
-﻿-----   Version 0.2.0.0 (beta) - December 23, 2021   -----
-• Update target framework from .NET Core 3.1 to .NET 6
+﻿-----   Version 0.1.2.0 (beta) - December 23, 2021   -----
 • Update libraries, fixing a bug where changing the size of a map in the Rayman PC versions would corrupt the level
 
 
