@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace RayCarrot.Ray1Editor
@@ -34,10 +35,10 @@ namespace RayCarrot.Ray1Editor
             try
             {
                 // Create the web client
-                using var wc = new WebClient();
+                using var wc = new HttpClient();
 
                 // Download the manifest
-                var result = await wc.DownloadStringTaskAsync(ManifestURL);
+                var result = await wc.GetStringAsync(ManifestURL);
 
                 // Parse the manifest
                 manifest = JObject.Parse(result);
