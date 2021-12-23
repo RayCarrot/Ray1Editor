@@ -117,7 +117,7 @@ public abstract class UpdaterManager
         }
         catch (Exception ex)
         {
-            Logger.Log(LogLevel.Error, ex, "Getting assembly version from server manifest", manifest);
+            Logger.Log(LogLevel.Error, ex, "Getting assembly version from server manifest {0}", manifest);
 
             return new UpdaterCheckResult("The server manifest could not be read", ex);
         }
@@ -131,7 +131,7 @@ public abstract class UpdaterManager
         }
         catch (Exception ex)
         {
-            Logger.Log(LogLevel.Error, ex, "Getting download URL from server manifest", manifest);
+            Logger.Log(LogLevel.Error, ex, "Getting download URL from server manifest {0}", manifest);
 
             return new UpdaterCheckResult("The server manifest could not be read", ex);
         }
@@ -146,7 +146,7 @@ public abstract class UpdaterManager
         }
         catch (Exception ex)
         {
-            Logger.Log(LogLevel.Error, ex, "Getting update news from server manifest", manifest);
+            Logger.Log(LogLevel.Error, ex, "Getting update news from server manifest {0}", manifest);
         }
 
         // Return the result
