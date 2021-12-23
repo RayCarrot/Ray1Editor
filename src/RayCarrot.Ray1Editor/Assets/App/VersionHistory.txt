@@ -1,4 +1,9 @@
-﻿-----   Version 0.1.1.0 (beta) - September 11, 2021   -----
+﻿-----   Version 0.2.0.0 (beta) - December 23, 2021   -----
+• Update target framework from .NET Core 3.1 to .NET 6
+• Update libraries, fixing a bug where changing the size of a map in the Rayman PC versions would corrupt the level
+
+
+-----   Version 0.1.1.0 (beta) - September 11, 2021   -----
 • Add fields for editing the profile defines for Rayman by his Fans and Rayman 60 Levels
 • Save level define flags to the profile defines, thus correctly displaying which abilities can be used in the level for Rayman by his Fans and Rayman 60 Levels
 • Update logging to archive log files, save logs for crash handler, log exceptions and allow the log level to be changed with a launch argument
