@@ -1,13 +1,12 @@
-﻿namespace RayCarrot.Ray1Editor
+﻿namespace RayCarrot.Ray1Editor;
+
+/// <summary>
+/// Common sprite animation data
+/// </summary>
+public class ObjAnimation
 {
     /// <summary>
-    /// Common sprite animation data
+    /// The animation frames
     /// </summary>
-    public class ObjAnimation
-    {
-        /// <summary>
-        /// The animation frames
-        /// </summary>
-        public ObjAnimation_Frame[] Frames { get; set; }
-    }
+    public ObjAnimation_Frame[] Frames { get; set; }
 }

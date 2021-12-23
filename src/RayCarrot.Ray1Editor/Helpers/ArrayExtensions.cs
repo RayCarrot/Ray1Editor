@@ -1,9 +1,8 @@
 ﻿using System;
 
-namespace RayCarrot.Ray1Editor
+namespace RayCarrot.Ray1Editor;
+
+public static class ArrayExtensions
 {
-    public static class ArrayExtensions
-    {
-        public static int FindItemIndex<T>(this T[] array, Predicate<T> match) => Array.FindIndex(array, match);
-    }
+    public static int FindItemIndex<T>(this T[] array, Predicate<T> match) => Array.FindIndex(array, match);
 }

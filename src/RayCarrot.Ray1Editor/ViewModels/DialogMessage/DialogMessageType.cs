@@ -1,33 +1,32 @@
-﻿namespace RayCarrot.Ray1Editor
-{
+﻿namespace RayCarrot.Ray1Editor;
+
+/// <summary>
+/// The types of messages to display
+/// </summary>
+public enum DialogMessageType
+{ 
     /// <summary>
-    /// The types of messages to display
+    /// An informative message
     /// </summary>
-    public enum DialogMessageType
-    { 
-        /// <summary>
-        /// An informative message
-        /// </summary>
-        Information,
+    Information,
 
-        /// <summary>
-        /// An error message
-        /// </summary>
-        Error,
+    /// <summary>
+    /// An error message
+    /// </summary>
+    Error,
 
-        /// <summary>
-        /// A warning message
-        /// </summary>
-        Warning,
+    /// <summary>
+    /// A warning message
+    /// </summary>
+    Warning,
 
-        /// <summary>
-        /// A success message
-        /// </summary>
-        Success,
+    /// <summary>
+    /// A success message
+    /// </summary>
+    Success,
 
-        /// <summary>
-        /// A message as a question
-        /// </summary>
-        Question
-    }
+    /// <summary>
+    /// A message as a question
+    /// </summary>
+    Question
 }

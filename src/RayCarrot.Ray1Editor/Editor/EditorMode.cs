@@ -1,10 +1,9 @@
-﻿namespace RayCarrot.Ray1Editor
+﻿namespace RayCarrot.Ray1Editor;
+
+public enum EditorMode
 {
-    public enum EditorMode
-    {
-        None,
-        Layers,
-        Objects,
-        Links,
-    }
+    None,
+    Layers,
+    Objects,
+    Links,
 }

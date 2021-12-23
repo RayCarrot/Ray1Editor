@@ -1,43 +1,42 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace RayCarrot.Ray1Editor
+namespace RayCarrot.Ray1Editor;
+
+/// <summary>
+/// Interaction logic for EditorTab_General.xaml
+/// </summary>
+public partial class EditorTab_General : UserControl
 {
-    /// <summary>
-    /// Interaction logic for EditorTab_General.xaml
-    /// </summary>
-    public partial class EditorTab_General : UserControl
+    public EditorTab_General()
     {
-        public EditorTab_General()
+        InitializeComponent();
+    }
+
+    public EditorViewModel ViewModel
+    {
+        get => DataContext as EditorViewModel;
+        set => DataContext = value;
+    }
+
+    private void EditPaletteButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        var pal = (PaletteEditorViewModel)((FrameworkElement)sender).DataContext;
+
+        ViewModel.DoAndPause(() =>
         {
-            InitializeComponent();
-        }
+            var editVM = new EditPaletteViewModel(pal.Palette);
 
-        public EditorViewModel ViewModel
-        {
-            get => DataContext as EditorViewModel;
-            set => DataContext = value;
-        }
+            var win = new EditPaletteWindow(editVM);
+            win.ShowDialog();
 
-        private void EditPaletteButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            var pal = (PaletteEditorViewModel)((FrameworkElement)sender).DataContext;
+            if (win.DialogResult != true)
+                return;
 
-            ViewModel.DoAndPause(() =>
-            {
-                var editVM = new EditPaletteViewModel(pal.Palette);
+            // Update the palette with the modifications
+            editVM.UpdatePalette();
 
-                var win = new EditPaletteWindow(editVM);
-                win.ShowDialog();
-
-                if (win.DialogResult != true)
-                    return;
-
-                // Update the palette with the modifications
-                editVM.UpdatePalette();
-
-                ViewModel.EditorScene.GameData.TextureManager.RefreshPalette(editVM.Palette);
-            });
-        }
+            ViewModel.EditorScene.GameData.TextureManager.RefreshPalette(editVM.Palette);
+        });
     }
 }

@@ -1,9 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace RayCarrot.Ray1Editor
+namespace RayCarrot.Ray1Editor;
+
+public class ObjAnimation_HitBoxLayer
 {
-    public class ObjAnimation_HitBoxLayer
-    {
-        public Rectangle Rectangle { get; set; }
-    }
+    public Rectangle Rectangle { get; set; }
 }

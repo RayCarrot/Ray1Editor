@@ -1,19 +1,18 @@
 ﻿using System.Collections.Generic;
 
-namespace RayCarrot.Ray1Editor
+namespace RayCarrot.Ray1Editor;
+
+public static class ListExtensions
 {
-    public static class ListExtensions
+    public static void Move<T>(this IList<T> list, int oldIndex, int newIndex)
     {
-        public static void Move<T>(this IList<T> list, int oldIndex, int newIndex)
-        {
-            var item = list[oldIndex];
+        var item = list[oldIndex];
 
-            list.RemoveAt(oldIndex);
+        list.RemoveAt(oldIndex);
 
-            if (newIndex > oldIndex) 
-                newIndex--;
+        if (newIndex > oldIndex) 
+            newIndex--;
 
-            list.Insert(newIndex, item);
-        }
+        list.Insert(newIndex, item);
     }
 }

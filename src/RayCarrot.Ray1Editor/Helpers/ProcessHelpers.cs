@@ -3,39 +3,38 @@ using System.Diagnostics;
 using System.IO;
 using NLog;
 
-namespace RayCarrot.Ray1Editor
+namespace RayCarrot.Ray1Editor;
+
+public static class ProcessHelpers
 {
-    public static class ProcessHelpers
+    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+    public static string GetStringAsPathArg(string filePath) => $"\"{filePath.Replace('/', '\\')}\"";
+
+    public static void RunProcess(string filePath, string[] args, string workingDir = null, bool waitForExit = true, bool logInfo = true)
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        // Create the process and dispose when finished
+        using var p = new Process();
 
-        public static string GetStringAsPathArg(string filePath) => $"\"{filePath.Replace('/', '\\')}\"";
-
-        public static void RunProcess(string filePath, string[] args, string workingDir = null, bool waitForExit = true, bool logInfo = true)
+        // Set the start info
+        p.StartInfo = new ProcessStartInfo(filePath, String.Join(" ", args))
         {
-            // Create the process and dispose when finished
-            using var p = new Process();
+            UseShellExecute = !logInfo,
+            RedirectStandardOutput = logInfo,
+            WorkingDirectory = workingDir ?? Path.GetDirectoryName(filePath)
+        };
 
-            // Set the start info
-            p.StartInfo = new ProcessStartInfo(filePath, String.Join(" ", args))
-            {
-                UseShellExecute = !logInfo,
-                RedirectStandardOutput = logInfo,
-                WorkingDirectory = workingDir ?? Path.GetDirectoryName(filePath)
-            };
+        if (logInfo)
+            Logger.Log(LogLevel.Info, $"Starting process {p.StartInfo.FileName} with arguments: {p.StartInfo.Arguments}");
+
+        p.Start();
+
+        if (waitForExit)
+        {
+            p.WaitForExit();
 
             if (logInfo)
-                Logger.Log(LogLevel.Info, $"Starting process {p.StartInfo.FileName} with arguments: {p.StartInfo.Arguments}");
-
-            p.Start();
-
-            if (waitForExit)
-            {
-                p.WaitForExit();
-
-                if (logInfo)
-                    Logger.Log(LogLevel.Info, $"Process output: {p.StandardOutput.ReadToEnd()}");
-            }
+                Logger.Log(LogLevel.Info, $"Process output: {p.StandardOutput.ReadToEnd()}");
         }
     }
 }

@@ -4,38 +4,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace RayCarrot.Ray1Editor
+namespace RayCarrot.Ray1Editor;
+
+public class EditorUpdateData
 {
-    public class EditorUpdateData
+    private Keys[] PressedKeys { get; set; }
+    private Dictionary<Keys, bool> PreviousPressedKeys { get; } = new Dictionary<Keys, bool>();
+
+    public float DeltaTime { get; set; }
+    public MouseState Mouse { get; set; }
+    public Vector2 MousePosition { get; set; }
+    public KeyboardState Keyboard { get; set; }
+    public StringBuilder DebugText { get; } = new StringBuilder();
+
+    public void Update()
     {
-        private Keys[] PressedKeys { get; set; }
-        private Dictionary<Keys, bool> PreviousPressedKeys { get; } = new Dictionary<Keys, bool>();
+        PressedKeys = Keyboard.GetPressedKeys();
+    }
 
-        public float DeltaTime { get; set; }
-        public MouseState Mouse { get; set; }
-        public Vector2 MousePosition { get; set; }
-        public KeyboardState Keyboard { get; set; }
-        public StringBuilder DebugText { get; } = new StringBuilder();
+    public bool IsKeyDown(Keys key, bool singleInput = true)
+    {
+        var isDown = PressedKeys.Contains(key);
 
-        public void Update()
+        if (!isDown)
         {
-            PressedKeys = Keyboard.GetPressedKeys();
+            PreviousPressedKeys[key] = false;
+            return false;
         }
 
-        public bool IsKeyDown(Keys key, bool singleInput = true)
-        {
-            var isDown = PressedKeys.Contains(key);
+        if (PreviousPressedKeys.ContainsKey(key) && PreviousPressedKeys[key] && singleInput)
+            return false;
 
-            if (!isDown)
-            {
-                PreviousPressedKeys[key] = false;
-                return false;
-            }
-
-            if (PreviousPressedKeys.ContainsKey(key) && PreviousPressedKeys[key] && singleInput)
-                return false;
-
-            return PreviousPressedKeys[key] = true;
-        }
+        return PreviousPressedKeys[key] = true;
     }
 }

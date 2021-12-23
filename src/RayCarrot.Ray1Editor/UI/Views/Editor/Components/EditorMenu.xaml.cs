@@ -2,61 +2,60 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace RayCarrot.Ray1Editor
+namespace RayCarrot.Ray1Editor;
+
+/// <summary>
+/// Interaction logic for EditorMenu.xaml
+/// </summary>
+public partial class EditorMenu : Menu
 {
-    /// <summary>
-    /// Interaction logic for EditorMenu.xaml
-    /// </summary>
-    public partial class EditorMenu : Menu
+    public EditorMenu()
     {
-        public EditorMenu()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        public EditorViewModel ViewModel
-        {
-            get => DataContext as EditorViewModel;
-            set => DataContext = value;
-        }
+    public EditorViewModel ViewModel
+    {
+        get => DataContext as EditorViewModel;
+        set => DataContext = value;
+    }
 
-        private void ShowControlsMenuItem_OnClick(object sender, RoutedEventArgs e)
+    private void ShowControlsMenuItem_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.DoAndPause(() =>
         {
-            ViewModel.DoAndPause(() =>
-            {
-                var win = new EditorControlsWindow();
-                win.ShowDialog();
-            });
-        }
+            var win = new EditorControlsWindow();
+            win.ShowDialog();
+        });
+    }
 
-        private void SettingsMenuItem_OnClick(object sender, RoutedEventArgs e)
+    private void SettingsMenuItem_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.DoAndPause(() =>
         {
-            ViewModel.DoAndPause(() =>
-            {
-                var win = new SettingsWindow();
-                win.ShowDialog();
-            });
+            var win = new SettingsWindow();
+            win.ShowDialog();
+        });
 
-            // Update colors
-            ViewModel.SceneVM.Colors = EditorColorProfileViewModel.GetViewModels.FirstOrDefault(x => x.ID == R1EServices.App.UserData.Theme_EditorColors)?.GetColorsFunc() ?? EditorColors.Colors_LightBlue;
-        }
+        // Update colors
+        ViewModel.SceneVM.Colors = EditorColorProfileViewModel.GetViewModels.FirstOrDefault(x => x.ID == R1EServices.App.UserData.Theme_EditorColors)?.GetColorsFunc() ?? EditorColors.Colors_LightBlue;
+    }
 
-        private void AboutMenuItem_OnClick(object sender, RoutedEventArgs e)
+    private void AboutMenuItem_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.DoAndPause(() =>
         {
-            ViewModel.DoAndPause(() =>
-            {
-                var win = new AboutWindow();
-                win.ShowDialog();
-            });
-        }
+            var win = new AboutWindow();
+            win.ShowDialog();
+        });
+    }
 
-        private void ChangelogMenuItem_OnClick(object sender, RoutedEventArgs e)
+    private void ChangelogMenuItem_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.DoAndPause(() =>
         {
-            ViewModel.DoAndPause(() =>
-            {
-                var win = new ChangelogWindow();
-                win.ShowDialog();
-            });
-        }
+            var win = new ChangelogWindow();
+            win.ShowDialog();
+        });
     }
 }

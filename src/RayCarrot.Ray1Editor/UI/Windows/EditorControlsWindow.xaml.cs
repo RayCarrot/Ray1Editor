@@ -1,13 +1,12 @@
-﻿namespace RayCarrot.Ray1Editor
+﻿namespace RayCarrot.Ray1Editor;
+
+/// <summary>
+/// Interaction logic for EditorControlsWindow.xaml
+/// </summary>
+public partial class EditorControlsWindow : BaseWindow
 {
-    /// <summary>
-    /// Interaction logic for EditorControlsWindow.xaml
-    /// </summary>
-    public partial class EditorControlsWindow : BaseWindow
+    public EditorControlsWindow()
     {
-        public EditorControlsWindow()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }
