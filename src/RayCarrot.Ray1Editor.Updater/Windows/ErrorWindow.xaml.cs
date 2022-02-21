@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Windows;
 
-namespace RayCarrot.Ray1Editor.Updater
+namespace Ray1Editor.Updater
 {
     /// <summary>
     /// Interaction logic for ErrorWindow.xaml

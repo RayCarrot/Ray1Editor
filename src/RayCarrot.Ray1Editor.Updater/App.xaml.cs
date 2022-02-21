@@ -5,7 +5,7 @@ using System.Net;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace RayCarrot.Ray1Editor.Updater
+namespace Ray1Editor.Updater
 {
     /// <summary>
     /// Interaction logic for App.xaml

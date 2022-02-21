@@ -1,0 +1,208 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <!-- General -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <LangVersion>10</LangVersion>
+    <ApplicationIcon>UI\Img\AppIcon.ico</ApplicationIcon>
+    <Version>0.1.2.0</Version>
+    <Authors>RayCarrot</Authors>
+    <Product>Ray1Editor</Product>
+    <PackageProjectUrl>https://github.com/RayCarrot/Ray1Editor</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/RayCarrot/Ray1Editor</RepositoryUrl>
+  </PropertyGroup>
+
+  <!-- Debug -->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <!-- Release -->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <!-- Package references -->
+  <ItemGroup>
+    <!-- For the obj scripts text box formatting (line numbers and syntax highlight) -->
+    <PackageReference Include="AvalonEdit" Version="6.1.2.30" />
+
+    <!-- For item drag-drop -->
+    <PackageReference Include="gong-wpf-dragdrop" Version="2.4.1" />
+    
+    <!-- Theme -->
+    <PackageReference Include="MahApps.Metro" Version="2.4.7" />
+    <PackageReference Include="MahApps.Metro.IconPacks.Material" Version="4.8.0" />
+
+    <!-- Required for full folder selection dialog -->
+    <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
+
+    <!-- MonoGame for WPF -->
+    <PackageReference Include="MonoGame.Framework.WpfInterop" Version="1.9.1" />
+
+    <!-- For JSON serialization (used to store app user data) -->
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+
+    <!-- Logging -->
+    <PackageReference Include="NLog" Version="4.7.11" />
+
+    <!-- For automatically invoking PropertyChanged for modified properties -->
+    <PackageReference Include="PropertyChanged.Fody" Version="3.4.0" PrivateAssets="All" />
+
+    <!-- For more string encodings (.NET Core doesn't support the same encodings as .NET Framework by default) -->
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0" />
+  </ItemGroup>
+
+  <!-- Project references -->
+  <ItemGroup>
+    <!-- Binary serializer -->
+    <ProjectReference Include="..\..\submodules\BinarySerializer\src\BinarySerializer.csproj" />
+    <ProjectReference Include="..\..\submodules\BinarySerializer.Image\src\BinarySerializer.Image.csproj" />
+    <ProjectReference Include="..\..\submodules\BinarySerializer.PS1\src\BinarySerializer.PS1.csproj" />
+    <ProjectReference Include="..\..\submodules\BinarySerializer.Ray1\src\BinarySerializer.Ray1\BinarySerializer.Ray1.csproj" />
+  </ItemGroup>
+
+  <!-- Fody -->
+  <PropertyGroup>
+    <WeaverConfiguration>
+      <Weavers>
+        <PropertyChanged />
+      </Weavers>
+    </WeaverConfiguration>
+  </PropertyGroup>
+
+  <!-- WPF XAML -->
+  <ItemGroup>
+    <Page Update="UI\Resources\Resources.ToolTip.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Resources\Resources.Icons.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Resources\Resources.TextBlock.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Resources\Resources.Button.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Views\Editor\Components\EditorTab_Properties.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Views\Editor\Components\EditorTab_Layers.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Views\Editor\Components\EditorTab_General.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Views\Editor\Components\EditorTab_Objects.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Views\Editor\Components\EditorMenu.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Views\Editor\Components\EditorToolBar.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Views\LoadMap\Components\LoadMapMenu.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Views\LoadMap\LoadMapView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Windows\ChangelogWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Windows\AboutWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Windows\FirstLaunchWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Windows\SettingsWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Windows\EditorControlsWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Windows\EditPaletteWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Windows\EditGameWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Windows\MainWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
+  <!-- Embedded resources -->
+  <ItemGroup>
+    <Content Remove="Assets\App\VersionHistory.txt" />
+    <Content Remove="Assets\Collision\R1_TypeCollision.png" />
+    <Content Remove="Assets\Rayman1\Events\edu_des.json" />
+    <Content Remove="Assets\Rayman1\Events\edu_eta.json" />
+    <Content Remove="Assets\Rayman1\Events\Events.csv" />
+    <Content Remove="Assets\Rayman1\Events\r1_pc_des.json" />
+    <Content Remove="Assets\Rayman1\Events\r1_pc_eta.json" />
+    <Content Remove="Assets\Object\object.png" />
+    <Content Remove="Assets\Object\trigger.png" />
+    <Content Remove="Assets\Object\waypoint.png" />
+    <Content Remove="Assets\Deployable\RayCarrot.Ray1Editor.Updater.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\App\VersionHistory.txt" />
+    <EmbeddedResource Include="Assets\Collision\R1_TypeCollision.png" />
+    <EmbeddedResource Include="Assets\Rayman1\Events\edu_des.json" />
+    <EmbeddedResource Include="Assets\Rayman1\Events\edu_eta.json" />
+    <EmbeddedResource Include="Assets\Rayman1\Events\Events.csv" />
+    <EmbeddedResource Include="Assets\Rayman1\Events\r1_pc_des.json" />
+    <EmbeddedResource Include="Assets\Rayman1\Events\r1_pc_eta.json" />
+    <EmbeddedResource Include="Assets\Rayman1\Events\r1_ps1_us_des.json" />
+    <EmbeddedResource Include="Assets\Rayman1\Events\r1_ps1_us_eta.json" />
+    <EmbeddedResource Include="Assets\Object\object.png" />
+    <EmbeddedResource Include="Assets\Object\trigger.png" />
+    <EmbeddedResource Include="Assets\Object\waypoint.png" />
+    <EmbeddedResource Include="Assets\Deployable\RayCarrot.Ray1Editor.Updater.exe" />
+  </ItemGroup>
+
+  <!-- Resources -->
+  <ItemGroup>
+    <None Remove="UI\Img\AppIcon.ico" />
+    <None Remove="UI\Img\Error.png" />
+    <None Remove="UI\Img\Information.png" />
+    <None Remove="UI\Img\Question.png" />
+    <None Remove="UI\Img\Success.png" />
+    <None Remove="UI\Img\Warning.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="UI\Img\AppIcon.ico" />
+    <Resource Include="UI\Img\Error.png" />
+    <Resource Include="UI\Img\Information.png" />
+    <Resource Include="UI\Img\Question.png" />
+    <Resource Include="UI\Img\Success.png" />
+    <Resource Include="UI\Img\Warning.png" />
+  </ItemGroup>
+
+</Project>

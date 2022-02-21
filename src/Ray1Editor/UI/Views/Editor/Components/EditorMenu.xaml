@@ -1,0 +1,115 @@
+﻿<Menu x:Class="Ray1Editor.EditorMenu"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:Ray1Editor"
+      xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+      mc:Ignorable="d"
+      d:DataContext="{d:DesignInstance local:EditorViewModel}">
+    <Menu.Style>
+        <Style TargetType="{x:Type Menu}" BasedOn="{StaticResource {x:Type Menu}}" />
+    </Menu.Style>
+
+    <!-- File -->
+
+    <MenuItem Header="File">
+        <MenuItem Header="Load"
+                  Icon="{iconPacks:Material OpenInApp}"
+                  Command="{Binding Path=LoadOtherMapCommand, Mode=OneTime}" />
+        <MenuItem Header="Save"
+                  Icon="{iconPacks:Material ContentSaveOutline}"
+                  InputGestureText="Ctrl+S"
+                  Command="{Binding Path=SaveCommand, Mode=OneTime}"
+                  IsEnabled="{Binding Path=IsEnabled}" />
+        <Separator />
+        <MenuItem Header="Exit"
+                  Icon="{iconPacks:Material CloseOutline}"
+                  InputGestureText="Alt+F4"
+                  Command="{Binding Source={x:Static local:R1EServices.App}, Path=CloseAppCommand, Mode=OneTime}" />
+    </MenuItem>
+
+    <!-- Edit -->
+
+    <MenuItem Header="Edit" IsEnabled="{Binding Path=IsEnabled}">
+        <MenuItem Header="Undo"
+                  Icon="{iconPacks:Material Undo}"
+                  InputGestureText="Ctrl+Z"
+                  IsEnabled="False" />
+        <MenuItem Header="Redo"
+                  Icon="{iconPacks:Material Redo}"
+                  InputGestureText="Ctrl+Y"
+                  IsEnabled="False" />
+    </MenuItem>
+
+    <!-- View -->
+
+    <MenuItem Header="View" IsEnabled="{Binding Path=IsEnabled}">
+        <MenuItem Header="Pause Editor Scene"
+                  IsCheckable="True"
+                  IsChecked="{Binding Path=IsPaused}" />
+        <MenuItem Header="Reset Position"
+                  Icon="{iconPacks:Material CameraControl}"
+                  Command="{Binding Path=ResetPositionCommand, Mode=OneTime}" />
+        <Separator />
+        <MenuItem Header="Animate Objects"
+                  IsCheckable="True"
+                  IsChecked="{Binding Path=SceneVM.AnimateObjects}"
+                  InputGestureText="P" />
+        <Separator />
+        <MenuItem Header="Show Object Offsets"
+                  IsCheckable="True"
+                  IsChecked="{Binding Path=ShowObjectOffsets}" 
+                  InputGestureText="X" />
+        <MenuItem Header="Show Object HitBoxes"
+                  IsCheckable="True"
+                  IsEnabled="False" />
+        <MenuItem Header="Show Links"
+                  IsCheckable="True"
+                  IsChecked="{Binding Path=ShowLinks}"
+                  IsEnabled="{Binding Path=Mode, Converter={local:InvertedEnumBooleanConverter}, ConverterParameter=Links}"
+                  InputGestureText="L" />
+    </MenuItem>
+
+    <!-- Tools -->
+
+    <MenuItem Header="Tools" IsEnabled="{Binding Path=IsEnabled}">
+        <MenuItem Header="Sprites"
+                  IsEnabled="False" />
+        <MenuItem Header="Animations"
+                  IsEnabled="False" />
+        <MenuItem Header="States"
+                  IsEnabled="False" />
+        <Separator Visibility="{Binding Path=GameActions, Converter={local:InvertedObjectNullToVisibilityConverter}}" />
+        <MenuItem Header="Actions" 
+                  Visibility="{Binding Path=GameActions, Converter={local:InvertedObjectNullToVisibilityConverter}}"
+                  ItemsSource="{Binding Path=GameActions}">
+            <MenuItem.ItemContainerStyle>
+                <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
+                    <Setter Property="Header" Value="{Binding Path=Header, Mode=OneTime}" />
+                    <Setter Property="Command" Value="{Binding Path=ActionCommand, Mode=OneTime}" />
+                </Style>
+            </MenuItem.ItemContainerStyle>
+        </MenuItem>
+        <Separator />
+        <MenuItem Header="Settings"
+                  Icon="{iconPacks:Material CogOutline}"
+                  Click="SettingsMenuItem_OnClick" />
+    </MenuItem>
+
+    <!-- Help -->
+
+    <MenuItem Header="Help">
+        <MenuItem Header="Show Controls"
+                  Click="ShowControlsMenuItem_OnClick"
+                  Icon="{iconPacks:Material KeyboardOutline}" />
+        <Separator />
+        <MenuItem Header="Version History"
+                  Icon="{iconPacks:Material TooltipTextOutline}"
+                  Click="ChangelogMenuItem_OnClick" />
+        <MenuItem Header="About Ray1Editor"
+                  Icon="{iconPacks:Material InformationOutline}"
+                  Click="AboutMenuItem_OnClick" />
+    </MenuItem>
+
+</Menu>

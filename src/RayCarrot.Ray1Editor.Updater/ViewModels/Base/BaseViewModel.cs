@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace RayCarrot.Ray1Editor.Updater
+namespace Ray1Editor.Updater
 {
     /// <summary>
     /// A base view model

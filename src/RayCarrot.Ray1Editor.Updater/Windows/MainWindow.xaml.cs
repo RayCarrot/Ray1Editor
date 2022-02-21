@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Windows;
 
-namespace RayCarrot.Ray1Editor.Updater
+namespace Ray1Editor.Updater
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

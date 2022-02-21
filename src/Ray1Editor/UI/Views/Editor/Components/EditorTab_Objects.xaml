@@ -1,0 +1,100 @@
+﻿<UserControl x:Class="Ray1Editor.EditorTab_Objects"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:Ray1Editor"
+             xmlns:dd="urn:gong-wpf-dragdrop"
+             mc:Ignorable="d"
+             d:Width="320"
+             d:DataContext="{x:Static local:DesignDataContexts.EditorViewModel}"
+             Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}">
+
+    <Grid Margin="5 10 5 5">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0 0 0 7">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="15" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <ComboBox SelectedIndex="{Binding Path=SelectedNewObjIndex}"
+                      ItemsSource="{Binding Path=AvailableObjects, Mode=OneTime}"/>
+
+            <Button Grid.Column="2" 
+                    Style="{StaticResource FlatButton}" 
+                    Command="{Binding Path=AddObjCommand, Mode=OneTime}"
+                    Width="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight}">
+                <iconPacks:PackIconMaterial Kind="Plus" Background="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            </Button>
+
+        </Grid>
+
+        <Grid Grid.Row="1" Margin="0 0 0 7">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0"
+                       VerticalAlignment="Center"
+                       Style="{StaticResource HeaderTextBlock}"
+                       Text="Objects " />
+
+            <TextBlock Grid.Column="1"
+                       VerticalAlignment="Center"
+                       Style="{StaticResource HeaderTextBlock}"
+                       Text="{Binding Path=ObjCountInfo}" />
+
+            <ToggleButton Grid.Column="2"
+                          HorizontalAlignment="Right"
+                          Style="{StaticResource MahApps.Styles.ToggleButton.Circle}"
+                          IsChecked="{Binding Path=ShowObjects}"
+                          ToolTip="Show objects (O)"
+                          Width="28" Height="28">
+                <iconPacks:PackIconMaterial Kind="EyeOutline" Width="14" Height="14" />
+            </ToggleButton>
+
+        </Grid>
+
+        <ListBox x:Name="ObjList"
+                 Grid.Row="2"
+                 dd:DragDrop.IsDragSource="True"
+                 dd:DragDrop.IsDropTarget="True"
+                 ItemsSource="{Binding Path=GameObjects, Mode=OneTime}"
+                 SelectedItem="{Binding Path=SelectedGameObjectItem}">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Vertical" />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="{Binding Path=Header, Mode=OneTime}" />
+
+                        <TextBlock Grid.Column="1" Text="{Binding Path=Tags, Mode=OneTime}" FontStyle="Italic" Margin="0 0 7 0" />
+
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+    </Grid>
+
+</UserControl>

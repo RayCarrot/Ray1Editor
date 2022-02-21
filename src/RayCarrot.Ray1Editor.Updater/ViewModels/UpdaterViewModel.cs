@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace RayCarrot.Ray1Editor.Updater
+namespace Ray1Editor.Updater
 {
     /// <summary>
     /// View model for the updater

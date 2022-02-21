@@ -1,0 +1,46 @@
+﻿<Menu x:Class="Ray1Editor.LoadMapMenu"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:Ray1Editor"
+      xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+      mc:Ignorable="d"
+      d:DataContext="{d:DesignInstance local:LoadMapViewModel}">
+    <Menu.Style>
+        <Style TargetType="{x:Type Menu}" BasedOn="{StaticResource {x:Type Menu}}" />
+    </Menu.Style>
+
+    <!-- File -->
+
+    <MenuItem Header="File">
+        <MenuItem Header="Exit"
+                  Icon="{iconPacks:Material CloseOutline}"
+                  InputGestureText="Alt+F4"
+                  Command="{Binding Source={x:Static local:R1EServices.App}, Path=CloseAppCommand, Mode=OneTime}" />
+    </MenuItem>
+
+    <!-- Tools -->
+    
+    <MenuItem Header="Tools">
+        <MenuItem Header="Settings"
+                  Icon="{iconPacks:Material CogOutline}"
+                  Click="SettingsMenuItem_OnClick" />
+    </MenuItem>
+
+    <!-- Help -->
+
+    <MenuItem Header="Help">
+        <MenuItem Header="Check for Updates"
+                  Icon="{iconPacks:Material Update}"
+                  Click="CheckForUpdatesMenuItem_OnClick"/>
+        <MenuItem Header="Version History"
+                  Icon="{iconPacks:Material TooltipTextOutline}"
+                  Click="ChangelogMenuItem_OnClick" />
+        <Separator />
+        <MenuItem Header="About Ray1Editor"
+                  Icon="{iconPacks:Material InformationOutline}"
+                  Click="AboutMenuItem_OnClick" />
+    </MenuItem>
+
+</Menu>

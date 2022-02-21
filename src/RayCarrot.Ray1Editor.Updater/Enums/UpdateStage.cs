@@ -1,4 +1,4 @@
-﻿namespace RayCarrot.Ray1Editor.Updater
+﻿namespace Ray1Editor.Updater
 {
     /// <summary>
     /// The current stage of the update
