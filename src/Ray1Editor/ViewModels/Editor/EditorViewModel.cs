@@ -16,7 +16,8 @@ namespace Ray1Editor
             CurrentGame = currentGame;
             CurrentGameManager = currentGameManager;
             CurrentGameSettings = currentGameSettings;
-            SceneVM = new EditorSceneViewModel(EditorColorProfileViewModel.GetViewModels.FirstOrDefault(x => x.ID == App.UserData.Theme_EditorColors)?.GetColorsFunc() ?? EditorColors.Colors_LightBlue);
+            SceneVM = new EditorSceneViewModel(EditorColorProfileViewModel.GetViewModels.FirstOrDefault(x => x.ID == 
+                App.UserData?.Theme_EditorColors)?.GetColorsFunc() ?? EditorColors.Colors_LightBlue);
             Palettes = new ObservableCollection<PaletteEditorViewModel>();
             LevelAttributeFields = new ObservableCollection<EditorFieldViewModel>();
             Layers = new ObservableCollection<LayerEditorViewModel>();
