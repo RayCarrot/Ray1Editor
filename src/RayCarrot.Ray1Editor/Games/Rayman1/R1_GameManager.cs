@@ -521,7 +521,7 @@ public abstract class R1_GameManager : GameManager
     public void InitRandom(R1_GameData data)
     {
         data.RandomIndex = (byte)data.Random.Next(0, 256);
-        data.RandomArray = data.Context.Deserializer.SerializeFromBytes<Array<ushort>>(RandomArrayData, "RandomArrayData", onPreSerialize: x => x.Length = 256, name: nameof(data.RandomArray)).Value;
+        data.RandomArray = data.Context.Deserializer.SerializeFromBytes<Array<ushort>>(RandomArrayData, "RandomArrayData", onPreSerialize: x => x.Pre_Length = 256, name: nameof(data.RandomArray)).Value;
     }
 
     public void LoadRayman(R1_GameData data)

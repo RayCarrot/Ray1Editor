@@ -49,7 +49,7 @@ public class R1_CollisionMapLayer : CollisionMapLayer<MapTile>
         HorizontalFlip = destTile.HorizontalFlip,
         VerticalFlip = destTile.VerticalFlip,
         PC_Byte_03 = destTile.PC_Byte_03,
-        TransparencyMode = destTile.TransparencyMode,
+        PC_RuntimeTransparencyMode = destTile.PC_RuntimeTransparencyMode,
         PC_Byte_05 = destTile.PC_Byte_05,
         PaletteIndex = destTile.PaletteIndex,
         Priority = destTile.Priority

@@ -105,7 +105,7 @@ namespace RayCarrot.Ray1Editor
             var data = new R1_PS1_GameData(context, textureManager);
 
             // Read the exe file
-            var exe = FileFactory.Read<PS1_Executable>(Path_ExeFile, context, onPreSerialize: (_, o) => o.Pre_PS1_Config = exeConfig);
+            var exe = FileFactory.Read<PS1_Executable>(context, Path_ExeFile, onPreSerialize: (_, o) => o.Pre_PS1_Config = exeConfig);
 
             var worldIndex = (int)ray1Settings.World - 1;
             var lvlIndex = ray1Settings.Level - 1;
@@ -117,15 +117,15 @@ namespace RayCarrot.Ray1Editor
 
             // Add and read allfix
             LoadFile(context, fileEntryFix);
-            var fix = FileFactory.Read<PS1_AllfixFile>(fileEntryFix.ProcessedFilePath, context);
+            var fix = FileFactory.Read<PS1_AllfixFile>(context, fileEntryFix.ProcessedFilePath);
 
             // Add and read world
             LoadFile(context, fileEntryworld);
-            var wld = FileFactory.Read<PS1_WorldFile>(fileEntryworld.ProcessedFilePath, context);
+            var wld = FileFactory.Read<PS1_WorldFile>(context, fileEntryworld.ProcessedFilePath);
 
             // Add and read level
             LoadFile(context, fileEntrylevel);
-            var levFile = FileFactory.Read<SerializableEditorFile<PS1_LevFile>>(fileEntrylevel.ProcessedFilePath, context);
+            var levFile = FileFactory.Read<SerializableEditorFile<PS1_LevFile>>(context, fileEntrylevel.ProcessedFilePath);
             var lev = levFile.FileData;
 
             // Initialize the random generation
@@ -217,15 +217,15 @@ namespace RayCarrot.Ray1Editor
             Logger.Log(LogLevel.Info, "Level data has been relocated. Writing files.");
 
             // Save files
-            FileFactory.Write<PS1_AllfixFile>(fileEntryFix.ProcessedFilePath, context);
-            FileFactory.Write<PS1_WorldFile>(fileEntryworld.ProcessedFilePath, context);
-            FileFactory.Write<SerializableEditorFile<PS1_LevFile>>(fileEntrylevel.ProcessedFilePath, context);
+            FileFactory.Write<PS1_AllfixFile>(context, fileEntryFix.ProcessedFilePath);
+            FileFactory.Write<PS1_WorldFile>(context, fileEntryworld.ProcessedFilePath);
+            FileFactory.Write<SerializableEditorFile<PS1_LevFile>>(context, fileEntrylevel.ProcessedFilePath);
 
             // Update the file table
             UpdateFileTable(context, exe, userData.PS1_mkpsxisoPath, Path_DiscXMLFile);
 
             // Save the exe
-            FileFactory.Write<PS1_Executable>(Path_ExeFile, context);
+            FileFactory.Write<PS1_Executable>(context, Path_ExeFile);
 
             // Create an ISO with the modified files
             CreateISO(context, userData.PS1_mkpsxisoPath, Path_DiscXMLFile);
@@ -565,7 +565,7 @@ namespace RayCarrot.Ray1Editor
                         LoadFile(context, fndFileEntry);
 
                         // Read the file
-                        var fnd = FileFactory.Read<PS1_BackgroundVignetteFile>(fndFileEntry.ProcessedFilePath, context);
+                        var fnd = FileFactory.Read<PS1_BackgroundVignetteFile>(context, fndFileEntry.ProcessedFilePath);
                         var img = fnd.ImageBlock;
 
                         var texture = LoadFond(img, settings, textureManager);

@@ -38,7 +38,7 @@ public class R1_TileMapLayer : TileMapLayer<MapTile>
                 };
 
                 if (Data is R1_PC_GameData pcData)
-                    tile.TransparencyMode = pcData.PC_TileSetTransparencyModes[y]; // PC version is 1-dimensional
+                    tile.PC_RuntimeTransparencyMode = pcData.PC_TileSetTransparencyModes[y]; // PC version is 1-dimensional
 
                 tiles[index] = tile;
             }
@@ -58,7 +58,7 @@ public class R1_TileMapLayer : TileMapLayer<MapTile>
         HorizontalFlip = srcTile.HorizontalFlip,
         VerticalFlip = srcTile.VerticalFlip,
         PC_Byte_03 = srcTile.PC_Byte_03,
-        TransparencyMode = srcTile.TransparencyMode,
+        PC_RuntimeTransparencyMode = srcTile.PC_RuntimeTransparencyMode,
         PC_Byte_05 = srcTile.PC_Byte_05,
         PaletteIndex = srcTile.PaletteIndex,
         Priority = srcTile.Priority

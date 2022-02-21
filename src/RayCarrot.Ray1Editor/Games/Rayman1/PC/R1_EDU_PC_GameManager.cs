@@ -267,7 +267,7 @@ public class R1_EDU_PC_GameManager : R1_PC_GameManager
         if (context.MemoryMap.Files.All(x => x.FilePath != archivePath))
             return null;
 
-        return FileFactory.Read<PC_FileArchive>(archivePath, context).ReadFile<T>(context, fileName);
+        return FileFactory.Read<PC_FileArchive>(context, archivePath).ReadFile<T>(context, fileName);
     }
 
     #endregion

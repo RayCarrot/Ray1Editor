@@ -49,9 +49,9 @@ namespace RayCarrot.Ray1Editor
             var data = new R1_PC_GameData(context, textureManager);
 
             // Read the files
-            var fix = FileFactory.Read<PC_AllfixFile>(Path_FixFile, context);
-            var wld = FileFactory.Read<PC_WorldFile>(Path_WorldFile(ray1Settings), context);
-            var lev = FileFactory.Read<SerializableEditorFile<PC_LevFile>>(Path_LevelFile(ray1Settings), context).FileData;
+            var fix = FileFactory.Read<PC_AllfixFile>(context, Path_FixFile);
+            var wld = FileFactory.Read<PC_WorldFile>(context, Path_WorldFile(ray1Settings));
+            var lev = FileFactory.Read<SerializableEditorFile<PC_LevFile>>(context, Path_LevelFile(ray1Settings)).FileData;
 
             // Initialize the random generation
             InitRandom(data);
@@ -152,7 +152,7 @@ namespace RayCarrot.Ray1Editor
             SaveFond(data, lvlData);
 
             // Save the file
-            FileFactory.Write<SerializableEditorFile<PC_LevFile>>(Path_LevelFile(ray1Settings), context);
+            FileFactory.Write<SerializableEditorFile<PC_LevFile>>(context, Path_LevelFile(ray1Settings));
         }
 
         #endregion
@@ -405,7 +405,7 @@ namespace RayCarrot.Ray1Editor
             if (context.MemoryMap.Files.All(x => x.FilePath != archivePath))
                 return null;
 
-            return FileFactory.Read<PC_FileArchive>(archivePath, context).ReadFile<T>(context, fileIndex);
+            return FileFactory.Read<PC_FileArchive>(context, archivePath).ReadFile<T>(context, fileIndex);
         }
 
         #endregion
