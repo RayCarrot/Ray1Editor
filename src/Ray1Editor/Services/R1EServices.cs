@@ -10,13 +10,11 @@
             // IDEA: Move to dependency injection?
             App = new AppViewModel();
             UI = new AppUIManager();
-            Updater = new R1EUpdateManager();
             File = new FileManager();
         }
 
         public static AppViewModel App { get; }
         public static AppUIManager UI { get; }
-        public static UpdaterManager Updater { get; }
         public static FileManager File { get; }
     }
 }

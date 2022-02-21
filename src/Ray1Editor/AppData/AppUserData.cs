@@ -28,8 +28,6 @@ namespace Ray1Editor
             Theme_Sync = false;
             Theme_EditorColors = "LightBlue";
             PS1_mkpsxisoPath = null;
-            Update_CheckOnLaunch = true;
-            Update_GetBeta = false;
         }
 
         /// <summary>
@@ -88,8 +86,5 @@ namespace Ray1Editor
         public string Theme_EditorColors { get; set; }
 
         public string PS1_mkpsxisoPath { get; set; }
-
-        public bool Update_CheckOnLaunch { get; set; }
-        public bool Update_GetBeta { get; set; }
     }
 }

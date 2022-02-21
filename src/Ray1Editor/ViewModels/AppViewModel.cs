@@ -1,15 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Windows;
+using System.Windows.Input;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
-using System;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
 
 namespace Ray1Editor;
 
@@ -24,7 +23,7 @@ public class AppViewModel : BaseViewModel
         Path_LogFile = Path.Combine(Path_AppDataDir, $"Log.txt");
         Path_ArchivedLogFile = Path.Combine(Path_AppDataDir, $"Log_archived.txt");
         Path_SerializerLogFile = Path.Combine(Path_AppDataDir, $"SerializerLog.txt");
-        Path_UpdaterFile = Path.Combine(Path_AppDataDir, $"Updater.exe");
+        LegacyPath_UpdaterFile = Path.Combine(Path_AppDataDir, $"Updater.exe");
 
         CloseAppCommand = new RelayCommand(() => App.Current.Shutdown());
     }
@@ -38,14 +37,13 @@ public class AppViewModel : BaseViewModel
     public string Path_LogFile { get; }
     public string Path_ArchivedLogFile { get; }
     public string Path_SerializerLogFile { get; }
-    public string Path_UpdaterFile { get; }
+    public string LegacyPath_UpdaterFile { get; } // Need to keep this for deleting the updater if updated from older version
 
     #endregion
 
     #region URLs
 
     public string Url_Ray1EditorHome => "https://raym.app/ray1editor";
-    public string Url_Ray1EditorUpdateManifest => "https://raym.app/ray1editor/update_manifest.json";
     public string Url_Ray1EditorGitHub => "https://github.com/RayCarrot/Ray1Editor";
     public string Url_Ray1Map => "https://raym.app/maps_r1";
 
@@ -60,12 +58,6 @@ public class AppViewModel : BaseViewModel
     #region Commands
 
     public ICommand CloseAppCommand { get; }
-
-    #endregion
-
-    #region Private Properties
-
-    private bool CheckingForUpdates { get; set; }
 
     #endregion
 
@@ -258,66 +250,6 @@ public class AppViewModel : BaseViewModel
     public void PostUpdate(Version prevVersion)
     {
         HasUpdated = true;
-    }
-
-    public async Task CheckForUpdatesAsync(bool isManualSearch, bool forceUpdate)
-    {
-        if (CheckingForUpdates)
-            return;
-
-        try
-        {
-            CheckingForUpdates = true;
-
-            // Check for updates
-            var result = await R1EServices.Updater.CheckAsync(forceUpdate && isManualSearch, UserData.Update_GetBeta || IsBeta);
-
-            // Check if there is an error
-            if (result.ErrorMessage != null)
-            {
-                Logger.Log(LogLevel.Error, result.Exception, "Checking for updates");
-
-                R1EServices.UI.DisplayMessage($"The update check failed. Error message: {result.ErrorMessage}{Environment.NewLine}To manually update the app, go to {Url_Ray1EditorHome} and download the latest version.", "Error checking for updates", DialogMessageType.Error);
-
-                return;
-            }
-
-            // Check if no new updates were found
-            if (!result.IsNewUpdateAvailable)
-            {
-                if (isManualSearch)
-                    R1EServices.UI.DisplayMessage($"The latest version {CurrentAppVersion} is already installed", "No new version found", DialogMessageType.Information); 
-
-                return;
-            }
-
-            try
-            {
-                var updateMessage = !result.IsBetaUpdate
-                    ? $"A new update is available to download. Download now?{Environment.NewLine}{Environment.NewLine}" +
-                      $"News: {Environment.NewLine}{result.DisplayNews}"
-                    : $"A new beta update is available to download. Download now?{Environment.NewLine}{Environment.NewLine}" +
-                      $"News: {Environment.NewLine}{result.DisplayNews}";
-
-                if (R1EServices.UI.DisplayMessage(updateMessage, "New update available", DialogMessageType.Information, true))
-                {
-                    // Launch the updater
-                    var succeeded = R1EServices.Updater.Update(result, false);
-
-                    if (!succeeded)
-                        Logger.Log(LogLevel.Warn, "The updater failed to update the program");
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(LogLevel.Error, ex, "Updating Ray1Editor");
-                R1EServices.UI.DisplayMessage($"AN error occurred while updating. Error message: {ex.Message}", "Error updating", DialogMessageType.Error);
-            }
-        }
-        finally
-        {
-            CheckingForUpdates = false;
-        }
     }
 
     public void Unload()

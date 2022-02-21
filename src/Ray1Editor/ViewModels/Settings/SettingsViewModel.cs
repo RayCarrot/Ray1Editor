@@ -81,18 +81,6 @@ public class SettingsViewModel : BaseViewModel
         set => Data.PS1_mkpsxisoPath = value;
     }
 
-    public bool Update_CheckOnLaunch
-    {
-        get => Data.Update_CheckOnLaunch;
-        set => Data.Update_CheckOnLaunch = value;
-    }
-
-    public bool Update_GetBeta
-    {
-        get => Data.Update_GetBeta;
-        set => Data.Update_GetBeta = value;
-    }
-
     public EditorColorProfileViewModel SelectedColorProfile
     {
         get => EditorColorProfiles.FirstOrDefault(x => x.ID == Data.Theme_EditorColors) ?? EditorColorProfiles.First();

@@ -31,9 +31,6 @@
     <!-- Help -->
 
     <MenuItem Header="Help">
-        <MenuItem Header="Check for Updates"
-                  Icon="{iconPacks:Material Update}"
-                  Click="CheckForUpdatesMenuItem_OnClick"/>
         <MenuItem Header="Version History"
                   Icon="{iconPacks:Material TooltipTextOutline}"
                   Click="ChangelogMenuItem_OnClick" />

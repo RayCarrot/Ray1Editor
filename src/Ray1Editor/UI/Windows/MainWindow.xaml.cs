@@ -42,12 +42,12 @@ public partial class MainWindow : BaseWindow
             win.ShowDialog();
         }
 
-        if (File.Exists(app.Path_UpdaterFile))
+        if (File.Exists(app.LegacyPath_UpdaterFile))
         {
             int retryTime = 0;
 
             // Wait until we can write to the file (i.e. it closing after an update)
-            while (!R1EServices.File.CheckFileWriteAccess(app.Path_UpdaterFile))
+            while (!R1EServices.File.CheckFileWriteAccess(app.LegacyPath_UpdaterFile))
             {
                 retryTime++;
 
@@ -76,7 +76,7 @@ public partial class MainWindow : BaseWindow
             try
             {
                 // Remove the updater
-                File.Delete(app.Path_UpdaterFile);
+                File.Delete(app.LegacyPath_UpdaterFile);
 
                 Logger.Log(LogLevel.Info, "The updater has been removed");
             }
@@ -86,9 +86,6 @@ public partial class MainWindow : BaseWindow
                 R1EServices.UI.DisplayMessage($"The updater could not be deleted. Error message: {ex.Message}", "Error deleting updater", DialogMessageType.Error);
             }
         }
-
-        if (app.UserData.Update_CheckOnLaunch)
-            await R1EServices.App.CheckForUpdatesAsync(false, false);
     }
 
     private void MainWindow_OnClosing(object sender, CancelEventArgs e)
