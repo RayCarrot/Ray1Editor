@@ -1,4 +1,10 @@
-﻿-----   Version 0.1.2.0 (beta) - December 23, 2021   -----
+﻿-----   Version 0.2.0.0 (beta) - February 22, 2022   -----
+• Add option to edit object commands
+• Remove the updater and update checking (check the GitHub releases for future updates)
+• Update libraries
+
+
+-----   Version 0.1.2.0 (beta) - December 23, 2021   -----
 • Update libraries, fixing a bug where changing the size of a map in the Rayman PC versions would corrupt the level
 
 
