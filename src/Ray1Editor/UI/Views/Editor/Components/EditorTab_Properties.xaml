@@ -11,7 +11,8 @@
              d:DataContext="{x:Static local:DesignDataContexts.EditorViewModel}"
              Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}">
 
-    <ScrollViewer Padding="5 10 5 5"
+    <ScrollViewer x:Name="PropertiesScrollViewer"
+                  Padding="5 10 5 5"
                   VerticalScrollBarVisibility="Auto">
 
         <Grid>
@@ -109,8 +110,10 @@
                                        SyntaxHighlighting="C++"
                                        HorizontalScrollBarVisibility="Disabled"
                                        VerticalScrollBarVisibility="Disabled"
+                                       ScrollViewer.CanContentScroll="False"
                                        IsReadOnly="True"
-                                       Margin="0 0 0 7" />
+                                       Margin="0 0 0 7"
+                                       PreviewMouseWheel="TextEditor_OnPreviewMouseWheel" />
 
                 </StackPanel>
 

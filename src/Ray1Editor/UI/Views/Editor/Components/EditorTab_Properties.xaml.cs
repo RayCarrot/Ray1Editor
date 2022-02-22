@@ -1,6 +1,7 @@
 ﻿using ICSharpCode.AvalonEdit.Highlighting;
 using System.ComponentModel;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace Ray1Editor;
@@ -82,5 +83,19 @@ public partial class EditorTab_Properties : UserControl
     {
         get => DataContext as EditorViewModel;
         set => DataContext = value;
+    }
+
+    private void TextEditor_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
+    {
+        // Redirect the mouse wheel movement to allow scrolling
+
+        var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
+        {
+            RoutedEvent = MouseWheelEvent,
+            Source = e.Source
+        };
+
+        PropertiesScrollViewer?.RaiseEvent(eventArg);
+        e.Handled = true;
     }
 }
