@@ -88,6 +88,6 @@ public partial class App : Application
             ThemeManager.Current.ChangeTheme(this, $"{(data.Theme_Dark ? "Dark" : "Light")}.{color}");
         }
 
-        Logger.Log(LogLevel.Trace, "Updated the theme");
+        Logger.Trace("Updated the theme");
     }
 }

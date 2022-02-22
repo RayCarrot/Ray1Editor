@@ -51,7 +51,7 @@ public class EditorDropDownFieldViewModel : EditorFieldViewModel
             Items.Clear();
             Items.AddRange(GetItemsAction());
 
-            Logger.Log(LogLevel.Debug, "Recreated drop-down items for drop-down with header {0}", Header);
+            Logger.Debug("Recreated drop-down items for drop-down with header {0}", Header);
         }
 
         _selectedItem = GetValueAction();

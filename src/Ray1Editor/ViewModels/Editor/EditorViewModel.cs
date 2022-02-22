@@ -388,7 +388,7 @@ namespace Ray1Editor
             }
             catch (Exception ex)
             {
-                Logger.Log(LogLevel.Error, ex, "Saving");
+                Logger.Error(ex, "Saving");
                 R1EServices.UI.DisplayMessage($"An error occurred while saving. Error message: {ex.Message}", "Error saving", DialogMessageType.Error);
             }
         }

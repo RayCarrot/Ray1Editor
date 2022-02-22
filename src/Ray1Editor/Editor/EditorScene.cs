@@ -82,7 +82,7 @@ public class EditorScene : WpfGame
                 l.OnModeChanged(_mode, value);
 
             VM.OnModeChanged(_mode, value);
-            Logger.Log(LogLevel.Info, "Changed editor mode from {0} to {1}", _mode, value);
+            Logger.Info("Changed editor mode from {0} to {1}", _mode, value);
 
             _mode = value;
         }
@@ -111,7 +111,7 @@ public class EditorScene : WpfGame
 
             _selectedObject = value;
             VM.OnSelectedObjectChanged(_selectedObject);
-            Logger.Log(LogLevel.Trace, "Selected object {0}", SelectedObject?.DisplayName ?? "null");
+            Logger.Trace("Selected object {0}", SelectedObject?.DisplayName ?? "null");
         }
     }
     public bool IsDraggingObject { get; protected set; }
@@ -141,8 +141,8 @@ public class EditorScene : WpfGame
 
     protected override void Initialize()
     {
-        Logger.Log(LogLevel.Info, "Initializing the editor scene");
-        Logger.Log(LogLevel.Trace, "Editor scene is initializing with manager {0} and a context with the base path {1}", GameManager, Context.BasePath);
+        Logger.Info("Initializing the editor scene");
+        Logger.Trace("Editor scene is initializing with manager {0} and a context with the base path {1}", GameManager, Context.BasePath);
 
         // Create the graphics service
         _ = new WpfGraphicsDeviceService(this);
@@ -162,7 +162,7 @@ public class EditorScene : WpfGame
         // Notify the view model
         VM.OnEditorLoaded();
 
-        Logger.Log(LogLevel.Info, "Initialized the editor scene");
+        Logger.Info("Initialized the editor scene");
 
         if (Stage != EditorStage.Error)
             Stage = EditorStage.Editing;
@@ -172,13 +172,13 @@ public class EditorScene : WpfGame
     {
         try
         {
-            Logger.Log(LogLevel.Info, "Loading the editor content");
+            Logger.Info("Loading the editor content");
 
             // Load the game data
             using (Context)
                 GameData = GameManager.Load(Context, GameSettings, new TextureManager(GraphicsDevice));
 
-            Logger.Log(LogLevel.Trace, "Loading the editor elements");
+            Logger.Trace("Loading the editor elements");
 
             // Load elements
             GameData.LoadElements(this);
@@ -190,18 +190,18 @@ public class EditorScene : WpfGame
             // Post-load
             GameManager.PostLoad(GameData);
 
-            Logger.Log(LogLevel.Trace, "Loading the editor objects");
+            Logger.Trace("Loading the editor objects");
 
             // Load objects
             foreach (var obj in GameData.Objects)
                 obj.Load();
 
-            Logger.Log(LogLevel.Trace, "Initializing the object links");
+            Logger.Trace("Initializing the object links");
 
             // Initialize object links
             InitializeObjLinks();
 
-            Logger.Log(LogLevel.Trace, "Calculating the map size");
+            Logger.Trace("Calculating the map size");
 
             // Calculate the map size
             ViewModel.UpdateMapSize(GameData);
@@ -211,7 +211,7 @@ public class EditorScene : WpfGame
         }
         catch (Exception ex)
         {
-            Logger.Log(LogLevel.Error, ex, "Loading editor");
+            Logger.Error(ex, "Loading editor");
 
             R1EServices.UI.DisplayMessage($"An error occurred loading the editor. Error message: {ex.Message}", "Error loading editor", DialogMessageType.Error);
 
@@ -244,7 +244,7 @@ public class EditorScene : WpfGame
 
     protected override void UnloadContent()
     {
-        Logger.Log(LogLevel.Info, "Unloading the editor scene");
+        Logger.Info("Unloading the editor scene");
 
         base.UnloadContent();
 
@@ -252,7 +252,7 @@ public class EditorScene : WpfGame
         GameData?.Dispose();
         Context?.Dispose();
 
-        Logger.Log(LogLevel.Info, "Unloaded the editor scene");
+        Logger.Info("Unloaded the editor scene");
 
         Stage = EditorStage.Closed;
     }
@@ -709,7 +709,7 @@ public class EditorScene : WpfGame
     {
         Cam.TargetPosition = obj.Position.ToVector2();
         Cam.TargetZoom = 2;
-        Logger.Log(LogLevel.Trace, "Targeting object {0} at {1}", obj.DisplayName, obj.Position);
+        Logger.Trace("Targeting object {0} at {1}", obj.DisplayName, obj.Position);
     }
 
     public void DuplicateObject(GameObject obj)
@@ -745,7 +745,7 @@ public class EditorScene : WpfGame
 
         VM.OnObjectRemoved(obj);
 
-        Logger.Log(LogLevel.Trace, "Removed object {0}", obj.DisplayName);
+        Logger.Trace("Removed object {0}", obj.DisplayName);
     }
 
     public void AddObject(int index)
@@ -767,7 +767,7 @@ public class EditorScene : WpfGame
 
     public void Save()
     {
-        Logger.Log(LogLevel.Info, "Saving the editor changes");
+        Logger.Info("Saving the editor changes");
 
         // Save objects
         foreach (var obj in GameData.Objects)
@@ -776,7 +776,7 @@ public class EditorScene : WpfGame
         using (Context)
             GameManager.Save(Context, GameData);
 
-        Logger.Log(LogLevel.Info, "Saved the editor changes");
+        Logger.Info("Saved the editor changes");
     }
 
     #endregion

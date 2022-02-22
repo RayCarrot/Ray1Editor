@@ -114,7 +114,7 @@ public class AppViewModel : BaseViewModel
         else
             Title += $" {CurrentAppVersion}";
 
-        Logger.Log(LogLevel.Trace, "Title set to {0}", Title);
+        Logger.Trace("Title set to {0}", Title);
     }
 
     /// <summary>
@@ -124,7 +124,7 @@ public class AppViewModel : BaseViewModel
     /// <param name="vm">The view model for the new view</param>
     public void ChangeView(AppView view, AppViewBaseViewModel vm)
     {
-        Logger.Log(LogLevel.Info, "Changing view from {0} to {1}", CurrentAppView, view);
+        Logger.Info("Changing view from {0} to {1}", CurrentAppView, view);
 
         // Dispose the current view model
         CurrentAppViewViewModel?.Dispose();
@@ -147,7 +147,7 @@ public class AppViewModel : BaseViewModel
 
         InitializeLogging(args);
 
-        Logger.Log(LogLevel.Info, "Initializing application with app version {0}", CurrentAppVersion);
+        Logger.Info("Initializing application with app version {0}", CurrentAppVersion);
 
         // Default the title
         SetTitle(null);
@@ -167,7 +167,7 @@ public class AppViewModel : BaseViewModel
         // Change the view to the load map view
         ChangeView(AppView.LoadMap, new LoadMapViewModel());
 
-        Logger.Log(LogLevel.Info, "Initialized application");
+        Logger.Info("Initialized application");
     }
 
     public void InitializeLogging(string[] args)
@@ -254,7 +254,7 @@ public class AppViewModel : BaseViewModel
 
     public void Unload()
     {
-        Logger.Log(LogLevel.Info, "Unloading the application");
+        Logger.Info("Unloading the application");
 
         // Dispose the current view model
         CurrentAppViewViewModel?.Dispose();
@@ -262,7 +262,7 @@ public class AppViewModel : BaseViewModel
         // Save the app user data
         SaveAppUserData();
 
-        Logger.Log(LogLevel.Info, "Unloaded the application");
+        Logger.Info("Unloaded the application");
 
         // Shut down the logger
         LogManager.Shutdown();
@@ -270,7 +270,7 @@ public class AppViewModel : BaseViewModel
 
     public void LoadAppUserData()
     {
-        Logger.Log(LogLevel.Info, "Loading app user data from {0}", Path_AppUserDataFile);
+        Logger.Info("Loading app user data from {0}", Path_AppUserDataFile);
 
         if (File.Exists(Path_AppUserDataFile))
         {
@@ -286,7 +286,7 @@ public class AppViewModel : BaseViewModel
             }
             catch (Exception ex)
             {
-                Logger.Log(LogLevel.Error, ex, "Error loading app user data");
+                Logger.Error(ex, "Error loading app user data");
 
                 MessageBox.Show($"An error occurred when loading the app user data. Error message: {ex.Message}");
 
@@ -295,7 +295,7 @@ public class AppViewModel : BaseViewModel
         }
         else
         {
-            Logger.Log(LogLevel.Info, "No app user data found");
+            Logger.Info("No app user data found");
             ResetAppUserData();
         }
     }
@@ -304,12 +304,12 @@ public class AppViewModel : BaseViewModel
     {
         UserData = new AppUserData();
 
-        Logger.Log(LogLevel.Info, "Reset the app user data");
+        Logger.Info("Reset the app user data");
     }
 
     public void SaveAppUserData()
     {
-        Logger.Log(LogLevel.Trace, "Saving the app user data");
+        Logger.Trace("Saving the app user data");
 
         // Serialize to JSON and save to file
         try
@@ -319,11 +319,11 @@ public class AppViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            Logger.Log(LogLevel.Fatal, ex, "Error saving the app user data");
+            Logger.Fatal(ex, "Error saving the app user data");
             throw;
         }
 
-        Logger.Log(LogLevel.Info, "Saved the app user data");
+        Logger.Info("Saved the app user data");
     }
 
     #endregion

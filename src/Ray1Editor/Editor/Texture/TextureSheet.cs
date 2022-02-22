@@ -53,7 +53,7 @@ public class TextureSheet : IDisposable
 
         Sheet = new Texture2D(manager.GraphicsDevice, sheetWidth, height);
 
-        Logger.Log(LogLevel.Trace, "Created texture sheet with {0} entries and a size of {1}", Entries.Length, Sheet.Bounds.Size);
+        Logger.Trace("Created texture sheet with {0} entries and a size of {1}", Entries.Length, Sheet.Bounds.Size);
     }
 
     public TextureSheet(TextureManager manager, string path, IEnumerable<Rectangle> textures)

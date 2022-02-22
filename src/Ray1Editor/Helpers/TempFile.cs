@@ -23,7 +23,7 @@ public sealed class TempFile : IDisposable
         // Set the attribute to temporary
         info.Attributes |= FileAttributes.Temporary;
 
-        Logger.Log(LogLevel.Info, $"A new temp file has been created under {TempPath}");
+        Logger.Info($"A new temp file has been created under {TempPath}");
     }
 
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
@@ -47,7 +47,7 @@ public sealed class TempFile : IDisposable
         }
         catch (Exception ex)
         {
-            Logger.Log(LogLevel.Error, $"Couldn't delete temp file at {TempPath} with error {ex}");
+            Logger.Error($"Couldn't delete temp file at {TempPath} with error {ex}");
         }
     }
 }

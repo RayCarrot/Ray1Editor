@@ -64,7 +64,7 @@ namespace Ray1Editor
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(LogLevel.Error, ex, "Exporting VRAM");
+                    Logger.Error(ex, "Exporting VRAM");
                     R1EServices.UI.DisplayMessage("An error occurred exporting the VRAM", "Error", DialogMessageType.Error);
                 }
             });
@@ -170,7 +170,7 @@ namespace Ray1Editor
 
         public override void Save(Context context, GameData gameData)
         {
-            Logger.Log(LogLevel.Info, "Saving R1 PS1");
+            Logger.Info("Saving R1 PS1");
 
             var userData = R1EServices.App.UserData;
 
@@ -209,12 +209,12 @@ namespace Ray1Editor
             // Save background
             exe.PS1_LevelBackgroundIndexTable[(int)settings.World - 1][settings.Level - 1] = (byte)data.Layers.OfType<BackgroundLayer>().First().SelectedBackgroundIndex;
 
-            Logger.Log(LogLevel.Info, "Data has been saved. Relocating level data.");
+            Logger.Info("Data has been saved. Relocating level data.");
 
             // Relocate level data
             RelocateLevelData(data, lev, exe);
 
-            Logger.Log(LogLevel.Info, "Level data has been relocated. Writing files.");
+            Logger.Info("Level data has been relocated. Writing files.");
 
             // Save files
             FileFactory.Write<PS1_AllfixFile>(context, fileEntryFix.ProcessedFilePath);
@@ -230,7 +230,7 @@ namespace Ray1Editor
             // Create an ISO with the modified files
             CreateISO(context, userData.PS1_mkpsxisoPath, Path_DiscXMLFile);
 
-            Logger.Log(LogLevel.Info, "Saved R1 PS1");
+            Logger.Info("Saved R1 PS1");
         }
 
         #endregion
@@ -784,7 +784,7 @@ namespace Ray1Editor
                     // Get the new pointer
                     var newPointer = getNextPointer(size);
 
-                    Logger.Log(LogLevel.Info, $"Relocating data from 0x{originalPointer.AbsoluteOffset:X8} to 0x{newPointer.AbsoluteOffset:X8}.");
+                    Logger.Info($"Relocating data from 0x{originalPointer.AbsoluteOffset:X8} to 0x{newPointer.AbsoluteOffset:X8}.");
 
                     // Add pointer to table
                     relocatedStructs.Add(new RelocatedStruct
@@ -857,7 +857,7 @@ namespace Ray1Editor
 
                 var newPointer = getNextPointer(size);
 
-                Logger.Log(LogLevel.Info, $"Relocating unreferenced data from 0x{originalPointer.AbsoluteOffset:X8} to 0x{newPointer.AbsoluteOffset:X8}.");
+                Logger.Info($"Relocating unreferenced data from 0x{originalPointer.AbsoluteOffset:X8} to 0x{newPointer.AbsoluteOffset:X8}.");
 
                 // Add pointer to table
                 relocatedStructs.Add(new RelocatedStruct
@@ -947,7 +947,7 @@ namespace Ray1Editor
                 if (entry == null)
                 {
                     if (!String.IsNullOrWhiteSpace(fileEntry.FilePath))
-                        Logger.Log(LogLevel.Warn, $"LBA not updated for {fileEntry.FilePath}");
+                        Logger.Warn($"LBA not updated for {fileEntry.FilePath}");
 
                     continue;
                 }

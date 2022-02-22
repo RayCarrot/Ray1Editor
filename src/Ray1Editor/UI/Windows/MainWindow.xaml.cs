@@ -54,21 +54,21 @@ public partial class MainWindow : BaseWindow
                 // Try for 2 seconds first
                 if (retryTime < 10)
                 {
-                    Logger.Log(LogLevel.Warn, "The updater can not be removed due to not having write access. Retrying {0}", retryTime);
+                    Logger.Warn("The updater can not be removed due to not having write access. Retrying {0}", retryTime);
 
                     await Task.Delay(100);
                 }
                 // Now it's taking a long time... Try for 10 more seconds
                 else if (retryTime < 40)
                 {
-                    Logger.Log(LogLevel.Warn, "The updater can not be removed due to not having write access. Retrying {0}", retryTime);
+                    Logger.Warn("The updater can not be removed due to not having write access. Retrying {0}", retryTime);
 
                     await Task.Delay(200);
                 }
                 // Give up and let the deleting of the file give an error message
                 else
                 {
-                    Logger.Log(LogLevel.Error, $"The updater can not be removed due to not having write access");
+                    Logger.Error($"The updater can not be removed due to not having write access");
                     break;
                 }
             }
@@ -78,11 +78,11 @@ public partial class MainWindow : BaseWindow
                 // Remove the updater
                 File.Delete(app.LegacyPath_UpdaterFile);
 
-                Logger.Log(LogLevel.Info, "The updater has been removed");
+                Logger.Info("The updater has been removed");
             }
             catch (Exception ex)
             {
-                Logger.Log(LogLevel.Error, ex, "Deleting updater");
+                Logger.Error(ex, "Deleting updater");
                 R1EServices.UI.DisplayMessage($"The updater could not be deleted. Error message: {ex.Message}", "Error deleting updater", DialogMessageType.Error);
             }
         }

@@ -18,7 +18,7 @@ public class BaseWindow : MetroWindow
     /// </summary>
     public BaseWindow()
     {
-        Logger.Log(LogLevel.Info, "A window is being created");
+        Logger.Info("A window is being created");
 
         // Default to true
         CloseWithEscape = true;
@@ -37,7 +37,7 @@ public class BaseWindow : MetroWindow
         // Set owner window
         Owner = Application.Current?.Windows.Cast<Window>().FirstOrDefault(x => x.IsActive);
 
-        Logger.Log(LogLevel.Trace, "The owner window has been set to {0}", Owner?.ToString() ?? "null");
+        Logger.Trace("The owner window has been set to {0}", Owner?.ToString() ?? "null");
 
         // Do not show in the task bar if the window has a owner, is not the main window and a main window has been created
         if (Owner != null && Application.Current?.MainWindow != null && this != Application.Current.MainWindow)
@@ -53,7 +53,7 @@ public class BaseWindow : MetroWindow
         // Set transition
         //WindowTransitionsEnabled = RCPServices.Data?.EnableAnimations ?? true;
 
-        Logger.Log(LogLevel.Info, "The window {0} has been created", this);
+        Logger.Info("The window {0} has been created", this);
 
         PreviewKeyDown += (_, e) =>
         {

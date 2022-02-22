@@ -21,7 +21,7 @@ public class FileManager
         }
         catch (Exception ex)
         {
-            Logger.Log(LogLevel.Error, ex, "Opening URL {0}", url);
+            Logger.Error(ex, "Opening URL {0}", url);
         }
     }
 
@@ -52,20 +52,20 @@ public class FileManager
             // Start the process and get the process
             var p = Process.Start(info);
 
-            Logger.Log(LogLevel.Info, "The file {0} launched with the arguments: {1}", file, arguments);
+            Logger.Info("The file {0} launched with the arguments: {1}", file, arguments);
 
             // Return the process
             return p;
         }
         catch (FileNotFoundException ex)
         {
-            Logger.Log(LogLevel.Warn, ex, "Launching file", file);
+            Logger.Warn(ex, "Launching file", file);
 
             R1EServices.UI.DisplayMessage($"The specified file could not be found: {file}", "File not found", DialogMessageType.Error);
         }
         catch (Exception ex)
         {
-            Logger.Log(LogLevel.Warn, ex, "Launching file", file);
+            Logger.Warn(ex, "Launching file", file);
 
             R1EServices.UI.DisplayMessage($"An error occurred when attempting to run {file}", "Error opening file", DialogMessageType.Error);
         }
@@ -83,11 +83,11 @@ public class FileManager
             else if (Directory.Exists(path))
                 Process.Start("explorer.exe", path)?.Dispose();
 
-            Logger.Log(LogLevel.Trace, "Opened path in explorer");
+            Logger.Trace("Opened path in explorer");
         }
         catch (Exception ex)
         {
-            Logger.Log(LogLevel.Warn, ex, "Opening explorer path", path);
+            Logger.Warn(ex, "Opening explorer path", path);
 
         }
     }
@@ -104,7 +104,7 @@ public class FileManager
         }
         catch (Exception ex)
         {
-            Logger.Log(LogLevel.Trace, ex, "Checking for file write access");
+            Logger.Trace(ex, "Checking for file write access");
             return false;
         }
     }

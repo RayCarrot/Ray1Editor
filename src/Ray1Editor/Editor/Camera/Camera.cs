@@ -119,7 +119,7 @@ public class Camera
     {
         Zoom = 1;
         Position = new Vector2(Viewport.Width / 2f, Viewport.Height / 2f);
-        Logger.Log(LogLevel.Trace, "Reset the camera");
+        Logger.Trace("Reset the camera");
     }
 
     public void SetZoom(float value)

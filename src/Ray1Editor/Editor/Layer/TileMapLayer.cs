@@ -142,7 +142,7 @@ public abstract class TileMapLayer<T> : TileMapBaseLayer<T>
             SelectedTiles = TileSetLayer.SelectedTiles;
         }
 
-        Logger.Log(LogLevel.Info, "Toggled the tile map layer tile set");
+        Logger.Info("Toggled the tile map layer tile set");
     }
 
     #endregion
@@ -204,7 +204,7 @@ public abstract class TileMapLayer<T> : TileMapBaseLayer<T>
 
         ViewModel.UpdateMapSize(Data);
 
-        Logger.Log(LogLevel.Info, "Updated the tile map layer size to {0}", newSize);
+        Logger.Info("Updated the tile map layer size to {0}", newSize);
     }
 
     public override void OnModeChanged(EditorMode oldMode, EditorMode newMode)

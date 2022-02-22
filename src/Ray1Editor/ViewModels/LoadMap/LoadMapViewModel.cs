@@ -68,12 +68,12 @@ namespace Ray1Editor
             App.UserData.App_Games.Add(game);
             Games.Add(new LoadGameViewModel(this, game));
 
-            Logger.Log(LogLevel.Info, "Added game with mode {0}", game.GameID);
+            Logger.Info("Added game with mode {0}", game.GameID);
         }
 
         public void LoadMap()
         {
-            Logger.Log(LogLevel.Info, "Loading editor with mode {0}", SelectedGame.Game.GameID);
+            Logger.Info("Loading editor with mode {0}", SelectedGame.Game.GameID);
 
             var gameData = SelectedGame.Game;
             var g = Ray1Editor.Games.FromID(gameData.GameID);

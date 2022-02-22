@@ -50,7 +50,7 @@ public class LoadGameViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            Logger.Log(LogLevel.Warn, ex, "Getting levels");
+            Logger.Warn(ex, "Getting levels");
         }
     }
 
@@ -81,7 +81,7 @@ public class LoadGameViewModel : BaseViewModel
     {
         R1EServices.File.OpenExplorerPath(Game.Path);
 
-        Logger.Log(LogLevel.Trace, "Opened game path");
+        Logger.Trace("Opened game path");
     }
 
     public void Delete()
@@ -95,6 +95,6 @@ public class LoadGameViewModel : BaseViewModel
         // Remove from user data
         R1EServices.App.UserData.App_Games.Remove(Game);
 
-        Logger.Log(LogLevel.Trace, "Removed game with mode {0}", Game.GameID);
+        Logger.Trace("Removed game with mode {0}", Game.GameID);
     }
 }

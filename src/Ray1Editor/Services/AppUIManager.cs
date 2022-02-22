@@ -27,7 +27,7 @@ public class AppUIManager
         if (Application.Current.Dispatcher == null)
             throw new Exception("A message box can not be shown when the application dispatcher is null");
 
-        Logger.Log(LogLevel.Info, $"Logging message with content: {message} of type {messageType}");
+        Logger.Info($"Logging message with content: {message} of type {messageType}");
 
         // Create the message actions
         var actions = new ObservableCollection<DialogMessageActionViewModel>();

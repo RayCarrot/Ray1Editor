@@ -283,7 +283,7 @@ public abstract class R1_GameManager : GameManager
 
         var gameObj = new R1_GameObject(obj, def);
 
-        Logger.Log(LogLevel.Trace, "Created object {0}", gameObj.DisplayName);
+        Logger.Trace("Created object {0}", gameObj.DisplayName);
 
         return gameObj;
     }
@@ -322,7 +322,7 @@ public abstract class R1_GameManager : GameManager
 
         var gameObj = new R1_GameObject(obj, source.EventDefinition);
 
-        Logger.Log(LogLevel.Trace, "Duplicated object {0}", gameObj.DisplayName);
+        Logger.Trace("Duplicated object {0}", gameObj.DisplayName);
 
         return gameObj;
     }
@@ -646,7 +646,7 @@ public abstract class R1_GameManager : GameManager
 
         // Log if not found
         if (match == null && data.EventDefinitions.Any())
-            Logger.Log(LogLevel.Warn, "Matching event not found for event with type {0}, etat {1} & subetat {2}", e.Type, e.Etat, e.SubEtat);
+            Logger.Warn("Matching event not found for event with type {0}, etat {1} & subetat {2}", e.Type, e.Etat, e.SubEtat);
 
         // Return the item
         return match;

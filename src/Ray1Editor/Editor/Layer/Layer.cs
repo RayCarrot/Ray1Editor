@@ -84,7 +84,7 @@ public abstract class Layer : EditorElement
 
     public virtual void Select()
     {
-        Logger.Log(LogLevel.Trace, "Selected layer {0}", Name);
+        Logger.Trace("Selected layer {0}", Name);
 
         IsSelected = true;
         IsVisible = true;

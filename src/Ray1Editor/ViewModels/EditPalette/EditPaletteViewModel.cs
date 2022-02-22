@@ -46,7 +46,7 @@ public class EditPaletteViewModel : BaseViewModel
             Palette.Colors[i] = new Microsoft.Xna.Framework.Color(c.R, c.G, c.B, c.A);
         }
 
-        Logger.Log(LogLevel.Trace, "Updated modified palette");
+        Logger.Trace("Updated modified palette");
     }
 
     #endregion

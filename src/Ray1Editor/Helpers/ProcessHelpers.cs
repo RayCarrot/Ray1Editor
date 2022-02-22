@@ -25,7 +25,7 @@ public static class ProcessHelpers
         };
 
         if (logInfo)
-            Logger.Log(LogLevel.Info, $"Starting process {p.StartInfo.FileName} with arguments: {p.StartInfo.Arguments}");
+            Logger.Info($"Starting process {p.StartInfo.FileName} with arguments: {p.StartInfo.Arguments}");
 
         p.Start();
 
@@ -34,7 +34,7 @@ public static class ProcessHelpers
             p.WaitForExit();
 
             if (logInfo)
-                Logger.Log(LogLevel.Info, $"Process output: {p.StandardOutput.ReadToEnd()}");
+                Logger.Info($"Process output: {p.StandardOutput.ReadToEnd()}");
         }
     }
 }

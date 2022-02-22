@@ -65,7 +65,7 @@ public class TextureManager : IDisposable
         // Update the palette
         pal.Update();
 
-        Logger.Log(LogLevel.Info, "Refreshed palette {0}", pal.Name);
+        Logger.Info("Refreshed palette {0}", pal.Name);
     }
 
     public void SwapPalettes(Palette oldPal, Palette newPal)
@@ -76,7 +76,7 @@ public class TextureManager : IDisposable
             tex.Apply();
         }
 
-        Logger.Log(LogLevel.Info, "Swapped palette {0} with {0}", oldPal.Name, newPal.Name);
+        Logger.Info("Swapped palette {0} with {0}", oldPal.Name, newPal.Name);
     }
 
     public void Dispose()
