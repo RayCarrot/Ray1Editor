@@ -26,6 +26,7 @@
                 <ResourceDictionary Source="UI/Resources/Resources.ListBox.xaml" />
                 <ResourceDictionary Source="UI/Resources/Resources.SmallTabItem.xaml" />
                 <ResourceDictionary Source="UI/Resources/Resources.NumericUpDown.xaml" />
+                <ResourceDictionary Source="UI/Resources/Resources.Expander.xaml" />
                 <ResourceDictionary Source="UI/Views/Editor/EditorFields/EditorFields.xaml" />
 
             </ResourceDictionary.MergedDictionaries>

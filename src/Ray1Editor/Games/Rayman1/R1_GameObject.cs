@@ -13,10 +13,7 @@ public class R1_GameObject : GameObject
         ObjData = objData;
         EventDefinition = def;
 
-        var cmdLines = objData.Commands?.ToTranslatedStrings(objData.LabelOffsets, 1);
-
-        if (cmdLines != null) 
-            Scripts = String.Join(Environment.NewLine, cmdLines);
+        UpdateScripts();
 
         SecondaryName = def?.Name;
             
@@ -128,7 +125,80 @@ public class R1_GameObject : GameObject
     public override string PrimaryName => (ushort)ObjData.Type < 262 ? $"{ObjData.Type.ToString().Replace("TYPE_", "")}" : $"TYPE_{(ushort)ObjData.Type}";
     public override string SecondaryName { get; }
     public override string Tags { get; }
-    public override string Scripts { get; }
+
+    // Scripts
+    private string _scripts;
+    public override string Scripts => _scripts;
+    public override bool CanEditScripts => true;
+    private void UpdateScripts()
+    {
+        var cmdLines = ObjData.Commands?.ToTranslatedStrings(ObjData.LabelOffsets, 1);
+
+        if (cmdLines != null)
+            _scripts = String.Join(Environment.NewLine, cmdLines);
+    }
+    public override void EditScripts()
+    {
+        var vm = new R1_EditCmdsViewModel(ObjData.Commands, ObjData.LabelOffsets);
+        var win = new R1_EditCmdsWindow(vm);
+        win.ShowDialog();
+
+        if (win.DialogResult != true)
+            return;
+
+        CommandCollection cmds = vm.GetCommands();
+
+        if (cmds.Commands.Length == 0)
+        {
+            R1EServices.UI.DisplayMessage("At least one command has to be specified",
+                "Error saving commands", DialogMessageType.Error);
+            return;
+        }
+
+        // Validate the commands
+        for (int i = 0; i < cmds.Commands.Length; i++)
+        {
+            CommandType type = cmds.Commands[i].CommandType;
+            byte[] args = cmds.Commands[i].Arguments;
+
+            // Correct the number of arguments
+            int argsCount = Command.GetArgumentsCount(Data.Context.GetSettings<Ray1Settings>().EngineVersion, type, args);
+
+            if (args.Length != argsCount)
+            {
+                Array.Resize(ref args, argsCount);
+                cmds.Commands[i].Arguments = args;
+            }
+
+            // Validate the commands are correctly terminated
+            bool isLast = i == cmds.Commands.Length - 1;
+            bool isInvalidCmd = type is CommandType.INVALID_CMD or CommandType.INVALID_CMD_DEMO;
+
+            if (!isLast && isInvalidCmd)
+            {
+                R1EServices.UI.DisplayMessage("The commands can't be terminated (33, 255) before the end", 
+                    "Error saving commands", DialogMessageType.Error);
+                return;
+            }
+            else if (isLast && !isInvalidCmd)
+            {
+                R1EServices.UI.DisplayMessage("The commands have to end with the command terminator (33, 255)", 
+                    "Error saving commands", DialogMessageType.Error);
+                return;
+            }
+            else if (isInvalidCmd && args[0] != 0xFF)
+            {
+                R1EServices.UI.DisplayMessage("The command terminator (33) has to have 255 as its argument", 
+                    "Error saving commands", DialogMessageType.Error);
+                return;
+            }
+        }
+
+        ObjData.Commands = cmds;
+        ObjData.LabelOffsets = vm.GetLabelOffsets();
+
+        UpdateScripts();
+    }
 
     // Animations
     public override ObjAnimation_HitBoxLayer[] HitBoxLayers => null; // TODO: Implement from ZDC

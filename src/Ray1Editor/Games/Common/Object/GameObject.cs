@@ -88,7 +88,11 @@ public abstract class GameObject : EditorElement
     public string DisplayName => SecondaryName ?? PrimaryName;
     public virtual string Tags => null;
     //public virtual string DebugText => null;
+
+    // Scripts
     public virtual string Scripts => null;
+    public virtual bool CanEditScripts => false;
+    public virtual void EditScripts() { }
 
     // Update
     public virtual void Update(EditorUpdateData updateData)

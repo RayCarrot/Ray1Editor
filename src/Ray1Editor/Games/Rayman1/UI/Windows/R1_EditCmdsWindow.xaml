@@ -1,0 +1,108 @@
+﻿<local:BaseWindow x:Class="Ray1Editor.R1_EditCmdsWindow"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                  xmlns:local="clr-namespace:Ray1Editor"
+                  xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+                  mc:Ignorable="d"
+                  Title="Edit Commands"
+                  Width="500" Height="550" 
+                  MaxWidth="500" MaxHeight="550"
+                  Background="{DynamicResource MahApps.Brushes.ThemeBackground}"
+                  Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}"
+                  ResizeMode="NoResize"
+                  CloseWithEscape="True" 
+                  d:DataContext="{d:DesignInstance local:R1_EditCmdsViewModel}">
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Expander Grid.Row="0" 
+                  Header="Command Types"
+                  Margin="0 0 0 7">
+
+            <ScrollViewer MaxHeight="200">
+                <TextBlock FontFamily="Consolas">
+                    0 - GO_LEFT (1 argument)<LineBreak/>
+                    1 - GO_RIGHT (1 argument)<LineBreak/>
+                    2 - GO_WAIT<LineBreak/>
+                    3 - GO_UP (1 argument)<LineBreak/>
+                    4 - GO_DOWN (1 argument)<LineBreak/>
+                    5 - GO_SUBSTATE (1 argument)<LineBreak/>
+                    6 - GO_SKIP (1 argument)<LineBreak/>
+                    7 - GO_ADD<LineBreak/>
+                    8 - GO_STATE (1 argument)<LineBreak/>
+                    9 - GO_PREPARELOOP (1 argument)<LineBreak/>
+                    10 - GO_DOLOOP<LineBreak/>
+                    11 - GO_LABEL (1 argument)<LineBreak/>
+                    12 - GO_GOTO (1 argument)<LineBreak/>
+                    13 - GO_GOSUB (1 argument)<LineBreak/>
+                    14 - GO_RETURN<LineBreak/>
+                    15 - GO_BRANCHTRUE (1 argument)<LineBreak/>
+                    16 - GO_BRANCHFALSE (1 argument)<LineBreak/>
+                    17 - GO_TEST (1 argument, 2 if the first argument is less than 5)<LineBreak/>
+                    18 - GO_SETTEST (1 argument)<LineBreak/>
+                    19 - GO_WAITSTATE (1 argument)<LineBreak/>
+                    20 - GO_SPEED (3 arguments)<LineBreak/>
+                    21 - GO_X (2 arguments)<LineBreak/>
+                    22 - GO_Y (2 arguments)<LineBreak/>
+                    23 - RESERVED_GO_SKIP (1 argument)<LineBreak/>
+                    24 - RESERVED_GO_GOTO (1 argument)<LineBreak/>
+                    25 - RESERVED_GO_GOSUB (1 argument)<LineBreak/>
+                    26 - RESERVED_GO_GOTOT (1 argument)<LineBreak/>
+                    27 - RESERVED_GO_GOTOF (1 argument)<LineBreak/>
+                    28 - RESERVED_GO_SKIPT (1 argument)<LineBreak/>
+                    29 - RESERVED_GO_SKIPF (1 argument)<LineBreak/>
+                    30 - GO_NOP<LineBreak/>
+                    31 - GO_SKIPTRUE (1 argument)<LineBreak/>
+                    32 - GO_SKIPFALSE (1 argument)<LineBreak/>
+                    33 - INVALID_CMD (1 argument)
+                </TextBlock>
+            </ScrollViewer>
+            
+        </Expander>
+
+        <TextBlock Grid.Row="1"
+                   Style="{StaticResource HeaderTextBlock}"
+                   Text="Commands"
+                   Margin="0 0 0 7"/>
+
+        <TextBox Grid.Row="2"
+                 Text="{Binding Path=Commands}"
+                 AcceptsReturn="True"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                 Margin="0 0 0 15"/>
+
+        <TextBlock Grid.Row="3"
+                   Style="{StaticResource HeaderTextBlock}"
+                   Text="Label Offsets"
+                   Margin="0 0 0 7"/>
+
+        <TextBox Grid.Row="4"
+                 Text="{Binding Path=LabelOffsets}"
+                 Margin="0 0 0 15" />
+
+        <StackPanel Grid.Row="5" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right">
+
+            <Button Content="Cancel"
+                    IsCancel="True"/>
+
+            <Button Content="Accept"
+                    Margin="10 0 0 0"
+                    IsDefault="True"
+                    Click="AcceptButton_OnClick" />
+
+        </StackPanel>
+    </Grid>
+
+</local:BaseWindow>

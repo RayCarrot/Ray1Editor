@@ -30,6 +30,7 @@ namespace Ray1Editor
             SaveCommand = new RelayCommand(Save);
             ResetPositionCommand = new RelayCommand(ResetPosition);
             DeleteSelectedObjectCommand = new RelayCommand(DeleteSelectedObject);
+            EditSelectedObjectScriptsCommand = new RelayCommand(EditScripts);
             AddObjCommand = new RelayCommand(AddObject);
             ZoomInCommand = new RelayCommand(() => EditorScene.Cam.SetZoom(CameraZoom + 0.2f));
             ZoomOutCommand = new RelayCommand(() => EditorScene.Cam.SetZoom(CameraZoom - 0.2f));
@@ -49,6 +50,7 @@ namespace Ray1Editor
         public ICommand SaveCommand { get; }
         public ICommand ResetPositionCommand { get; }
         public ICommand DeleteSelectedObjectCommand { get; }
+        public ICommand EditSelectedObjectScriptsCommand { get; }
         public ICommand AddObjCommand { get; }
         public ICommand ZoomInCommand { get; }
         public ICommand ZoomOutCommand { get; }
@@ -147,6 +149,7 @@ namespace Ray1Editor
         public string SelectedObjectOffset { get; set; }
         public ObservableCollection<EditorFieldViewModel> ObjFields { get; }
         public string SelectedObjectScript { get; set; }
+        public bool SelectedObjectCanEditScripts { get; set; }
 
         #endregion
 
@@ -230,6 +233,7 @@ namespace Ray1Editor
             SelectedObjectName = obj?.DisplayName;
             SelectedObjectOffset = obj?.SerializableData?.Offset?.ToString();
             SelectedObjectScript = obj?.Scripts;
+            SelectedObjectCanEditScripts = obj?.CanEditScripts ?? false;
         }
 
         public void OnModeChanged(EditorMode oldMode, EditorMode newMode) { }
@@ -339,6 +343,12 @@ namespace Ray1Editor
         public void AddObject()
         {
             EditorScene.AddObject(SelectedNewObjIndex);
+        }
+
+        public void EditScripts()
+        {
+            DoAndPause(() => SelectedObject?.EditScripts());
+            SelectedObjectScript = SelectedObject?.Scripts;
         }
 
         public void UpdateObjCountInfo()

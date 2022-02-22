@@ -75,6 +75,14 @@
 
   <!-- WPF XAML -->
   <ItemGroup>
+    <Page Update="Games\Rayman1\UI\Windows\R1_EditCmdsWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Resources\Resources.Expander.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="UI\Resources\Resources.ToolTip.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>

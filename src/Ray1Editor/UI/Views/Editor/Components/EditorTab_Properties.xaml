@@ -83,9 +83,25 @@
                             Margin="0 0 0 7"
                             Visibility="{Binding Path=SelectedObjectScript, Converter={local:InvertedObjectNullToVisibilityConverter}}">
 
-                    <TextBlock Style="{StaticResource HeaderTextBlock}"
-                               Text="Object Commands"
-                               Margin="0 0 0 7" />
+                    <Grid Margin="0 0 0 7">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0"
+                                   Style="{StaticResource HeaderTextBlock}"
+                                   Text="Object Commands" />
+
+                        <Button Grid.Column="1"
+                                ToolTip="Edit commands"
+                                Visibility="{Binding Path=SelectedObjectCanEditScripts, Converter={local:BooleanToVisibilityConverter}}"
+                                Command="{Binding Path=EditSelectedObjectScriptsCommand, Mode=OneTime}"
+                                Style="{StaticResource FlatButton}">
+                            <iconPacks:PackIconMaterial Kind="PencilOutline" Background="Transparent" />
+                        </Button>
+
+                    </Grid>
 
                     <avalon:TextEditor x:Name="ScriptTextEditor"
                                        Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}"
