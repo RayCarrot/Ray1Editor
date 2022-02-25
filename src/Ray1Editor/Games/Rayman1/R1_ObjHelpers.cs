@@ -1,6 +1,6 @@
 ﻿using BinarySerializer.Ray1;
 
-namespace Ray1Editor;
+namespace Ray1Editor.Rayman1;
 
 public static class R1_ObjHelpers
 {
@@ -306,6 +306,8 @@ public static class R1_ObjHelpers
             }
             return 6;
         }
+        
+        // TODO: This is always false. Should v2 be a byte?
         if (v2 < 48u)
         {
             if (v2 >= 21u)

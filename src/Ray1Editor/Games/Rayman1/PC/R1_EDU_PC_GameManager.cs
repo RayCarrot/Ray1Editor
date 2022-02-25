@@ -7,7 +7,7 @@ using BinarySerializer.Image;
 using BinarySerializer.Ray1;
 using Microsoft.Xna.Framework;
 
-namespace Ray1Editor;
+namespace Ray1Editor.Rayman1;
 
 public class R1_EDU_PC_GameManager : R1_PC_GameManager
 {

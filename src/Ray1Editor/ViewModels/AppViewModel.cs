@@ -186,7 +186,7 @@ public class AppViewModel : BaseViewModel
         // Allow the log level to be specified from a launch argument
         if (args.Contains("-loglevel"))
         {
-            string argLogLevel = args[args.FindItemIndex(x => x == "-loglevel") + 1];
+            string argLogLevel = args[args.FindIndex(x => x == "-loglevel") + 1];
             logLevel = LogLevel.FromString(argLogLevel);
         }
 

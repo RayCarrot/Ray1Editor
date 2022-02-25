@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Media;
+using Ray1Editor.Rayman1;
 
 namespace Ray1Editor;
 

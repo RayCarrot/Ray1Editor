@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using BinarySerializer.Ray1;
+using Ray1Editor.Rayman1;
 
 namespace Ray1Editor;
 

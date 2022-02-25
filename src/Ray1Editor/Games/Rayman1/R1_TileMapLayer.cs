@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using System;
 
-namespace Ray1Editor;
+namespace Ray1Editor.Rayman1;
 
 public class R1_TileMapLayer : TileMapLayer<MapTile>
 {

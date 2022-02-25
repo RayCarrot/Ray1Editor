@@ -1,10 +1,10 @@
-﻿<local:BaseWindow x:Class="Ray1Editor.R1_EditCmdsWindow"
+﻿<local:BaseWindow x:Class="Ray1Editor.Rayman1.R1_EditCmdsWindow"
                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                   xmlns:local="clr-namespace:Ray1Editor"
-                  xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+                  xmlns:ray1="clr-namespace:Ray1Editor.Rayman1"
                   mc:Ignorable="d"
                   Title="Edit Commands"
                   Width="500" Height="550" 
@@ -13,7 +13,7 @@
                   Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}"
                   ResizeMode="NoResize"
                   CloseWithEscape="True" 
-                  d:DataContext="{d:DesignInstance local:R1_EditCmdsViewModel}">
+                  d:DataContext="{d:DesignInstance ray1:R1_EditCmdsViewModel}">
 
     <Grid Margin="10">
         <Grid.RowDefinitions>

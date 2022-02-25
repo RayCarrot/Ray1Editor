@@ -21,7 +21,7 @@ public static class ProcessHelpers
         {
             UseShellExecute = !logInfo,
             RedirectStandardOutput = logInfo,
-            WorkingDirectory = workingDir ?? Path.GetDirectoryName(filePath)
+            WorkingDirectory = workingDir ?? Path.GetDirectoryName(filePath) ?? String.Empty
         };
 
         if (logInfo)

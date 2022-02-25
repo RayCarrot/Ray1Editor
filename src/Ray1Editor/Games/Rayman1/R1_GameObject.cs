@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 using System;
 using System.Linq;
 
-namespace Ray1Editor;
+namespace Ray1Editor.Rayman1;
 
 public class R1_GameObject : GameObject
 {

@@ -2,7 +2,7 @@
 using BinarySerializer.Ray1;
 using Microsoft.Xna.Framework;
 
-namespace Ray1Editor;
+namespace Ray1Editor.Rayman1;
 
 public class R1_CollisionMapLayer : CollisionMapLayer<MapTile>
 {

@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace Ray1Editor;
+namespace Ray1Editor.Rayman1;
 
 /// <summary>
 /// Interaction logic for R1_EditCmdsWindow.xaml

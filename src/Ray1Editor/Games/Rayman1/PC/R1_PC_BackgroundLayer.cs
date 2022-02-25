@@ -7,7 +7,7 @@ using MahApps.Metro.IconPacks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Ray1Editor;
+namespace Ray1Editor.Rayman1;
 
 /// <summary>
 /// A background layer for the PC version of Rayman 1, allowing changing the background to update the level palettes

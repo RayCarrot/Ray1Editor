@@ -3,7 +3,7 @@ using System.Linq;
 using BinarySerializer.Ray1;
 using NLog;
 
-namespace Ray1Editor;
+namespace Ray1Editor.Rayman1;
 
 public class R1_EditCmdsViewModel : BaseViewModel
 {

@@ -2,7 +2,7 @@
 using BinarySerializer;
 using BinarySerializer.Ray1;
 
-namespace Ray1Editor;
+namespace Ray1Editor.Rayman1;
 
 public class R1_PC_GameData : R1_GameData
 {

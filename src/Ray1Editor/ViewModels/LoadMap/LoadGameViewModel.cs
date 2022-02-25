@@ -59,7 +59,7 @@ public class LoadGameViewModel : BaseViewModel
         var editGameVM = new EditGameViewModel()
         {
             GameName = Game.Name,
-            SelectedGameIndex = Games.LoadedGames.FindItemIndex(x => x.ID == Game.GameID),
+            SelectedGameIndex = Games.LoadedGames.FindIndex(x => x.ID == Game.GameID),
             GamePath = Game.Path
         };
 

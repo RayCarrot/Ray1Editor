@@ -2,7 +2,7 @@
 using BinarySerializer.Ray1;
 using System.Collections.Generic;
 
-namespace Ray1Editor;
+namespace Ray1Editor.Rayman1;
 
 /// <summary>
 /// Rayman 1 game data

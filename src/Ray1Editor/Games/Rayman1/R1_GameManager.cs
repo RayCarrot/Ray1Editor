@@ -8,7 +8,7 @@ using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace Ray1Editor;
+namespace Ray1Editor.Rayman1;
 
 /// <summary>
 /// Base game manager for Rayman 1

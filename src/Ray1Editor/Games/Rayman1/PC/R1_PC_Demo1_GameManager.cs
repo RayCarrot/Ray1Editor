@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using BinarySerializer.Ray1;
 
-namespace Ray1Editor;
+namespace Ray1Editor.Rayman1;
 
 public class R1_PC_Demo1_GameManager : R1_PC_GameManager
 {

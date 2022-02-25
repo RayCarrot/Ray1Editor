@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using BinarySerializer.Ray1;
 
-namespace Ray1Editor;
+namespace Ray1Editor.Rayman1;
 
 public class R1_EventDefinition
 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Ray1Editor;
+namespace Ray1Editor.Rayman1;
 
 public class R1_KIT_PC_GameManager : R1_EDU_PC_GameManager
 {
