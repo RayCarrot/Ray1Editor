@@ -1,4 +1,10 @@
-﻿-----   Version 0.2.0.0 (beta) - February 22, 2022   -----
+﻿-----   Version 0.2.1.0 (beta) - March 18, 2022   -----
+• Minimize additional object state data being written back when saving a level for the Rayman PS1 versions
+• Fix not being able to scroll with the mouse wheel over the object commands field
+• Update libraries
+
+
+-----   Version 0.2.0.0 (beta) - February 22, 2022   -----
 • Add option to edit object commands
 • Remove the updater and update checking (check the GitHub releases for future updates)
 • Update libraries
