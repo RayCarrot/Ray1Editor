@@ -281,7 +281,7 @@ public abstract class R1_GameManager : GameManager
         obj.SetFollowEnabled(settings, def.FollowEnabled);
         obj.ActualHitPoints = def.HitPoints;
 
-        var gameObj = new R1_GameObject(obj, def);
+        var gameObj = new R1_GameObject(obj, settings, def);
 
         Logger.Trace("Created object {0}", gameObj.DisplayName);
 
@@ -320,7 +320,7 @@ public abstract class R1_GameManager : GameManager
         obj.SetFollowEnabled(settings, source.ObjData.GetFollowEnabled(settings));
         obj.ActualHitPoints = source.ObjData.HitPoints;
 
-        var gameObj = new R1_GameObject(obj, source.EventDefinition);
+        var gameObj = new R1_GameObject(obj, settings, source.EventDefinition);
 
         Logger.Trace("Duplicated object {0}", gameObj.DisplayName);
 

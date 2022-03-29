@@ -282,7 +282,7 @@ public class R1_PC_GameManager : R1_GameManager
         {
             LoadObject(data, lev, obj, objIndex);
 
-            data.Objects.Add(new R1_GameObject(obj, FindMatchingEventDefinition(data, obj)));
+            data.Objects.Add(new R1_GameObject(obj, data.Context.GetSettings<Ray1Settings>(), FindMatchingEventDefinition(data, obj)));
 
             objIndex++;
         }

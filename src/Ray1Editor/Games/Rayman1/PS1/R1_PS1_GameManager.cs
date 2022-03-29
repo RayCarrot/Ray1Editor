@@ -481,7 +481,7 @@ public abstract class R1_PS1_GameManager : R1_GameManager
 
     public void LoadObjects(R1_PS1_GameData data, PS1_ObjBlock objBlock)
     {
-        data.Objects.AddRange(objBlock.Objects.Select(obj => new R1_GameObject(obj, FindMatchingEventDefinition(data, obj))));
+        data.Objects.AddRange(objBlock.Objects.Select(obj => new R1_GameObject(obj, data.Context.GetSettings<Ray1Settings>(), FindMatchingEventDefinition(data, obj))));
 
         data.LinkTable = objBlock.ObjectLinkingTable.Select(x => (ushort)x).ToArray();
         InitLinkGroups(data.Objects, data.LinkTable);

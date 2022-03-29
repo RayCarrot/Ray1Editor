@@ -8,7 +8,7 @@ namespace Ray1Editor.Rayman1;
 
 public class R1_GameObject : GameObject
 {
-    public R1_GameObject(ObjData objData, R1_EventDefinition def = null)
+    public R1_GameObject(ObjData objData, Ray1Settings settings, R1_EventDefinition def = null)
     {
         ObjData = objData;
         EventDefinition = def;
@@ -20,7 +20,7 @@ public class R1_GameObject : GameObject
         // TODO: Use object flags to determine if an object is always?
         var typeInfo = ObjData.Type.GetAttribute<ObjTypeInfoAttribute>();
         if (def?.CodeNames?.FirstOrDefault() == "always" || 
-            typeInfo?.Flag == ObjTypeFlag.Always && !(ObjData.Context.GetSettings<Ray1Settings>().EngineVersion == Ray1EngineVersion.PS1_JPDemoVol3 && ObjData.Type == ObjType.TYPE_DARK2_PINK_FLY))
+            typeInfo?.Flag == ObjTypeFlag.Always && !(settings.EngineVersion == Ray1EngineVersion.PS1_JPDemoVol3 && ObjData.Type == ObjType.TYPE_DARK2_PINK_FLY))
             Tags = "always";
     }
 

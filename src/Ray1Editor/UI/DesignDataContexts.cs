@@ -14,9 +14,11 @@ public static class DesignDataContexts
     {
         get
         {
+            var settings = new Ray1Settings(Ray1EngineVersion.PC);
+
             var vm = new EditorViewModel(new UserData_Game(), new R1_PC_GameManager(), null)
             {
-                SelectedObject = new R1_GameObject(new ObjData()),
+                SelectedObject = new R1_GameObject(new ObjData(), settings),
                 DebugText = "Debug Text",
                 SelectedObjectName = "Object Name",
             };
@@ -42,11 +44,11 @@ public static class DesignDataContexts
                 new GameObjectListItemViewModel(new R1_GameObject(new ObjData()
                 {
                     Type = ObjType.TYPE_BB1
-                })),
+                }, settings)),
                 new GameObjectListItemViewModel(new R1_GameObject(new ObjData()
                 {
                     Type = ObjType.TYPE_RAY_POS
-                })),
+                }, settings)),
             });
 
             vm.Palettes.AddRange(new PaletteEditorViewModel[]
