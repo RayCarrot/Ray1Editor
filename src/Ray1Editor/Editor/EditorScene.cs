@@ -8,6 +8,8 @@ using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BinarySerializer.Ray1;
+using Ray1Editor.Rayman1;
 
 namespace Ray1Editor;
 
@@ -166,6 +168,8 @@ public class EditorScene : WpfGame
 
         if (Stage != EditorStage.Error)
             Stage = EditorStage.Editing;
+
+        MOD_AddDarkRayman();
     }
 
     protected override void LoadContent()
@@ -691,6 +695,87 @@ public class EditorScene : WpfGame
         }
     }
 
+    protected void MOD_AddDarkRayman()
+    {
+        /*
+        PNG state 0-4 in FIX (RAY.XXX):
+           0x00033A6A: AnimIndex (set to 0x0D)
+           
+        PNG state 0-6 in FIX (RAY.XXX):
+           0x00033A7A: AnimIndex (set to 0x3E)
+           0x00033A7D: AnimSpeed (set to 0x06)
+           
+        PNG state 0-15 in FIX (RAY.XXX):
+           0x00033AC2: AnimIndex (set to 0x3E)
+           0x00033AC4: LinkedSubEtat (set to 0x06)
+           0x00033AC5: AnimSpeed (set to 0x06)
+           
+        Dummy out DIV anim 13 in FIX (RAY.XXX):
+           0x0002BE7C: LayersPerFrame (set to 0x00)
+           0x0002BE7E: FramesCount (set to 0x01)
+           
+        Mr Dark hard-coded anim frame in EXE (SLUS-000.05):
+           0x00073AEC: (set to 0x15)
+        */
+
+        R1_GameData data = (R1_GameData)GameData;
+        Point startPos = GameData.Objects.
+            OfType<R1_GameObject>().
+            FirstOrDefault(x => x.ObjData.Type == ObjType.TYPE_RAY_POS)?.Position ?? new Point(100, 10);
+
+        // Add Mr Dark
+        createObj(ObjType.TYPE_DARK, startPos.X + 90, startPos.Y - 20, "PNG", "PNG", etat: 0, subEtat: 15, bx: 80, by: 64, hy: 0);
+
+        // Add Dark Rayman
+        createObj(ObjType.TYPE_BLACK_RAY, 0, 0, "RAY", "RAY", etat: 0, subEtat: 0, bx: 80, by: 80, hy: 20, hp: 0, hitSprite: 254);
+
+        // Add Dark Rayman's fist
+        createObj(ObjType.TYPE_BLACK_FIST, 0, 0, "PNG", "PNG", etat: 5, subEtat: 1, bx: 60, by: 48, hy: 32, hp: 1, hitSprite: 254);
+
+        // Add spell effects
+        for (int i = 0; i < 10; i++)
+            createObj(ObjType.TYPE_DARK_SORT, 0, 0, "DIV", "PNG", etat: 0, subEtat: 4, bx: 0, by: 0, hy: 0);
+
+        // Remove checkpoints
+        R1_GameObject[] checkpoints = GameData.Objects.
+            OfType<R1_GameObject>().
+            Where(x => x.ObjData.Type == ObjType.TYPE_PHOTOGRAPHE).
+            ToArray();
+
+        foreach (R1_GameObject obj in checkpoints)
+        {
+            SelectedObject = obj;
+            RemoveObject(obj);
+        }
+
+        void createObj(ObjType type, int x, int y, string desName, string etaName, byte etat, byte subEtat, byte bx, byte by, byte hy, byte hp = 0, byte hitSprite = 0)
+        {
+            R1_GameObject obj = (R1_GameObject)AddObject(0);
+
+            if (obj == null)
+                return;
+
+            R1_GameData.DESData des = data.DES.First(d => d.Name == desName);
+            R1_GameData.ETAData eta = data.ETA.First(e => e.Name == etaName);
+
+            obj.Position = new Point(x, y);
+            obj.ObjData.Type = type;
+            obj.ObjData.SpriteCollection = des.SpritesData;
+            obj.ObjData.AnimationCollection = des.AnimationsData;
+            obj.ObjData.ImageBuffer = des.ImageBuffer;
+            obj.ObjData.ETA = eta.ETA;
+            obj.ObjData.Etat = obj.ObjData.InitialEtat = etat;
+            obj.ObjData.SubEtat = obj.ObjData.InitialSubEtat = subEtat;
+            obj.ObjData.OffsetBX = bx;
+            obj.ObjData.OffsetBY = by;
+            obj.ObjData.OffsetHY = hy;
+            obj.ObjData.SetFollowEnabled(data.Context.GetSettings<Ray1Settings>(), false);
+            obj.ObjData.FollowSprite = 0;
+            obj.ObjData.ActualHitPoints = hp;
+            obj.ObjData.HitSprite = hitSprite;
+        }
+    }
+
     #endregion
 
     #region Public Methods
@@ -748,21 +833,23 @@ public class EditorScene : WpfGame
         Logger.Trace("Removed object {0}", obj.DisplayName);
     }
 
-    public void AddObject(int index)
+    public GameObject AddObject(int index)
     {
         if (GameData.Objects.Count >= GameManager.GetMaxObjCount(GameData))
         {
             R1EServices.UI.DisplayMessage("Maximum number of objects has been reached in the level", "Max object count reached", DialogMessageType.Error);
                 
-            return;
+            return null;
         }
 
-        var obj = GameManager.CreateGameObject(GameData, index);
+        GameObject obj = GameManager.CreateGameObject(GameData, index);
         obj.Position = Cam.Position.ToPoint();
         LoadElement(obj);
         obj.Load();
         GameData.Objects.Add(obj);
         VM.OnObjectAdded(obj);
+
+        return obj;
     }
 
     public void Save()
