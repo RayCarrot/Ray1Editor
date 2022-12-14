@@ -1,4 +1,8 @@
-﻿-----   Version 0.2.2.0 (beta) - March 29, 2022   -----
+﻿-----   Version 0.2.3.0 (beta) - December 14, 2022   -----
+• Fix a crash when using modified files with added DES/ETA entries for the Rayman PC versions
+
+
+-----   Version 0.2.2.0 (beta) - March 29, 2022   -----
 • Fix a crash when adding certain objects
 
 
