@@ -250,7 +250,7 @@ public class R1_PC_GameManager : R1_GameManager
             data.PC_LoadedAnimations[i] = animCollection;
             data.AddDES(new R1_GameData.DESData(des.SpriteCollection, spriteSheet, animCollection, loadedAnim.Select(x => ToCommonAnimation(x)).ToArray(), des.ImageData)
             {
-                Name = names[i]
+                Name = names.ElementAtOrDefault(i)
             });
         }
     }
@@ -269,7 +269,7 @@ public class R1_PC_GameManager : R1_GameManager
                 States = x.States
             })
             {
-                Name = names[offset + i]
+                Name = names.ElementAtOrDefault(offset + i)
             }));
         }
     }
