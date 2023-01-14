@@ -1,4 +1,9 @@
-﻿-----   Version 0.2.3.0 (beta) - December 14, 2022   -----
+﻿-----   Version 0.2.4.0 (beta) - January 14, 2023   -----
+• Fix color values rounding down after saving when having edited a palette
+• Update libraries
+
+
+-----   Version 0.2.3.0 (beta) - December 14, 2022   -----
 • Fix a crash when using modified files with added DES/ETA entries for the Rayman PC versions
 
 
