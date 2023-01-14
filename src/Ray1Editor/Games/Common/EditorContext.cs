@@ -3,13 +3,14 @@ using System.IO;
 using BinarySerializer;
 using NLog;
 using System.Text;
-using ILogger = BinarySerializer.ILogger;
+using LogLevel = BinarySerializer.LogLevel;
 
 namespace Ray1Editor;
 
 public class EditorContext : Context
 {
-    public EditorContext(string basePath, bool noLog = false) : base(basePath, new EditorSettings(), noLog ? null : new EditorSerializerLog(), null, new EditorLogger()) { }
+    public EditorContext(string basePath, bool noLog = false) 
+        : base(basePath, new EditorSettings(), noLog ? null : new EditorSerializerLogger(), null, new EditorLogger()) { }
 
     public class EditorSettings : ISerializerSettings
     {
@@ -18,19 +19,31 @@ public class EditorContext : Context
         public bool CreateBackupOnWrite => R1EServices.App.UserData.Serializer_CreateBackupOnWrite;
         public bool SavePointersForRelocation => false;
         public bool IgnoreCacheOnRead => false;
+        public bool LogAlignIfNotNull => false;
         public PointerSize? LoggingPointerSize => PointerSize.Pointer32;
     }
 
-    public class EditorLogger : ILogger
+    public class EditorLogger : ISystemLogger
     {
-        private static readonly Logger Logger = LogManager.GetLogger("SerializerContext");
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public void Log(object log, params object[] args) => Logger.Info($"BinarySerializer: {log}", args);
-        public void LogWarning(object log, params object[] args) => Logger.Info($"BinarySerializer: {log}", args);
-        public void LogError(object log, params object[] args) => Logger.Info($"BinarySerializer: {log}", args);
+        public void Log(LogLevel logLevel, object log, params object[] args)
+        {
+            NLog.LogLevel nlogLevel = logLevel switch
+            {
+                LogLevel.Trace => NLog.LogLevel.Trace,
+                LogLevel.Debug => NLog.LogLevel.Debug,
+                LogLevel.Info => NLog.LogLevel.Info,
+                LogLevel.Warning => NLog.LogLevel.Warn,
+                LogLevel.Error => NLog.LogLevel.Error,
+                _ => NLog.LogLevel.Info,
+            };
+
+            Logger.Log(nlogLevel, () => String.Format($"BinarySerializer: {log}", args));
+        }
     }
 
-    public class EditorSerializerLog : ISerializerLog
+    public class EditorSerializerLogger : ISerializerLogger
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static bool _hasBeenCreated;

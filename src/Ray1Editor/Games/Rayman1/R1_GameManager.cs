@@ -45,7 +45,7 @@ public abstract class R1_GameManager : GameManager
         ObjData getObjData() => getObj().ObjData;
 
         var data = (R1_GameData)gameData;
-        var settings = data.Context.GetSettings<Ray1Settings>();
+        var settings = data.Context.GetRequiredSettings<Ray1Settings>();
 
         var dropDownItems_type = Enum.GetValues(typeof(ObjType)).
             Cast<ObjType>().
@@ -231,7 +231,7 @@ public abstract class R1_GameManager : GameManager
     public override GameObject CreateGameObject(GameData gameData, int index)
     {
         var data = (R1_GameData)gameData;
-        var settings = data.Context.GetSettings<Ray1Settings>();
+        var settings = data.Context.GetRequiredSettings<Ray1Settings>();
         var def = data.EventDefinitions[index];
 
         // Get the commands and label offsets
@@ -292,7 +292,7 @@ public abstract class R1_GameManager : GameManager
     {
         var data = (R1_GameData)gameData;
         var source = (R1_GameObject)sourceObj;
-        var settings = data.Context.GetSettings<Ray1Settings>();
+        var settings = data.Context.GetRequiredSettings<Ray1Settings>();
 
         var obj = ObjData.CreateObj(settings);
 
@@ -329,7 +329,7 @@ public abstract class R1_GameManager : GameManager
 
     public override int GetMaxObjCount(GameData gameData)
     {
-        switch (gameData.Context.GetSettings<Ray1Settings>().EngineVersion)
+        switch (gameData.Context.GetRequiredSettings<Ray1Settings>().EngineVersion)
         {
             case Ray1EngineVersion.PS1_JPDemoVol3:
             case Ray1EngineVersion.PS1_JPDemoVol6:
@@ -557,7 +557,7 @@ public abstract class R1_GameManager : GameManager
     public void LoadEditorEventDefinitions(R1_GameData data)
     {
         var engine = R1_EventDefinition.Engine.R1;
-        var settings = data.Context.GetSettings<Ray1Settings>();
+        var settings = data.Context.GetRequiredSettings<Ray1Settings>();
 
         if (settings.EngineVersion is Ray1EngineVersion.PC_Edu or Ray1EngineVersion.PS1_Edu)
             engine = R1_EventDefinition.Engine.EDU;
@@ -602,7 +602,7 @@ public abstract class R1_GameManager : GameManager
             compiledCmds = compiledData?.Commands?.ToBytes(() =>
             {
                 var c = new EditorContext(data.Context.BasePath, noLog: true);
-                c.AddSettings(data.Context.GetSettings<Ray1Settings>());
+                c.AddSettings(data.Context.GetRequiredSettings<Ray1Settings>());
                 return c;
             }) ?? new byte[0];
             labelOffsets = compiledData?.LabelOffsets ?? new ushort[0];
@@ -612,7 +612,7 @@ public abstract class R1_GameManager : GameManager
             compiledCmds = e.Commands?.ToBytes(() =>
             {
                 var c = new EditorContext(data.Context.BasePath, noLog: true);
-                c.AddSettings(data.Context.GetSettings<Ray1Settings>());
+                c.AddSettings(data.Context.GetRequiredSettings<Ray1Settings>());
                 return c;
             }) ?? new byte[0];
             labelOffsets = e.LabelOffsets ?? new ushort[0];
@@ -640,7 +640,7 @@ public abstract class R1_GameManager : GameManager
                 (!flags.HasFlag(EventMatchFlags.FollowSprite) || x.FollowSprite == e.FollowSprite) &&
                 (!flags.HasFlag(EventMatchFlags.HitPoints) || x.HitPoints == e.ActualHitPoints) &&
                 (!flags.HasFlag(EventMatchFlags.HitSprite) || x.HitSprite == e.HitSprite) &&
-                (!flags.HasFlag(EventMatchFlags.FollowEnabled) || x.FollowEnabled == e.GetFollowEnabled(data.Context.GetSettings<Ray1Settings>())) && 
+                (!flags.HasFlag(EventMatchFlags.FollowEnabled) || x.FollowEnabled == e.GetFollowEnabled(data.Context.GetRequiredSettings<Ray1Settings>())) && 
                 (!flags.HasFlag(EventMatchFlags.Commands) || compareCommands(x)));
         }
 

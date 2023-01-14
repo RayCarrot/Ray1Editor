@@ -86,7 +86,7 @@ public abstract class R1_PS1_GameManager : R1_GameManager
 
         // Get settings
         var ray1Settings = (Ray1Settings)settings;
-        var game = (Games.R1_Game)context.GetSettings<Games.Game>();
+        var game = (Games.R1_Game)context.GetRequiredSettings<Games.Game>();
 
         // Add the settings
         context.AddSettings(ray1Settings);
@@ -181,7 +181,7 @@ public abstract class R1_PS1_GameManager : R1_GameManager
             throw new Exception("The disc.xml file does not exist");
 
         // Get settings
-        var settings = context.GetSettings<Ray1Settings>();
+        var settings = context.GetRequiredSettings<Ray1Settings>();
 
         var data = (R1_PS1_GameData)gameData;
 
@@ -481,7 +481,7 @@ public abstract class R1_PS1_GameManager : R1_GameManager
 
     public void LoadObjects(R1_PS1_GameData data, PS1_ObjBlock objBlock)
     {
-        data.Objects.AddRange(objBlock.Objects.Select(obj => new R1_GameObject(obj, data.Context.GetSettings<Ray1Settings>(), FindMatchingEventDefinition(data, obj))));
+        data.Objects.AddRange(objBlock.Objects.Select(obj => new R1_GameObject(obj, data.Context.GetRequiredSettings<Ray1Settings>(), FindMatchingEventDefinition(data, obj))));
 
         data.LinkTable = objBlock.ObjectLinkingTable.Select(x => (ushort)x).ToArray();
         InitLinkGroups(data.Objects, data.LinkTable);
@@ -542,7 +542,7 @@ public abstract class R1_PS1_GameManager : R1_GameManager
     public void LoadFond(R1_PS1_GameData data, PS1_Executable exe, TextureManager textureManager)
     {
         var context = data.Context;
-        var settings = context.GetSettings<Ray1Settings>();
+        var settings = context.GetRequiredSettings<Ray1Settings>();
 
         // Get the current fond
         var fndIndex = exe.PS1_LevelBackgroundIndexTable[(int)settings.World - 1][settings.Level - 1];

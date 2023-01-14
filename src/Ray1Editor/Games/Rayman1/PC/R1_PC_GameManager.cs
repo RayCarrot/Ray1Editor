@@ -34,7 +34,7 @@ public class R1_PC_GameManager : R1_GameManager
     {
         // Get settings
         var ray1Settings = (Ray1Settings)settings;
-        var game = (Games.R1_Game)context.GetSettings<Games.Game>();
+        var game = (Games.R1_Game)context.GetRequiredSettings<Games.Game>();
 
         // Add the settings
         context.AddSettings(ray1Settings);
@@ -97,7 +97,7 @@ public class R1_PC_GameManager : R1_GameManager
     public override void Save(Context context, GameData gameData)
     {
         // Get settings
-        var ray1Settings = context.GetSettings<Ray1Settings>();
+        var ray1Settings = context.GetRequiredSettings<Ray1Settings>();
 
         var data = (R1_PC_GameData)gameData;
 
@@ -219,7 +219,7 @@ public class R1_PC_GameManager : R1_GameManager
         {
             var des = data.PC_DES[i];
 
-            var processedImageData = des.RequiresBackgroundClearing ? PC_DES.ProcessImageData(des.ImageData) : des.ImageData;
+            var processedImageData = des.IsAnimatedSprite ? PC_DES.ProcessImageData(des.ImageData) : des.ImageData;
 
             var spriteSheet = new PalettedTextureSheet(textureManager, des.SpriteCollection.Sprites.Select(x => x.IsDummySprite() ? (Point?)null : new Point(x.Width, x.Height)).ToArray());
 
@@ -282,7 +282,7 @@ public class R1_PC_GameManager : R1_GameManager
         {
             LoadObject(data, lev, obj, objIndex);
 
-            data.Objects.Add(new R1_GameObject(obj, data.Context.GetSettings<Ray1Settings>(), FindMatchingEventDefinition(data, obj)));
+            data.Objects.Add(new R1_GameObject(obj, data.Context.GetRequiredSettings<Ray1Settings>(), FindMatchingEventDefinition(data, obj)));
 
             objIndex++;
         }
@@ -380,7 +380,7 @@ public class R1_PC_GameManager : R1_GameManager
 
     public R1_PC_BackgroundLayer.BackgroundEntry_R1_PC LoadFond(R1_PC_GameData data, TextureManager textureManager, int index)
     {
-        var pcx = LoadArchiveFile<PCX>(data.Context, Path_VigFile(data.Context.GetSettings<Ray1Settings>()), index);
+        var pcx = LoadArchiveFile<PCX>(data.Context, Path_VigFile(data.Context.GetRequiredSettings<Ray1Settings>()), index);
 
         var imgData = pcx.ScanLines.SelectMany(x => x).ToArray();
 

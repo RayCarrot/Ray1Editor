@@ -50,7 +50,7 @@ public class R1_EDU_PC_GameManager : R1_PC_GameManager
     {
         var data = (R1_PC_GameData)gameData;
         var lvlDefines = data.LevelDefines;
-        var settings = data.Context.GetSettings<Ray1Settings>();
+        var settings = data.Context.GetRequiredSettings<Ray1Settings>();
 
         yield return new EditorIntFieldViewModel(
             header: "Music track",
@@ -243,7 +243,7 @@ public class R1_EDU_PC_GameManager : R1_PC_GameManager
 
     public R1_PC_BackgroundLayer.BackgroundEntry_R1_PC LoadFond(R1_PC_GameData data, TextureManager textureManager, string fileName)
     {
-        var pcx = LoadArchiveFile<PCX>(data.Context, Path_VigFile(data.Context.GetSettings<Ray1Settings>()), fileName);
+        var pcx = LoadArchiveFile<PCX>(data.Context, Path_VigFile(data.Context.GetRequiredSettings<Ray1Settings>()), fileName);
 
         var imgData = pcx.ScanLines.SelectMany(x => x).ToArray();
 

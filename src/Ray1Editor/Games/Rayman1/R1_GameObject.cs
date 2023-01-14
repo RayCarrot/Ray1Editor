@@ -31,7 +31,7 @@ public class R1_GameObject : GameObject
     public new R1_GameData Data => (R1_GameData)base.Data;
     public override void Load()
     {
-        var settings = Data.Context.GetSettings<Ray1Settings>();
+        var settings = Data.Context.GetRequiredSettings<Ray1Settings>();
 
         var isEDUorKIT = settings.EngineVersion == Ray1EngineVersion.PC_Edu ||
                          settings.EngineVersion == Ray1EngineVersion.PS1_Edu ||
@@ -80,7 +80,7 @@ public class R1_GameObject : GameObject
     {
         get
         {
-            var settings = Data.Context.GetSettings<Ray1Settings>();
+            var settings = Data.Context.GetRequiredSettings<Ray1Settings>();
 
             if (ObjData.IsPCFormat(settings))
             {
@@ -162,7 +162,7 @@ public class R1_GameObject : GameObject
             byte[] args = cmds.Commands[i].Arguments;
 
             // Correct the number of arguments
-            int argsCount = Command.GetArgumentsCount(Data.Context.GetSettings<Ray1Settings>().EngineVersion, type, args);
+            int argsCount = Command.GetArgumentsCount(Data.Context.GetRequiredSettings<Ray1Settings>().EngineVersion, type, args);
 
             if (args.Length != argsCount)
             {
@@ -306,7 +306,7 @@ public class R1_GameObject : GameObject
 
         int hy = ObjData.OffsetHY;
 
-        if (ObjData.GetFollowEnabled(Data.Context.GetSettings<Ray1Settings>()))
+        if (ObjData.GetFollowEnabled(Data.Context.GetRequiredSettings<Ray1Settings>()))
             hy += CurrentAnimation?.Frames.ElementAtOrDefault(AnimationFrame)?.SpriteLayers.ElementAtOrDefault(ObjData.FollowSprite)?.Position.Y ?? 0;
 
         if (hy != 0)

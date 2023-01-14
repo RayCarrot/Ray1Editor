@@ -45,7 +45,7 @@ public class SerializableEditorFile<T> : BinarySerializable
         // If the magic is not correct we return
         if (Magic != magic)
         {
-            s.LogWarning($"Incorrect magic identifier {magic}");
+            s.SystemLogger?.LogWarning($"Incorrect magic identifier {magic}");
             return;
         }
 
@@ -55,7 +55,7 @@ public class SerializableEditorFile<T> : BinarySerializable
         // If not 1 we don't read the data. It's most likely from a later version.
         if (EditorVersion != 1)
         {
-            s.LogWarning($"Unknown editor version {EditorVersion}");
+            s.SystemLogger?.LogWarning($"Unknown editor version {EditorVersion}");
 
             // Set to 1 again so it's correct when we write the data
             EditorVersion = 1;
@@ -66,7 +66,7 @@ public class SerializableEditorFile<T> : BinarySerializable
         // Write the message. This is irrelevant when reading and is only used for users to more easily be able to identify
         // files which have been edited using the editor. We could also append other info here such as the edit date, username, description etc.
         Message = s.SerializeString(Message, encoding: Encoding.UTF8, name: nameof(Message));
-            
+        
         // Keep a table of relocated data structs. This is useful for files we need to repack or files where we append data to the end.
         RelocatedStructsCount = s.Serialize<int>(RelocatedStructsCount, name: nameof(RelocatedStructsCount));
         RelocatedStructs = s.SerializeObjectArray<RelocatedStruct>(RelocatedStructs, RelocatedStructsCount, name: nameof(RelocatedStructs));
@@ -76,7 +76,7 @@ public class SerializableEditorFile<T> : BinarySerializable
         magic = s.SerializeString(Magic, 4, name: nameof(Magic));
 
         if (Magic != magic)
-            s.LogWarning($"Unknown magic identifier {magic}");
+            s.SystemLogger?.LogWarning($"Unknown magic identifier {magic}");
 
         // Perform additional serialization actions
         if (AdditionalSerializationActions != null)
