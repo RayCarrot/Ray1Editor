@@ -46,12 +46,11 @@ A: Not currently, but it's a planned feature. In the meantime if you want it for
 
 **Q: Which libraries were used for this?**
 
-A: Primarily [BinarySerializer.Ray1](https://github.com/RayCarrot/BinarySerializer.Ray) for parsing Rayman 1 data, [MahApps.Metro](https://github.com/MahApps/MahApps.Metro) for the XAML styles, [MonoGame WPF Interop](https://github.com/MarcStan/monogame-framework-wpfinterop) for using MonoGame in WPF and [NLog](https://github.com/NLog/NLog) for logging.
+A: Primarily [BinarySerializer.Ray1](https://github.com/BinarySerializer/BinarySerializer.Ray1) for parsing Rayman 1 data, [MahApps.Metro](https://github.com/MahApps/MahApps.Metro) for the XAML styles, [MonoGame WPF Interop](https://github.com/MarcStan/monogame-framework-wpfinterop) for using MonoGame in WPF and [NLog](https://github.com/NLog/NLog) for logging.
 
 ## TODO
 In the code there are several comments for changes which should be made. These are marked with either 'TODO' or 'IDEA'. The former are for more improtant changes while the latter is for optional improvements. Other potential changes not mentioned in comments include:
 * Undo/redo for editing. This is currently shown in the UI, but disabled.
-* Allow Rayman 1 commands to be modified.
 * Allow sprites, animations and states to be viewed and modified. These options are shown in the menu, but disabled.
 * Allow real-time editing while running the game. This is already partially supported in Ray1Map.
 * Automatically add/remove always objects when adding/removing objects in Rayman 1.
@@ -59,6 +58,9 @@ In the code there are several comments for changes which should be made. These a
 * Handle multi-colored and frame variant objects better in event sheet for Rayman 1.
 * Parse the ETA structs better in the PS1 version of Rayman 1, avoiding reading the wrong amount and thus repacking the wrong amount when saving.
 * Allow tiles to be selected like objects, allowing tile attributes to be modified (such as the transparency for Rayman 1 on PC or the palette index for Rayman 1 on PS1).
+
+### Cross-platorm editing (Rayman 1)
+Currently the editor only edits the compiled game files for each platform. This poses several limitations, especially on PS1. One solution to this would be to have an option to "decompile" the game assets by converting them into their original raw editor formats (this can handled similarily to the original editor where things like ETA are text files etc.). Then when saving you can target different platforms and have it compile the game data for that. This would give you bigger freedom with using objects in levels they weren't originally in and such. There would of course still be some major issues to overcome with this, such as the PC versions requiring a palette swapper with some tilesets.
 
 ## Licence
 
