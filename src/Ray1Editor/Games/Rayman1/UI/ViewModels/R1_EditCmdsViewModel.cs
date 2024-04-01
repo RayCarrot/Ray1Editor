@@ -43,13 +43,6 @@ public class R1_EditCmdsViewModel : BaseViewModel
             {
                 string[] values = line.Split(',');
 
-                // Must have at least 2 values
-                if (values.Length < 2)
-                {
-                    Logger.Warn("Failed to parse command on line {0} due to the number of values being less than 2", lineIndex);
-                    return null;
-                }
-
                 if (!Enum.TryParse(values[0].Trim(), out CommandType cmdType))
                 {
                     Logger.Warn("Failed to parse command on line {0} due to the command type not being correctly formatted", lineIndex);
