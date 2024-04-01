@@ -1,4 +1,8 @@
-﻿-----   Version 0.2.4.0 (beta) - January 14, 2023   -----
+﻿-----   Version 0.2.5.0 (beta) - April 1, 2024   -----
+• Fix a bug with editing object commands when GO_DOLOOP is used
+
+
+-----   Version 0.2.4.0 (beta) - January 14, 2023   -----
 • Fix color values rounding down after saving when having edited a palette
 • Update libraries
 
